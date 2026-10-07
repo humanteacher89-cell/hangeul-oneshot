@@ -216,6 +216,12 @@
   .ghostbtn { flex: none; border: 2px solid var(--line); background: #fff; border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 800; color: #6E5E50; }
   .item.mine { padding-right: 10px; }
   .item.mine > a { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
+  .item.mat { padding-right: 10px; }
+  .item.mat > a:first-child { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
+  .qrbtn { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line); background: #fff; color: var(--ink); display: grid; place-items: center; padding: 0; }
+  .qrbtn svg { width: 20px; height: 20px; }
+  @media screen { .mqr .qrcard .qr img, .mqr .qrcard .qr canvas { width: min(270px, 70vw) !important; height: min(270px, 70vw) !important; } }
+  .mqr .openlink { display: block; margin-top: 14px; text-align: center; font-size: 14px; font-weight: 800; color: var(--sub); text-decoration: underline; }
   .hidebtn { flex: none; border: 2px solid #F6CFC4; background: #FFF5F2; color: #D93A1E; border-radius: 999px; padding: 7px 11px; font-size: 12.5px; font-weight: 900; }
 
   /* 자료 올리기(아래에서 올라온 창 모양) */
@@ -355,7 +361,7 @@
       mats: n => `자료 ${n}개`, empty: '아직 자료가 없어요', emptyHint: '다른 레벨도 둘러보세요', emptyTeacher: '‘자료 올리기’로 올리면 여기 생겨요',
       min: '분', newtab: '자료는 새 창에서 열려요', noTopic: '주제를 찾지 못했어요',
       tabHome: '홈', tabQr: 'QR 코드', tabTeacher: '선생님', back: '뒤로', close: '닫기',
-      qrTitle: 'QR 코드', print: '인쇄', qrByTopic: '주제별 QR', homeQr: '첫 화면', topicQr: '주제 전체 · 하·중·상 고르기',
+      qrTitle: 'QR 코드', print: '인쇄', qrByTopic: '주제별 QR', homeQr: '첫 화면', topicQr: '주제 전체 · 하·중·상 고르기', qrByMat: '자료별 QR', noMat: '자료를 찾을 수 없어요', openMat: '이 자료 열어 보기',
       qrIntro: 'QR은 종이 한 장에 하나씩 붙이세요. 여러 개가 가까이 있으면 카메라가 어느 것을 찍을지 헷갈려요. 인쇄하면 한 장에 하나씩 나와요.',
       scan: '휴대폰 카메라로 찍으세요', scanOther: 'Scannez avec l’appareil photo',
       teacherLogin: '선생님 로그인', loginHint: '협의회·학교에서 받은 코드를 넣으세요.', codePh: '코드', login: '로그인', loggedIn: '로그인했어요',
@@ -386,7 +392,7 @@
       mats: n => `${n} ressource${n > 1 ? 's' : ''}`, empty: 'Pas encore de ressource', emptyHint: 'Regarde les autres niveaux', emptyTeacher: 'Ajoutez une ressource pour la voir ici',
       min: ' min', newtab: 'Les ressources s’ouvrent dans un nouvel onglet', noTopic: 'Thème introuvable',
       tabHome: 'Accueil', tabQr: 'QR', tabTeacher: 'Enseignant', back: 'Retour', close: 'Fermer',
-      qrTitle: 'Codes QR', print: 'Imprimer', qrByTopic: 'QR par thème', homeQr: 'Page d’accueil', topicQr: 'Tout le thème · choisir son niveau',
+      qrTitle: 'Codes QR', print: 'Imprimer', qrByTopic: 'QR par thème', homeQr: 'Page d’accueil', topicQr: 'Tout le thème · choisir son niveau', qrByMat: 'QR par ressource', noMat: 'Ressource introuvable', openMat: 'Ouvrir cette ressource',
       qrIntro: 'Un seul QR par feuille : plusieurs QR côte à côte perturbent l’appareil photo. L’impression met un QR par page.',
       scan: 'Scannez avec l’appareil photo', scanOther: '휴대폰 카메라로 찍으세요',
       teacherLogin: 'Espace enseignant', loginHint: 'Entrez le code reçu de votre école.', codePh: 'Code', login: 'Connexion', loggedIn: 'Connecté',
@@ -613,7 +619,7 @@
     const sel = `<div class="lvsel">${LEVEL_KEYS.map(k => `<button type="button" class="lvbtn k-${k}${k === cur ? ' on' : ''}${cnt(k) ? '' : ' zero'}" data-level="${k}" aria-pressed="${k === cur}">
       <div class="k">${k}</div><div class="d">${esc(levelDesc(k))}</div><span class="n">${esc(t('cnt')(cnt(k)))}</span></button>`).join('')}</div>`;
     const items = list.length
-      ? list.map(m => `<a class="item" href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m)}${goBtn(m)}</a>`).join('')
+      ? list.map(m => `<div class="item mat"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m)}${goBtn(m)}</a><a class="qrbtn" href="#/mq/${encodeURIComponent(m.id)}" aria-label="QR">${ICON.qr}</a></div>`).join('')
       : `<div class="emptycard"><div class="e">🌱</div>${esc(t('empty'))}<small>${esc(teacher ? t('emptyTeacher') : t('emptyHint'))}</small></div>`;
     const other = [levelDescOther(cur), t('mats')(list.length)].filter(Boolean).join(' · ');
     const fab = teacher ? `<a class="fab" href="#/upload/${encodeURIComponent(name)}/${encodeURIComponent(cur)}">${ICON.plus}<span>${esc(t('upload'))}</span></a>` : '';
@@ -633,12 +639,25 @@
       const L = topicLabel(tp);
       const cards = [qrCard('', L.big, t('topicQr'), fullUrl(topicHref(name)))]
         .concat(LEVEL_KEYS.map(k => qrCard('k-' + k, `${L.big} · ${k}`, levelDesc(k), fullUrl(topicHref(name, k))))).join('');
-      return barSub(L.big, topicHref(name), printBtn) + `<div class="pad">${note}<div class="qrlist">${cards}</div></div>`;
+      const mats = data.materials.filter(m => m.topic === name);
+      const rows = LEVEL_KEYS.map(k => mats.filter(m => m.level === k).map(m =>
+        `<a class="trow" href="#/mq/${encodeURIComponent(m.id)}"><span class="em" style="background:${(TYPE_ICON[m.type] || TYPE_ICON['기타'])[1]}">${(TYPE_ICON[m.type] || TYPE_ICON['기타'])[0]}</span><b>${esc(k + ' · ' + m.title)}</b>${ICON.qr}</a>`).join('')).join('');
+      return barSub(L.big, topicHref(name), printBtn) + `<div class="pad">${note}<div class="qrlist">${cards}</div>
+        ${rows ? `<div class="noprint"><div class="sec"><h2>${esc(t('qrByMat'))}</h2><span>${esc(t('nItems')(mats.length))}</span></div>${rows}</div>` : ''}</div>`;
     }
     const rows = data.topics.map(x => { const ic = topicIcon(x), L = topicLabel(x);
       return `<a class="trow" href="#/qr/${encodeURIComponent(x.name)}"><span class="em${ic.txt ? ' txt' : ''}" style="background:${x.color}">${esc(ic.v)}</span><b>${esc(L.big)}</b>${ICON.right}</a>`; }).join('');
     return barSub(t('qrTitle'), '', printBtn) + `<div class="pad">${note}<div class="qrlist">${qrCard('', appTitle(), t('homeQr'), fullUrl('#/'))}</div>
       ${rows ? `<div class="noprint"><div class="sec"><h2>${esc(t('qrByTopic'))}</h2><span>${esc(t('nTopics')(data.topics.length))}</span></div>${rows}</div>` : ''}</div>`;
+  }
+  // 자료 하나의 QR: 찍으면 그 자료(링크)가 바로 열린다.
+  function viewMatQr(id) {
+    const m = data.materials.find(x => x.id === id);
+    if (!m) return barSub('', '#/') + `<div class="pad"><div class="emptycard"><div class="e">🔍</div>${esc(t('noMat'))}</div></div>`;
+    const tp = data.topics.find(x => x.name === m.topic), big = tp ? topicLabel(tp).big : m.topic;
+    const printBtn = `<button type="button" class="pbtn" data-print>${esc(t('print'))}</button>`;
+    return barSub(big, topicHref(m.topic, m.level), printBtn) + `<div class="pad mqr"><div class="qrlist">${qrCard('k-' + m.level, m.title, `${big} · ${m.level} · ${levelDesc(m.level)}`, m.url)}</div>
+      <a class="openlink noprint" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(t('openMat'))}</a></div>`;
   }
   function drawQrs() {
     document.querySelectorAll('[data-qr]').forEach(el => {
@@ -695,7 +714,7 @@
 
   function renderTabs(page, parts) {
     const qrHref = (page === 't' || page === 'qr') && parts[1] ? '#/qr/' + encodeURIComponent(parts[1]) : '#/qr';
-    const on = { home: page === '' || page === 't', qr: page === 'qr', tc: ['login', 'mine', 'upload'].includes(page) };
+    const on = { home: page === '' || page === 't', qr: page === 'qr' || page === 'mq', tc: ['login', 'mine', 'upload'].includes(page) };
     $('#tabbar').innerHTML = `<a class="tab${on.home ? ' on' : ''}" href="#/">${ICON.home}<span>${esc(t('tabHome'))}</span></a>
       <a class="tab${on.qr ? ' on' : ''}" href="${qrHref}">${ICON.qr}<span>${esc(t('tabQr'))}</span></a>
       <a class="tab${on.tc ? ' on' : ''}" href="${teacher ? '#/mine' : '#/login'}">${ICON.person}<span>${esc(t('tabTeacher'))}</span></a>`;
@@ -717,6 +736,7 @@
     switch (page) {
       case 't': v.innerHTML = viewTopic(parts[1] || '', normLevel(parts[2]), fromQr); title = (parts[1] || '') + ' · ' + title; break;
       case 'qr': v.innerHTML = viewQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
+      case 'mq': v.innerHTML = viewMatQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'login': v.innerHTML = teacher ? viewMine() : viewLogin(); bindLogin(); break;
       case 'mine': v.innerHTML = viewMine(); bindLogin(); break;
       case 'upload': v.innerHTML = viewUpload(parts[1] || '', normLevel(parts[2])); bindUpload(); bindLogin(); break;
