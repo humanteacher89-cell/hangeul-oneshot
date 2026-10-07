@@ -29,6 +29,8 @@ function setup() {
     if (!sh) { sh = ss.insertSheet(name); }
     if (sh.getLastRow() === 0) { sh.appendRow(SHEETS[name]); sh.setFrozenRows(1); }
   });
+  // 교사 코드 칸은 글자로 둔다(숫자로 두면 0123이 123으로 바뀌어 로그인이 안 된다).
+  ss.getSheetByName('교사').getRange('C:C').setNumberFormat('@');
   var st = ss.getSheetByName('설정');
   if (st.getLastRow() < 2) { st.appendRow(['title', '한글원샷']); st.appendRow(['subtitle', '프랑스 한글학교 레벨별 자료']); st.appendRow(['notice', '']); }
 }
