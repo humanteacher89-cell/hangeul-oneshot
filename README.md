@@ -15,7 +15,7 @@ QR 한 번(원샷)에 내 레벨 자료가 열리는 **한 장짜리 페이지**
 
 ## 로컬에서 보기
 이 폴더에서 `python serve.py 8765`(맥·리눅스는 `python3`) 뒤 브라우저에서 http://127.0.0.1:8765/ (QR 그리기만 인터넷이 필요).
-공개 주소: https://humanteacher89-cell.github.io/apps/hangeul-oneshot/ (`apps` 저장소의 이 폴더가 그대로 공개된다. 폴더 이름 = 주소라 바꾸지 않는다).
+공개 주소: https://humanteacher89-cell.github.io/hangeul-oneshot/ (이 저장소가 그대로 공개된다. 저장소 이름 = 주소라 바꾸지 않는다).
 시험 모드 교사 코드: 1234(김선생·파리), 5678(이선생·리옹). 올린 자료는 그 브라우저의 localStorage에만 남는다.
 
 ## 실제 시트와 연결하기 (휴먼쌤, 한 번)
