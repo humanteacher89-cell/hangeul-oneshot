@@ -353,6 +353,63 @@
   .cta.ptab .btn { height: 54px; font-size: 17px; }
   .cta.ptab .btn.done { background: var(--g); box-shadow: 0 5px 0 var(--g-d); }
 
+  .pleft, .pright { display: contents; }
+
+  /* PC·넓은 화면(900px 이상): 같은 주소, 넓은 배치. 휴대폰 화면은 위 규칙 그대로. 인쇄에는 쓰지 않는다(screen만) */
+  @media screen and (min-width: 900px) {
+    .app { max-width: 1200px; padding: 0 0 48px 232px; }
+    .app.notab { padding-left: 0; }
+    .pad { padding: 4px 32px 0; }
+    .appbar { padding: 16px 32px 12px; }
+    /* 아래 탭 → 왼쪽 메뉴 */
+    .tabbar { top: 0; bottom: 0; left: max(0px, calc(50% - 600px)); right: auto; width: 220px; max-width: none; margin: 0; flex-direction: column; justify-content: flex-start;
+              gap: 6px; padding: 24px 14px; border-top: 0; border-right: 2px solid var(--line); box-shadow: none; }
+    .tabbar:before { content: "한글원샷"; display: block; padding: 6px 12px 18px; font-size: 21px; font-weight: 900; letter-spacing: -.03em; color: var(--ink); }
+    .tab { flex-direction: row; gap: 12px; width: auto; padding: 12px 14px; border-radius: 16px; font-size: 16px; color: var(--sub); }
+    .tab svg { width: 24px; height: 24px; }
+    .tab:hover { background: #F6EEE3; }
+    .tab.on { background: #FFEDE6; color: var(--coral-d); }
+    /* 첫 화면 */
+    .hero { padding: 28px 32px 30px; }
+    .hero h1 { font-size: 32px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+    .chips { margin: 18px 0 0; padding: 2px 0 6px; flex-wrap: wrap; overflow: visible; }
+    /* 주제 화면: 왼쪽 하·중·상, 오른쪽 자료 */
+    .tview { display: grid; grid-template-columns: 300px 1fr; column-gap: 28px; padding: 0 32px; }
+    .tview .thead { grid-column: 1 / -1; margin-top: 16px; border-radius: 30px; padding: 16px 24px 32px; }
+    .tview .lvsel { grid-column: 1; align-self: start; position: sticky; top: 16px; margin: 24px 0 0; grid-template-columns: 1fr; gap: 10px; }
+    .tview .lvbtn { display: grid; grid-template-columns: 54px 1fr auto; align-items: center; text-align: left; padding: 14px 16px; }
+    .tview .lvbtn .k { font-size: 30px; }
+    .tview .lvbtn .d { margin: 0; font-size: 13.5px; }
+    .tview .lvbtn .n { margin: 0; }
+    .tview .list { grid-column: 2; padding: 24px 0 0; }
+    .tview .list .item { margin-bottom: 14px; }
+    .fab { right: max(32px, calc(50% - 600px + 32px)); bottom: 32px; }
+    /* QR: 주제·레벨 QR 두 줄 */
+    .qrlist { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mqr .qrlist { grid-template-columns: minmax(0, 420px); justify-content: center; }
+    .qrnote { max-width: 760px; }
+    /* 선생님 */
+    #loginForm { max-width: 460px; margin-left: auto; margin-right: auto; }
+    .panel + .tip { max-width: 460px; margin-left: auto; margin-right: auto; }
+    .me, .pad > .btn, .entry { max-width: 760px; }
+    /* 자료 올리기: 왼쪽 칸들, 오른쪽 미리 보기 */
+    .updim { display: none; }
+    .sheet { max-width: 1000px; margin: 24px auto 40px; min-height: 0; border-radius: 30px; padding: 24px 32px 32px; display: grid; grid-template-columns: minmax(0, 1fr) 340px;
+             column-gap: 32px; align-items: start; box-shadow: 0 0 0 2px var(--line); }
+    .sheet > * { grid-column: 1; }
+    .sheet .handle { display: none; }
+    .sheet .pvf { grid-column: 2; grid-row: 1 / span 20; position: sticky; top: 24px; margin-top: 0; }
+    .sheet .cta { position: static; padding: 0; background: none; margin: 20px 0 0; max-width: none; }
+    /* 요청문 만들기: 왼쪽 고르기, 오른쪽 요청문(따라 내려옴) */
+    .ppage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 24px; align-items: start; padding-bottom: 24px; }
+    .ppage > .hero, .ppage > .pfoot { grid-column: 1 / -1; }
+    .pleft, .pright { display: flex; flex-direction: column; gap: 14px; }
+    .pright { position: sticky; top: 76px; }
+    .cta.ptab { position: static; padding: 0; background: none; margin: 0; max-width: none; }
+    .toast { bottom: 32px; }
+  }
+
   @media print {
     html, body, .app { background: #fff !important; box-shadow: none !important; max-width: none !important; padding: 0 !important; }
     .appbar, .tabbar, .noprint, .toast, .fab { display: none !important; }
@@ -748,8 +805,8 @@
       : `<div class="emptycard"><div class="e">🌱</div>${esc(t('empty'))}<small>${esc(teacher ? t('emptyTeacher') : t('emptyHint'))}</small></div>`;
     const other = [levelDescOther(cur), t('mats')(list.length)].filter(Boolean).join(' · ');
     const fab = teacher ? `<a class="fab" href="#/upload/${encodeURIComponent(name)}/${encodeURIComponent(cur)}">${ICON.plus}<span>${esc(t('upload'))}</span></a>` : '';
-    return head + sel + `<div class="list${teacher ? ' withfab' : ''}"><div class="lhead"><b>${esc(levelDesc(cur))}</b><span>${esc(other)}</span></div>${items}
-      <div class="hand"><span class="h">✋</span><div>${esc(t('hand'))}<small>${esc(t('handOther'))}</small></div></div><p class="tip">${esc(t('newtab'))}</p></div>` + fab;
+    return `<div class="tview">` + head + sel + `<div class="list${teacher ? ' withfab' : ''}"><div class="lhead"><b>${esc(levelDesc(cur))}</b><span>${esc(other)}</span></div>${items}
+      <div class="hand"><span class="h">✋</span><div>${esc(t('hand'))}<small>${esc(t('handOther'))}</small></div></div><p class="tip">${esc(t('newtab'))}</p></div></div>` + fab;
   }
 
   function qrCard(cls, head, sub, url) {
@@ -837,7 +894,7 @@
           <p class="lhint" id="urlHint" aria-live="polite">${linkHint(linkCheck(''))}</p></div></div>
       <div class="f"><span class="lab">${esc(t('fMin'))}</span><div class="stepper"><button type="button" data-step="-5" aria-label="-5">−</button><div class="sv"><input name="minutes" type="number" min="0" max="180" inputmode="numeric" value="10" aria-label="${esc(t('fMin'))}"><span>${esc(t('min').trim())}</span></div><button type="button" data-step="5" aria-label="+5">+</button></div></div>
       <div class="f"><label class="lab" for="f-desc">${esc(t('fDesc'))}</label><div class="inp"><input id="f-desc" name="desc" maxlength="80" placeholder="${esc(t('phDesc'))}"></div></div>
-      <div class="f"><span class="lab">${esc(t('previewCap'))}</span><div id="upPreview"></div></div>
+      <div class="f pvf"><span class="lab">${esc(t('previewCap'))}</span><div id="upPreview"></div></div>
       <p class="err" id="upErr"></p>
       <div class="cta"><button class="btn" type="submit" id="upBtn">${esc(t('submit'))}</button></div>
     </form>`;
@@ -881,18 +938,20 @@
     const fix = `<ul class="fix">${t('pFix').map((x, i) => `<li><span>${i + 1}</span><div><em>${esc(x[0])}</em>${esc(x[1])}</div></li>`).join('')}</ul>`;
     return barSub(t('pTitle'), teacher ? '#/mine' : '#/login', langToggle(true)) + `<div class="pad ppage" id="pform">
       <section class="hero ph"><p class="hi">${esc(t('pHi'))}</p><h1>${esc(t('pHero'))}</h1><p class="other">${esc(t('pHeroOther'))}</p></section>
-      <section class="pbox"><h2><span class="pstep">1</span>${esc(t('pS1'))}</h2>${kinds}${lvl}${num}</section>
+      <div class="pleft"><section class="pbox"><h2><span class="pstep">1</span>${esc(t('pS1'))}</h2>${kinds}${lvl}${num}</section>
       <section class="pbox"><h2><span class="pstep">2</span>${esc(t('pS2'))}</h2>
         <div class="f"><span class="lab">${esc(t('pWho'))}</span>${pChips('who')}</div>
         <div class="f"><span class="lab">${esc(t('pSpeak'))}</span>${pChips('speak')}</div>
         <div class="f"><span class="lab">${esc(t('pRead'))}</span>${pChips('read')}</div>
         <div class="f"><span class="lab">${esc(t('pGoal'))}</span>${pChips('goal')}</div></section>
-      <section class="pbox"><h2><span class="pstep">3</span>${esc(t('pS3'))}</h2>${field('pTopic', 'p-topic')}${field('pExpr', 'p-expr')}${field('pWords', 'p-words', true)}</section>
-      <div class="pnotice">${warn}<span>${esc(t('pNotice'))}</span></div>
+      <section class="pbox"><h2><span class="pstep">3</span>${esc(t('pS3'))}</h2>${field('pTopic', 'p-topic')}${field('pExpr', 'p-expr')}${field('pWords', 'p-words', true)}</section></div>
+      <div class="pright"><div class="pnotice">${warn}<span>${esc(t('pNotice'))}</span></div>
       <section class="pbox"><h2><span class="pstep">4</span>${esc(t('pS4'))}</h2><div class="out" id="p-out" aria-live="polite">${promptHtml()}</div><p class="phint" style="margin:0">${esc(t('pOutHint'))}</p></section>
+      <div class="cta ptab"><button type="button" class="btn" id="p-copy">${esc(t('pCopy'))}</button></div>
       <section class="pbox"><h2>${esc(t('pS5'))}</h2>${fix}<a class="ghost" href="#/upload">${esc(t('pToUpload'))}</a></section>
+</div>
       <p class="pfoot">${esc(appTitle())} · ${esc(t('pFoot'))}</p>
-    </div><div class="cta ptab"><button type="button" class="btn" id="p-copy">${esc(t('pCopy'))}</button></div>`;
+    </div>`;
   }
   function bindPrompt() {
     const f = $('#pform'); if (!f) return;
