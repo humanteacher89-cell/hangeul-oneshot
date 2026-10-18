@@ -255,6 +255,19 @@
   .lhint.ok { color: var(--g-d); } .lhint.ok .m { background: var(--g); }
   .lhint.warn { color: #A86A00; } .lhint.warn .m { background: #E9A23B; }
   .lhint.bad { color: #D93A1E; } .lhint.bad .m { background: #D93A1E; }
+  /* 자료 넣는 방법: 파일 올리기(휴먼쌤 드라이브에 보관) / 링크 */
+  .srcseg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; background: #F4EEE6; border-radius: 16px; padding: 4px; }
+  .srcseg button { border: 0; background: none; border-radius: 12px; padding: 10px 4px; font-size: 14.5px; font-weight: 900; color: var(--sub); }
+  .srcseg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 2px 0 #E6D7C3; }
+  .filebox { position: relative; display: flex; align-items: center; gap: 12px; min-height: 64px; background: #fff; border: 2px dashed #E1CFB8; border-radius: 16px; padding: 10px 14px; cursor: pointer; }
+  .filebox:focus-within { border-color: var(--coral); box-shadow: 0 0 0 4px #FFE0D5; }
+  .filebox input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+  .filebox .fi { flex: none; width: 40px; height: 40px; border-radius: 13px; background: #FFEDE6; color: var(--coral); display: grid; place-items: center; }
+  .filebox .fi svg { width: 21px; height: 21px; }
+  .filebox .fn { flex: 1; min-width: 0; font-size: 15px; font-weight: 800; overflow-wrap: anywhere; }
+  .filebox .fn small { display: block; margin-top: 2px; font-size: 12px; font-weight: 700; color: var(--sub); }
+  .filebox.has { border-style: solid; border-color: var(--g); }
+  .filebox.has .fi { background: var(--g-l); color: var(--g-d); }
   .seg3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .seg3 label, .tchips label { position: relative; }
   .seg3 input, .tchips input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
@@ -374,6 +387,10 @@
   const LEVEL_KEYS = LEVELS.map(l => l.key);
   const TYPES = CFG.TYPES || ['기타'];
   const SCHOOLS = CFG.SCHOOLS || [];
+  // 파일 올리기: 교사가 고른 파일을 시트 서버(앱스 스크립트)가 휴먼쌤 드라이브의 한 폴더에 저장한다. 같은 한도·형식을 apps-script/Code.gs도 확인한다.
+  const FILE_MAX_MB = 10;
+  const FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'odp', 'ods', 'hwp', 'hwpx', 'txt', 'mp3', 'm4a', 'wav', 'ogg'];
+  const fileExt = n => (String(n || '').match(/\.([a-z0-9]+)$/i) || ['', ''])[1].toLowerCase();
 
   // 자료 유형 그림과 바탕색
   const TYPE_ICON = { '듣기': ['🎧', '#E3F0FF'], '읽기': ['📖', '#E3F5EA'], '쓰기': ['✏️', '#FFE9DE'], '말하기': ['💬', '#FFE4EE'], '어휘': ['🔤', '#FFF0D6'],
@@ -400,6 +417,7 @@
     right: S('<path d="M9 5l7 7-7 7"/>', 2.2),
     plus: S('<path d="M12 5v14M5 12h14"/>', 2.8),
     down: S('<path d="M6 9l6 6 6-6"/>', 2.4),
+    upfile: S('<path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 14.5v3A2 2 0 0 0 6.5 19.5h11a2 2 0 0 0 2-2v-3"/>', 2.2),
     share: S('<path d="M12 3.5v11M8 7.5l4-4 4 4"/><path d="M8.5 10.5H6.5A1.5 1.5 0 0 0 5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7a1.5 1.5 0 0 0-1.5-1.5h-2"/>', 2),
     target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="#fff" stroke-width="2.8"/><circle cx="12" cy="12" r="3.9" fill="#fff"/></svg>'
   };
@@ -426,6 +444,11 @@
       fUrl: '링크', fMin: '걸리는 시간', fDesc: '한 줄 설명', fSchool: '소속 학교', phSchool: '학교를 골라 주세요', needSchool: '소속 학교를 골라 주세요',
       phTopic: '주제를 고르거나 새로 적어요', phTitle: '예: 가족 단어 그림 카드', phDesc: '예: 그림을 보며 따라 해요', phGroup: '예: 일상',
       paste: '붙여넣기', previewCap: '학습자에게 이렇게 보여요', submit: '올리기', required: '주제·레벨·제목·링크는 꼭 적어 주세요',
+      srcFile: '파일 올리기', srcLink: '링크 붙여넣기', fSrc: '자료', pickFile: '파일 고르기', fileWhat: n => `PDF·사진·문서·한글·소리 · ${n}MB까지`,
+      fileKeep: '파일은 한글원샷 보관함(휴먼쌤 드라이브)에 저장돼요. 내 드라이브에서 지워도 자료는 남아요.',
+      fileBig: n => `파일이 커요. ${n}MB까지 올릴 수 있어요. 영상은 유튜브 ‘일부 공개’ 링크로 올려 주세요.`,
+      fileBad: '이 파일 형식은 올릴 수 없어요. PDF·사진·문서·한글·소리 파일만 돼요.', needFile: '올릴 파일을 골라 주세요',
+      uploading: '올리는 중…', fileReadErr: '파일을 읽지 못했어요. 다시 골라 주세요.',
       lkAny: '직접 만든 사이트·구글 드라이브·유튜브 링크 모두 돼요', lkBad: 'https://로 시작하는 링크를 붙여 넣어 주세요',
       lkLocal: '내 컴퓨터에서만 열리는 주소예요. 공개 주소를 넣어 주세요', lkDrive: '구글 드라이브 파일 · 공유를 ‘링크가 있는 모든 사용자’로 해 주세요',
       lkFolder: '드라이브 폴더예요 · 파일 하나의 링크가 학습자에게 더 쉬워요', lkDocs: '구글 문서·슬라이드 · 공유를 ‘링크가 있는 모든 사용자(뷰어)’로 해 주세요',
@@ -469,6 +492,11 @@
       fUrl: 'Lien', fMin: 'Durée', fDesc: 'Description', fSchool: 'Votre école', phSchool: 'Choisir l’école', needSchool: 'Choisissez votre école',
       phTopic: 'Choisir ou créer un thème', phTitle: 'ex. Cartes images de la famille', phDesc: 'ex. Répéter en regardant les images', phGroup: 'ex. 일상',
       paste: 'Coller', previewCap: 'Aperçu côté élève', submit: 'Ajouter', required: 'Thème, niveau, titre et lien sont obligatoires',
+      srcFile: 'Envoyer un fichier', srcLink: 'Coller un lien', fSrc: 'Ressource', pickFile: 'Choisir un fichier', fileWhat: n => `PDF, image, document, hangeul (HWP), audio · ${n} Mo max`,
+      fileKeep: 'Le fichier est conservé dans l’archive Hangeul Oneshot. Il reste disponible même si vous le supprimez de votre Drive.',
+      fileBig: n => `Fichier trop lourd : ${n} Mo maximum. Pour une vidéo, collez un lien YouTube « non répertorié ».`,
+      fileBad: 'Format non accepté. PDF, image, document, HWP ou audio uniquement.', needFile: 'Choisissez un fichier à envoyer',
+      uploading: 'Envoi…', fileReadErr: 'Lecture du fichier impossible. Choisissez-le à nouveau.',
       lkAny: 'Site créé par vous, Google Drive, YouTube : tout lien fonctionne', lkBad: 'Collez un lien qui commence par https://',
       lkLocal: 'Adresse locale (votre ordinateur). Utilisez une adresse publique', lkDrive: 'Fichier Google Drive · partage « Tous les utilisateurs disposant du lien »',
       lkFolder: 'Dossier Drive · un lien vers un seul fichier est plus simple pour l’élève', lkDocs: 'Google Docs/Slides · partage « Tous les utilisateurs disposant du lien » (lecteur)',
@@ -503,6 +531,7 @@
   let afterLogin = '';
   let installEvt = null;     // 안드로이드 크롬이 주는 '앱 설치' 기회
   let installHide = false;   // 홈 화면 추가 안내를 닫았는지(이번에 열어 둔 동안만)
+  let upSrc = 'file';        // 올리기 화면: 'file'(파일 올리기) 또는 'link'(링크 붙여넣기)
 
   // 요청문 만들기(선생님 탭 → #/prompt, 로그인 없이). 앱은 AI를 부르지 않고 아무것도 저장·전송하지 않는다.
   // 고른 값은 화면을 떠나면 잊는다(localStorage에도 남기지 않음). 요청문 자체는 늘 한국어다(AI에 붙여 넣는 글). 문장 틀은 개발부 시안 그대로.
@@ -595,6 +624,7 @@
     if (!tc) return Promise.resolve({ ok: false, error: 'bad_code' });
     if (b.action === 'upload') {
       const m = Object.assign({}, b.material, { id: 'u' + Date.now(), by: tc.name, date: new Date().toISOString().slice(0, 10) });
+      if (b.file) m.url = 'https://example.org/oneshot-file/' + encodeURIComponent(b.file.name);   // 시험 모드: 드라이브 대신 견본 주소
       s.uploads.push(m); mockSave(s); return Promise.resolve({ ok: true, id: m.id });
     }
     if (b.action === 'hide') {
@@ -798,8 +828,13 @@
       <div class="f"><span class="lab">${esc(t('fLevel'))}</span><div class="seg3">${LEVEL_KEYS.map(k => `<label class="k-${k}"><input type="radio" name="level" value="${k}"${k === preLevel ? ' checked' : ''}><span>${k}<small>${esc(levelDesc(k))}</small></span></label>`).join('')}</div></div>
       <div class="f"><label class="lab" for="f-title">${esc(t('fTitle'))}</label><div class="inp"><input id="f-title" name="title" maxlength="60" placeholder="${esc(t('phTitle'))}"></div></div>
       <div class="f"><span class="lab">${esc(t('fType'))}</span><div class="tchips">${TYPES.map((x, i) => `<label><input type="radio" name="type" value="${esc(x)}"${i === 0 ? ' checked' : ''}><span>${(TYPE_ICON[x] || TYPE_ICON['기타'])[0]} ${esc(x)}</span></label>`).join('')}</div></div>
-      <div class="f"><label class="lab" for="f-url">${esc(t('fUrl'))}</label><div class="inp"><input id="f-url" name="url" type="url" inputmode="url" placeholder="https://"><button type="button" class="paste" data-paste>${esc(t('paste'))}</button></div>
-        <p class="lhint" id="urlHint" aria-live="polite">${linkHint(linkCheck(''))}</p></div>
+      <div class="f"><span class="lab">${esc(t('fSrc'))}</span>
+        <div class="srcseg" role="group"><button type="button" data-src="file" aria-pressed="${upSrc === 'file'}">${esc(t('srcFile'))}</button><button type="button" data-src="link" aria-pressed="${upSrc === 'link'}">${esc(t('srcLink'))}</button></div>
+        <div id="srcFile"${upSrc === 'file' ? '' : ' hidden'}><label class="filebox" id="fileBox"><input id="f-file" type="file" accept="${FILE_EXT.map(x => '.' + x).join(',')}" aria-label="${esc(t('pickFile'))}">
+          <span class="fi">${ICON.upfile}</span><span class="fn" id="fileName">${esc(t('pickFile'))}<small>${esc(t('fileWhat')(FILE_MAX_MB))}</small></span></label>
+          <p class="lhint" id="fileHint" aria-live="polite"><span class="m">i</span><span>${esc(t('fileKeep'))}</span></p></div>
+        <div id="srcLink"${upSrc === 'link' ? '' : ' hidden'}><div class="inp"><input id="f-url" name="url" type="url" inputmode="url" placeholder="https://" aria-label="${esc(t('fUrl'))}"><button type="button" class="paste" data-paste>${esc(t('paste'))}</button></div>
+          <p class="lhint" id="urlHint" aria-live="polite">${linkHint(linkCheck(''))}</p></div></div>
       <div class="f"><span class="lab">${esc(t('fMin'))}</span><div class="stepper"><button type="button" data-step="-5" aria-label="-5">−</button><div class="sv"><input name="minutes" type="number" min="0" max="180" inputmode="numeric" value="10" aria-label="${esc(t('fMin'))}"><span>${esc(t('min').trim())}</span></div><button type="button" data-step="5" aria-label="+5">+</button></div></div>
       <div class="f"><label class="lab" for="f-desc">${esc(t('fDesc'))}</label><div class="inp"><input id="f-desc" name="desc" maxlength="80" placeholder="${esc(t('phDesc'))}"></div></div>
       <div class="f"><span class="lab">${esc(t('previewCap'))}</span><div id="upPreview"></div></div>
@@ -950,6 +985,23 @@
     };
     const syncLink = () => { const r = linkCheck(el('url').value), h = $('#urlHint'); h.className = 'lhint' + (r.lv ? ' ' + r.lv : ''); h.innerHTML = linkHint(r); };
     const sync = () => { syncGroup(); syncLink(); el('school').classList.toggle('empty', !el('school').value); pv(); };
+    // 파일 고르기: 크기·형식을 바로 알려 주고, 제목이 비어 있으면 파일 이름으로 채운다
+    const fileOk = fl => !fl ? { lv: 'bad', msg: t('needFile') } : !fl.size ? { lv: 'bad', msg: t('fileReadErr') } : !FILE_EXT.includes(fileExt(fl.name)) ? { lv: 'bad', msg: t('fileBad') }
+      : fl.size > FILE_MAX_MB * 1048576 ? { lv: 'bad', msg: t('fileBig')(FILE_MAX_MB) } : { lv: 'ok', msg: t('fileKeep') };
+    const syncFile = () => {
+      const fl = $('#f-file').files[0], r = fl ? fileOk(fl) : { lv: '', msg: t('fileKeep') }, h = $('#fileHint');
+      $('#fileBox').classList.toggle('has', !!fl && r.lv === 'ok');
+      $('#fileName').innerHTML = fl ? `${esc(fl.name)}<small>${(fl.size / 1048576).toFixed(1)}MB</small>` : `${esc(t('pickFile'))}<small>${esc(t('fileWhat')(FILE_MAX_MB))}</small>`;
+      h.className = 'lhint' + (r.lv ? ' ' + r.lv : ''); h.innerHTML = linkHint(r);
+      if (fl && r.lv === 'ok' && !el('title').value.trim()) { el('title').value = fl.name.replace(/\.[^.]+$/, '').slice(0, 60); pv(); }
+    };
+    $('#f-file').addEventListener('change', e => { e.stopPropagation(); syncFile(); });
+    f.querySelectorAll('[data-src]').forEach(b => b.onclick = () => {
+      upSrc = b.dataset.src;
+      f.querySelectorAll('[data-src]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.src === upSrc)));
+      $('#srcFile').hidden = upSrc !== 'file'; $('#srcLink').hidden = upSrc !== 'link';
+    });
+    const readB64 = fl => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1] || ''); r.onerror = () => no(r.error); r.readAsDataURL(fl); });
     f.addEventListener('input', sync); f.addEventListener('change', sync); sync();
     f.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { const i = el('minutes'); i.value = Math.max(0, Math.min(180, (Number(i.value) || 0) + Number(b.dataset.step))); pv(); });
     const ps = f.querySelector('[data-paste]');
@@ -958,22 +1010,26 @@
       e.preventDefault(); const err = $('#upErr'); err.textContent = '';
       const topic = el('topic').value.trim(); const known = data.topics.find(x => x.name === topic);
       const material = { group: known ? known.group : (el('group').value.trim() || '기타'), topic, level: el('level').value || '', title: el('title').value.trim(),
-        type: el('type').value, url: el('url').value.trim(), desc: el('desc').value.trim(), minutes: Number(el('minutes').value) || 0, school: el('school').value.trim() };
+        type: el('type').value, url: upSrc === 'link' ? el('url').value.trim() : '', desc: el('desc').value.trim(), minutes: Number(el('minutes').value) || 0, school: el('school').value.trim() };
       const fail = msg => { err.textContent = msg; toast(msg); };
       if (SCHOOLS.length && !material.school) { el('school').focus(); return fail(t('needSchool')); }
-      if (!material.title || !material.topic || !material.level || !material.url) return fail(t('required'));
-      const lk = linkCheck(material.url); if (lk.lv === 'bad') { el('url').focus(); return fail(lk.msg); }
-      const btn = $('#upBtn'); btn.disabled = true;
+      const fl = upSrc === 'file' ? $('#f-file').files[0] : null;
+      if (upSrc === 'file') { const fr = fileOk(fl); if (fr.lv === 'bad') return fail(fr.msg); }
+      if (!material.title || !material.topic || !material.level || (upSrc === 'link' && !material.url)) return fail(t('required'));
+      if (upSrc === 'link') { const lk = linkCheck(material.url); if (lk.lv === 'bad') { el('url').focus(); return fail(lk.msg); } }
+      const btn = $('#upBtn'); btn.disabled = true; btn.textContent = t('uploading');
       try {
-        const r = await api.post({ action: 'upload', code: teacher.code, material });
+        let file = null;
+        if (fl) { try { file = { name: fl.name, type: fl.type || '', size: fl.size, data: await readB64(fl) }; } catch (ex) { btn.disabled = false; btn.textContent = t('submit'); return fail(t('fileReadErr')); } }
+        const r = await api.post({ action: 'upload', code: teacher.code, material, file });
         if (r.ok) {
           if (material.school !== teacher.school) { teacher.school = material.school; saveTeacher(teacher); }   // 다음에 올릴 때 이 학교가 먼저 골라져 있다
           await reload(); toast(t('uploaded')); location.hash = topicHref(material.topic, material.level);
         }
         else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); location.hash = '#/login'; }
-        else fail(r.error || t('netErr'));
+        else fail({ file_big: t('fileBig')(FILE_MAX_MB), file_type: t('fileBad'), file_empty: t('fileReadErr'), file_save: t('netErr'), missing: t('required') }[r.error] || r.error || t('netErr'));
       } catch (ex) { fail(t('netErr')); }
-      btn.disabled = false;
+      btn.disabled = false; btn.textContent = t('submit');
     };
   }
   async function hideMat(b) {
