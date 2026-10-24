@@ -8,6 +8,7 @@
 <title>한글원샷</title>
 <!-- 홈 화면에 추가하면 주소창 없이 앱처럼 열린다(manifest.json · sw.js · icons/) -->
 <link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icons/symbol.svg">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
@@ -54,6 +55,10 @@
   .brand span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .logo { flex: none; width: 34px; height: 34px; border-radius: 11px; background: var(--coral); display: grid; place-items: center; box-shadow: 0 3px 0 var(--coral-d); }
   .logo svg { width: 22px; height: 22px; }
+  /* 로고(2026-10-25 휴먼쌤 "이 로고 파일도 반영해줘" · "hangul -> 이걸 hangeul로 수정"): 가로 로고 icons/logo-h.svg, 상징 icons/symbol.svg */
+  .hlogo { display: block; height: 40px; width: auto; }
+  .logo.sym { background: #fff; border: 2px solid var(--line); box-shadow: none; }
+  .logo.sym img { display: block; height: 78%; width: auto; }
   .atitle { font-size: 18px; font-weight: 900; letter-spacing: -.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .lang { flex: none; display: flex; background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 3px; }
   .lang button { border: 0; background: none; padding: 5px 11px; border-radius: 14px; font-size: 13px; font-weight: 800; color: var(--sub); }
@@ -395,7 +400,8 @@
     /* 아래 탭 → 왼쪽 메뉴 */
     .tabbar { top: 0; bottom: 0; left: max(0px, calc(50% - 600px)); right: auto; width: 220px; max-width: none; margin: 0; flex-direction: column; justify-content: flex-start;
               gap: 6px; padding: 24px 14px; border-top: 0; border-right: 2px solid var(--line); box-shadow: none; }
-    .tabbar:before { content: "한글원샷"; display: block; padding: 6px 12px 18px; font-size: 21px; font-weight: 900; letter-spacing: -.03em; color: var(--ink); }
+    .tabbar:before { content: ""; display: block; height: 46px; margin: 4px 12px 20px; background: url(icons/logo-h.svg) no-repeat left center / contain; }
+    .appbar .brand { visibility: hidden; }   /* 로고는 왼쪽 메뉴 위에 한 번만 */
     .tab { flex-direction: row; gap: 12px; width: auto; padding: 12px 14px; border-radius: 16px; font-size: 16px; color: var(--sub); }
     .tab svg { width: 24px; height: 24px; }
     .tab:hover { background: #F6EEE3; }
@@ -748,7 +754,7 @@
   }
   function appTitle() { return data.settings.title || CFG.TITLE || '한글원샷'; }
   // 자료실 위: 첫 화면 QR 단추(QR 탭을 없애며 옮김, 2026-10-24)
-  function barHome() { return `<header class="appbar"><a class="brand" href="#/"><span class="logo">${ICON.target}</span><span>${esc(appTitle())}</span></a><span class="hbtns">${langToggle(true)}<a class="circ" href="#/qr" aria-label="${esc(t('homeQrBtn'))}">${ICON.qr}</a></span></header>`; }
+  function barHome() { return `<header class="appbar"><a class="brand" href="#/"><img class="hlogo" src="icons/logo-h.svg" alt="${esc(appTitle())}"></a><span class="hbtns">${langToggle(true)}<a class="circ" href="#/qr" aria-label="${esc(t('homeQrBtn'))}">${ICON.qr}</a></span></header>`; }
   const isFav = id => !!(teacher && (teacher.favs || []).includes(id));
   const starBtn = m => { const on = isFav(m.id); return `<button type="button" class="star${on ? ' on' : ''}" data-fav="${esc(m.id)}" aria-pressed="${on}" aria-label="${esc(t(on ? 'favOff' : 'favOn'))}">${ICON.star}</button>`; };
   function barSub(title, backHref, right) {
@@ -796,7 +802,7 @@
   function installCard() {
     if (installHide || isStandalone() || !window.matchMedia('(pointer: coarse)').matches || !(installEvt || IOS)) return '';
     const sub = installEvt ? esc(t('installSub')) : t('installIos')(ICON.share);
-    return `<div class="install noprint"><span class="logo">${ICON.target}</span><div class="tx"><b>${esc(t('installTitle'))}</b><small>${sub}</small></div>
+    return `<div class="install noprint"><span class="logo sym"><img src="icons/symbol.svg" alt=""></span><div class="tx"><b>${esc(t('installTitle'))}</b><small>${sub}</small></div>
       ${installEvt ? `<button type="button" class="inbtn" data-install>${esc(t('installBtn'))}</button>` : ''}<button type="button" class="inx" data-install-x aria-label="${esc(t('close'))}">${ICON.x}</button></div>`;
   }
 
