@@ -274,7 +274,7 @@ function importAll() {
   // 3) 링크 글 파일
   linkFiles.forEach(function (f) {
     var rest = [];
-    f.getBlob().getDataAsString('UTF-8').replace(/^﻿/, '').split(/\r?\n/).forEach(function (line, i) {
+    f.getBlob().getDataAsString('UTF-8').replace(/^\uFEFF/, '').split(/\r?\n/).forEach(function (line, i) {
       var s = line.replace(/\s*←.*$/, '').trim(); if (!s) return;
       if (late()) { rest.push(s); return; }
       var why = addLink(s.split('|'));
