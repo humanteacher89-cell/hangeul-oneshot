@@ -30,7 +30,7 @@ var SHEETS = {
 // '주제' 탭의 아이콘 칸: 이모지 하나(예: 👨‍👩‍👧) 또는 글자. 비우면 페이지가 주제 이름으로 고른다.
 // 파일 올리기 한도·형식(index.html의 FILE_MAX_MB·FILE_EXT와 같게). 폴더 이름은 처음 만들 때만 쓰고, 그 뒤로는 폴더 id로 찾는다(이름을 바꿔도 됨).
 var FILE_MAX_MB = 10;
-var FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'odp', 'ods', 'hwp', 'hwpx', 'txt', 'mp3', 'm4a', 'wav', 'ogg'];
+var FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'];   // PDF·사진만, 영상은 링크로(휴먼쌤 2026-10-24)
 var FOLDER_NAME = '한글원샷 자료';
 var KEYS = { 자료: ['id', 'group', 'topic', 'level', 'title', 'type', 'url', 'desc', 'minutes', 'school', 'by', 'date', 'pub'], 주제: ['topic', 'fr', 'group', 'order', 'icon'] };
 // 틀린 코드·가입 코드 막기: 앱스 스크립트는 기기를 가릴 수 없어 모든 시도를 함께 센다(10분에 30번 넘으면 10분 동안 'too_many').
