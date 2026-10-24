@@ -203,6 +203,9 @@ function doPost(e) {
 //     새 주제는 같은 자리에 폴더를 직접 만들면 된다(묶음은 '주제' 탭에 있으면 그 묶음, 없으면 '기타').
 //  2) 링크: 시트 '올리기' 탭 한 줄(주제·레벨·제목·링크, 유형·설명은 골라서)을 자료로 옮기고 그 줄을 지운다.
 //     유형을 비우면 유튜브·비메오는 '영상', 그 밖은 '기타'. 틀린 줄은 남기고 '확인' 칸에 까닭을 적는다.
+//  3) 링크 글 파일(휴먼쌤 "그냥 복잡하게 하지말고 이대화창에다가 링크 주면 그걸 너가 대신넣어주면안되니"): '한글원샷 올리기' 바로 아래
+//     .txt 한 줄 = 주제 | 레벨 | 제목 | 링크 (| 유형 | 설명). 대화로 받은 링크를 창이 드라이브에 이 파일로 적는다.
+//     다 올리면 파일을 휴지통으로, 틀린 줄이 있으면 그 줄만 남기고 끝에 '← 까닭'을 붙인다.
 //  5분이 넘으면 멈춘다. 다시 실행하면 남은 것부터 한다(올린 파일은 옮기고 올린 줄은 지우니 겹치지 않는다).
 var IMPORT_FOLDER_NAME = '한글원샷 올리기', LEVELS = ['하', '중', '상'], IMPORT_LIMIT_MS = 300000;
 
@@ -218,16 +221,27 @@ function importAll() {
     try { sh.appendRow(['m' + (t0 + seq++).toString(36), groups[topic] || '기타', topic, level, String(title).slice(0, 60), type, url, String(desc || '').slice(0, 80), '', school, by, day, '']); }
     finally { lock.releaseLock(); }
   };
-  // 이름순으로 늘어놓되, order가 있으면 그 순서가 먼저(주제는 '주제' 탭 순서, 레벨은 하·중·상)
+  // 이름순으로 늘어놓되, order가 있으면 그 순서가 먼저(주제는 '주제' 탭 순서, 레벨은 하·중·상). 휴지통에 있는 것은 뺀다
   var list = function (it, order) {
-    var a = []; while (it.hasNext()) a.push(it.next());
+    var a = []; while (it.hasNext()) { var x = it.next(); if (!x.isTrashed()) a.push(x); }
     var rank = function (x) { var i = order ? order.indexOf(x.getName().trim()) : -1; return i < 0 ? 1e9 : i; };
     return a.sort(function (x, y) { return rank(x) - rank(y) || (x.getName() < y.getName() ? -1 : x.getName() > y.getName() ? 1 : 0); });
   };
 
+  // 링크 한 줄([주제, 레벨, 제목, 링크, 유형, 설명]) → 틀리면 까닭, 올리면 ''
+  var addLink = function (r) {
+    var topic = String(r[0] || '').trim(), level = String(r[1] || '').trim(), title = String(r[2] || '').trim(), url = String(r[3] || '').trim();
+    var why = !topic ? '주제를 넣어 주세요' : LEVELS.indexOf(level) < 0 ? '레벨은 하·중·상' : !title ? '제목을 넣어 주세요' : !/^https?:\/\//i.test(url) ? '링크는 https://로 시작' : '';
+    if (why) return why;
+    var type = String(r[4] || '').trim() || (/^https?:\/\/(www\.|m\.)?(youtube\.com|youtu\.be|vimeo\.com)\//i.test(url) ? '영상' : '기타');
+    add(topic, level, title, type, url, String(r[5] || '').trim());
+    nl++;
+    return '';
+  };
+
   // 1) 파일
-  var inbox = importFolder(Object.keys(groups)), store = folder();
-  list(inbox.getFiles()).forEach(function (f) { skipped.push(f.getName() + ' (주제 → 하·중·상 폴더 안에)'); });
+  var inbox = importFolder(Object.keys(groups)), store = folder(), linkFiles = [];
+  list(inbox.getFiles()).forEach(function (f) { if (/\.txt$/i.test(f.getName())) linkFiles.push(f); else skipped.push(f.getName() + ' (주제 → 하·중·상 폴더 안에)'); });
   list(inbox.getFolders(), Object.keys(groups)).forEach(function (tf) {
     var topic = tf.getName().trim();
     list(tf.getFiles()).forEach(function (f) { skipped.push(topic + '/' + f.getName() + ' (하·중·상 폴더 안에)'); });
@@ -250,16 +264,24 @@ function importAll() {
   // 2) 링크: 올린 줄은 빼고 남은 줄(틀린 줄·못 한 줄)만 다시 적는다(행 삭제는 마지막 줄에서 막힐 수 있어 쓰지 않음)
   var ish = importSheet(), n = Math.max(ish.getLastRow() - 1, 0), v = n ? ish.getRange(2, 1, n, 7).getValues() : [], keep = [];
   v.forEach(function (r, i) {
-    var topic = String(r[0]).trim(), level = String(r[1]).trim(), title = String(r[2]).trim(), url = String(r[3]).trim();
-    if (!topic && !level && !title && !url) return;
+    if (r.slice(0, 4).every(function (x) { return String(x).trim() === ''; })) return;
     if (late()) { keep.push(r); return; }
-    var why = !topic ? '주제를 넣어 주세요' : LEVELS.indexOf(level) < 0 ? '레벨은 하·중·상' : !title ? '제목을 넣어 주세요' : !/^https?:\/\//i.test(url) ? '링크는 https://로 시작' : '';
-    if (why) { r[6] = why; keep.push(r); skipped.push('올리기 ' + (i + 2) + '행 (' + why + ')'); return; }
-    var type = String(r[4]).trim() || (/^https?:\/\/(www\.|m\.)?(youtube\.com|youtu\.be|vimeo\.com)\//i.test(url) ? '영상' : '기타');
-    add(topic, level, title, type, url, r[5]);
-    nl++;
+    var why = addLink(r);
+    if (why) { r[6] = why; keep.push(r); skipped.push('올리기 ' + (i + 2) + '행 (' + why + ')'); }
   });
   if (n) { ish.getRange(2, 1, n, 7).clearContent(); if (keep.length) ish.getRange(2, 1, keep.length, 7).setValues(keep); }
+
+  // 3) 링크 글 파일
+  linkFiles.forEach(function (f) {
+    var rest = [];
+    f.getBlob().getDataAsString('UTF-8').replace(/^﻿/, '').split(/\r?\n/).forEach(function (line, i) {
+      var s = line.replace(/\s*←.*$/, '').trim(); if (!s) return;
+      if (late()) { rest.push(s); return; }
+      var why = addLink(s.split('|'));
+      if (why) { rest.push(s + '  ← ' + why); skipped.push(f.getName() + ' ' + (i + 1) + '줄 (' + why + ')'); }
+    });
+    if (rest.length) f.setContent(rest.join('\n') + '\n'); else f.setTrashed(true);
+  });
 
   var msg = '파일 ' + nf + '개·링크 ' + nl + '개를 자료로 올렸어요.' + (more ? ' 5분이 넘어 멈췄어요. 한 번 더 실행하면 이어서 해요.' : '') +
     (skipped.length ? ' 건너뜀 ' + skipped.length + '개: ' + skipped.join(', ') : '');
