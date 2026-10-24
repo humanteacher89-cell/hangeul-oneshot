@@ -16,7 +16,7 @@
  *     시트 '올리기' 탭의 링크 줄을 한꺼번에 '자료' 탭에 올린다(처음 실행하면 폴더와 탭을 만든다). 자세히는 importAll 위 주석.
  *
  * 하는 일: GET ?action=data → 자료·주제·설정 JSON(공개 N 제외, join_code는 빼고). POST {action:'join', joinCode, name, school, agree} → 가입.
- * POST {action:'login'|'upload'|'hide', code, ...} → 교사 코드 확인 뒤 처리. 틀린 코드·가입 코드가 10분에 30번 넘으면 10분 막는다.
+ * POST {action:'login'|'upload'|'hide'|'fav', code, ...} → 교사 코드 확인 뒤 처리(login은 즐겨찾기 목록도, fav {id, on}은 담기·빼기). 틀린 코드·가입 코드가 10분에 30번 넘으면 10분 막는다.
  * 파일 올리기(2026-10-18): upload에 file {name, type, data(base64)}가 오면 '한글원샷 자료' 폴더에 저장하고 '링크가 있는 모든 사용자 보기'로 연 뒤
  * 그 링크를 '자료' 탭 링크 칸에 적는다. 파일 주인은 휴먼쌤(이 스크립트 실행 사용자)이라 교사가 자기 드라이브에서 지워도 남는다.
  * 숨기기는 줄의 공개 칸만 N으로 바꾸고 파일은 지우지 않는다(보관).
@@ -26,7 +26,7 @@
 var SHEETS = {
   자료: ['id', '묶음', '주제', '레벨', '제목', '유형', '링크', '설명', '시간', '학교', '올린이', '올린날짜', '공개'],
   주제: ['주제', '프랑스어', '묶음', '순서', '아이콘'],
-  교사: ['이름', '학교', '코드', '활성', '가입일'],
+  교사: ['이름', '학교', '코드', '활성', '가입일', '즐겨찾기'],   // 즐겨찾기 = 자료 id를 쉼표로(최근에 담은 것이 앞, 2026-10-24)
   설정: ['키', '값'],
   올리기: ['주제', '레벨', '제목', '링크', '유형', '설명', '확인']
 };
@@ -149,11 +149,18 @@ function join(b) {
   } finally { lock.releaseLock(); }
 }
 
+// 교사 찾기: 이름·학교와 함께 시트 줄 번호·즐겨찾기 목록도 돌려준다(즐겨찾기를 그 줄에 다시 적으려고).
 function findTeacher(code) {
   code = String(code || '').trim(); if (!code) return null;
-  var t = rows('교사', ['name', 'school', 'code', 'active']).filter(function (r) { return String(r.code).trim() === code && String(r.active).trim().toUpperCase() !== 'N'; })[0];
-  return t ? { name: String(t.name).trim(), school: String(t.school).trim() } : null;
+  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('교사'); if (!sh || sh.getLastRow() < 2) return null;
+  var v = sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues();
+  for (var i = 0; i < v.length; i++) {
+    if (String(v[i][2]).trim() === code && String(v[i][3]).trim().toUpperCase() !== 'N')
+      return { name: String(v[i][0]).trim(), school: String(v[i][1]).trim(), row: i + 2, favs: favList(v[i][5]) };
+  }
+  return null;
 }
+function favList(s) { return String(s || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
 
 function doPost(e) {
   var b; try { b = JSON.parse(e.postData.contents); } catch (ex) { return json({ ok: false, error: 'bad_json' }); }
@@ -161,7 +168,21 @@ function doPost(e) {
   if (b.action === 'join') return join(b);
   var tc = findTeacher(b.code);
   if (!tc) { addFail(); return json({ ok: false, error: 'bad_code' }); }
-  if (b.action === 'login') return json({ ok: true, teacher: tc });
+  if (b.action === 'login') return json({ ok: true, teacher: { name: tc.name, school: tc.school }, favs: tc.favs });
+
+  // 즐겨찾기 담기·빼기(휴먼쌤 2026-10-24 "어디서든 로그인하면 보일 수는 없는거야?" → '교사' 탭 그 교사 줄 '즐겨찾기' 칸에 적는다)
+  if (b.action === 'fav') {
+    var fid = String(b.id || '').trim(); if (!fid || fid.length > 40 || fid.indexOf(',') >= 0) return json({ ok: false, error: 'missing' });
+    var fl = LockService.getScriptLock(); fl.waitLock(10000);
+    try {
+      var me = findTeacher(b.code); if (!me) return json({ ok: false, error: 'bad_code' });
+      var list = me.favs.filter(function (x) { return x !== fid; });
+      if (b.on) list.unshift(fid);   // 최근에 담은 것이 앞
+      list = list.slice(0, 500);
+      SpreadsheetApp.getActiveSpreadsheet().getSheetByName('교사').getRange(me.row, 6).setNumberFormat('@').setValue(list.join(','));
+      return json({ ok: true, favs: list });
+    } finally { fl.releaseLock(); }
+  }
 
   // 파일은 시트 잠금 전에 드라이브에 저장한다(느린 일이라 다른 교사의 올리기를 막지 않게)
   if (b.action === 'upload' && b.file) {

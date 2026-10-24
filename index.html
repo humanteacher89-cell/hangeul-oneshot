@@ -279,6 +279,61 @@
   .cbo.new { color: var(--coral-d); }
   .cbo.new .em { background: #FFEDE6; color: var(--coral); font-size: 20px; font-weight: 900; }
   .cbempty { padding: 12px 10px; font-size: 13.5px; font-weight: 700; color: var(--sub); }
+
+  /* 즐겨찾기(☆ 단추·#/fav 화면·필터 창·로그인 안내창) */
+  .hbtns { display: flex; align-items: center; gap: 8px; }
+  .star { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line); background: #fff; color: #C9B9A6; display: grid; place-items: center; padding: 0; }
+  .star svg { width: 20px; height: 20px; }
+  .star.on { border-color: #FFE2A6; background: #FFF6E0; color: #FFB020; }
+  .star.on svg { fill: #FFB020; }
+  .qrpill { flex: none; display: flex; align-items: center; gap: 5px; height: 40px; padding: 0 13px; border-radius: 999px; background: var(--coral); color: #fff; font-size: 14px; font-weight: 900; box-shadow: 0 3px 0 var(--coral-d); }
+  .qrpill svg { width: 18px; height: 18px; }
+  .item.fav { gap: 8px; }
+  .item.fav > a:first-child { gap: 10px; }
+  .favtop { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .favtop .cnt { font-size: 13.5px; font-weight: 800; color: var(--sub); white-space: nowrap; }
+  .srch { display: flex; align-items: center; gap: 10px; height: 52px; margin-top: 4px; background: #fff; border: 2px solid var(--line); border-radius: 16px; padding: 0 8px 0 14px; color: var(--sub); }
+  .srch:focus-within { border-color: var(--coral); box-shadow: 0 0 0 4px #FFE0D5; }
+  .srch > svg { flex: none; width: 20px; height: 20px; }
+  .srch input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font-size: 16px; font-weight: 800; color: var(--ink); -webkit-appearance: none; appearance: none; }
+  .srch input::placeholder { color: #BFAF9E; font-weight: 700; }
+  .srch input::-webkit-search-cancel-button { display: none; }
+  .srch .sx { flex: none; width: 28px; height: 28px; border: 0; border-radius: 50%; background: #F1E7DA; color: #8A7B6C; font-size: 13px; font-weight: 900; display: grid; place-items: center; padding: 0; }
+  .fchips { display: flex; gap: 6px; margin: 12px -20px 0; padding: 2px 20px 4px; overflow-x: auto; scrollbar-width: none; }
+  .fchips::-webkit-scrollbar { display: none; }
+  .fc { flex: none; display: flex; align-items: center; gap: 4px; padding: 7px 11px; border-radius: 999px; background: #fff; border: 2px solid var(--line); font-size: 13.5px; font-weight: 800; color: #6E5E50; }
+  .fc.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .fc.flt { border-color: var(--coral); color: var(--coral-d); }
+  .fc em { font-style: normal; font-size: 11.5px; }
+  .rhead { display: flex; justify-content: space-between; align-items: center; margin: 14px 2px 10px; }
+  .rhead b { font-size: 17px; font-weight: 900; }
+  .rhead button { border: 0; background: none; padding: 4px 2px; font-size: 13px; font-weight: 800; color: var(--sub); }
+  .fdim { position: fixed; inset: 0; z-index: 45; background: rgba(36,24,14,.42); }
+  .fsheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 46; max-width: 480px; max-height: 86vh; margin: 0 auto; overflow-y: auto; background: var(--bg);
+            border-radius: 30px 30px 0 0; padding: 10px 20px calc(22px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 30px rgba(0,0,0,.14); }
+  .fsheet .shtop button { border: 0; background: none; font-size: 14px; font-weight: 800; color: var(--coral-d); padding: 6px 2px; }
+  .fgrp { margin-top: 14px; }
+  .fgrp .lab { display: block; margin: 0 0 7px 2px; font-size: 13.5px; font-weight: 900; color: #6E5E50; }
+  .fgrp .lab small { font-weight: 700; color: var(--sub); }
+  .cks { display: flex; flex-wrap: wrap; gap: 7px; }
+  .ck { display: flex; align-items: center; gap: 5px; padding: 7px 12px; border-radius: 999px; background: #fff; border: 2px solid var(--line); font-size: 14px; font-weight: 800; color: #6E5E50; }
+  .ck.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .ck.on:before { content: "✓"; font-weight: 900; }
+  .ck.k-하.on { background: var(--g); border-color: var(--g); } .ck.k-중.on { background: var(--bl); border-color: var(--bl); } .ck.k-상.on { background: var(--pu); border-color: var(--pu); }
+  .ck.srt.on { background: var(--bl); border-color: var(--bl); }
+  .fbtns { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; margin-top: 18px; }
+  .fbtns .btn { margin: 0; height: 54px; }
+  .gbtn { height: 54px; border-radius: 18px; border: 2px solid var(--line); background: #fff; font-size: 16px; font-weight: 900; color: #6E5E50; }
+  .favghost { opacity: .35; }
+  .favghost i { display: block; height: 76px; border-radius: 21px; background: #fff; border: 2px solid var(--line); margin-bottom: 12px; }
+  .fmodal { position: fixed; z-index: 46; left: 50%; top: 46%; transform: translate(-50%, -50%); width: calc(100% - 48px); max-width: 400px; background: #fff; border-radius: 28px;
+            padding: 28px 22px 20px; text-align: center; box-shadow: 0 20px 50px rgba(40,25,10,.28); }
+  .fmodal .e { width: 84px; height: 84px; margin: 0 auto; border-radius: 26px; background: #FFF6E0; display: grid; place-items: center; font-size: 46px; line-height: 1; }
+  .fmodal h2 { margin: 14px 0 0; font-size: 23px; font-weight: 900; letter-spacing: -.03em; }
+  .fmodal p { margin: 8px 0 0; font-size: 14.5px; font-weight: 700; color: var(--sub); line-height: 1.55; word-break: keep-all; }
+  .fmodal .btn { margin-top: 18px; }
+  .fmodal .later { display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 800; color: var(--sub); }
+  .app.dimtab .tabbar { z-index: 47; }
   .lhint { display: flex; gap: 7px; align-items: flex-start; margin: 8px 2px 0; font-size: 12.5px; font-weight: 700; color: var(--sub); line-height: 1.45; }
   .lhint .m { flex: none; width: 17px; height: 17px; margin-top: 1px; border-radius: 50%; display: grid; place-items: center; background: #C9BBAB; color: #fff;
               font-size: 11px; font-weight: 900; line-height: 1; }
@@ -444,6 +499,9 @@
     right: S('<path d="M9 5l7 7-7 7"/>', 2.2),
     plus: S('<path d="M12 5v14M5 12h14"/>', 2.8),
     down: S('<path d="M6 9l6 6 6-6"/>', 2.4),
+    star: S('<path d="M12 3.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>'),
+    shelf: S('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2h6.5A1.5 1.5 0 0 1 20 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/>'),
+    search: S('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
     upfile: S('<path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 14.5v3A2 2 0 0 0 6.5 19.5h11a2 2 0 0 0 2-2v-3"/>', 2.2),
     share: S('<path d="M12 3.5v11M8 7.5l4-4 4 4"/><path d="M8.5 10.5H6.5A1.5 1.5 0 0 0 5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7a1.5 1.5 0 0 0-1.5-1.5h-2"/>', 2),
     target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="#fff" stroke-width="2.8"/><circle cx="12" cy="12" r="3.9" fill="#fff"/></svg>'
@@ -457,7 +515,14 @@
       fromQr: 'QR로 바로 왔어요', hand: '막히면 손을 들어 선생님을 불러요', handOther: 'Besoin d’aide ? Lève la main !',
       mats: n => `자료 ${n}개`, empty: '아직 자료가 없어요', emptyHint: '다른 레벨도 둘러보세요', emptyTeacher: '‘자료 올리기’로 올리면 여기 생겨요',
       min: '분', newtab: '자료는 새 창에서 열려요', noTopic: '주제를 찾지 못했어요',
-      tabHome: '홈', tabQr: 'QR 코드', tabTeacher: '선생님', back: '뒤로', close: '닫기',
+      tabHome: '자료실', tabFav: '즐겨찾기', tabTeacher: '선생님', back: '뒤로', close: '닫기',
+      // 즐겨찾기(#/fav, 2026-10-24 휴먼쌤: 교사가 담아 두었다가 학생에게 QR로 보여 주는 곳)
+      favOn: '즐겨찾기에 담기', favOff: '즐겨찾기에서 빼기', favAdded: '즐겨찾기에 담았어요', favRemoved: '즐겨찾기에서 뺐어요',
+      favCount: n => `담은 자료 ${n}개`, favFound: n => `찾은 자료 ${n}개`, favSearch: '제목·주제·설명으로 찾기', clearQ: '지우기',
+      filter: '필터', sortK: '정렬', sortAdded: '담은 순', sortTitle: '제목순', sortTopic: '주제순', reset: '초기화', showN: n => `자료 ${n}개 보기`,
+      inGroups: '고른 묶음 안에서', favEmpty: '아직 담은 자료가 없어요', favEmptyHint: '자료실에서 ☆를 눌러 담아요', toLib: '자료실로 가기',
+      favNone: '찾는 자료가 없어요', favNeedLogin: '선생님 로그인해주세요', favNeedLoginP: '즐겨찾기는 선생님이 자료를 담아 두었다가 수업 때 학생에게 QR로 보여 주는 곳이에요.',
+      favLoginBtn: '선생님 로그인하러 가기', backLib: '자료실로 돌아가기', homeQrBtn: '첫 화면 QR',
       qrTitle: 'QR 코드', print: '인쇄', qrByTopic: '주제별 QR', homeQr: '첫 화면', topicQr: '주제 전체 · 하·중·상 고르기', qrByMat: '자료별 QR', noMat: '자료를 찾을 수 없어요', openMat: '이 자료 열어 보기',
       qrIntro: 'QR은 종이 한 장에 하나씩 붙이세요. 여러 개가 가까이 있으면 카메라가 어느 것을 찍을지 헷갈려요. 인쇄하면 한 장에 하나씩 나와요.',
       scan: '휴대폰 카메라로 찍으세요', scanOther: 'Scannez avec l’appareil photo',
@@ -505,7 +570,13 @@
       fromQr: 'Ouvert par QR', hand: 'Besoin d’aide ? Lève la main !', handOther: '막히면 손을 들어 선생님을 불러요',
       mats: n => `${n} ressource${n > 1 ? 's' : ''}`, empty: 'Pas encore de ressource', emptyHint: 'Regarde les autres niveaux', emptyTeacher: 'Ajoutez une ressource pour la voir ici',
       min: ' min', newtab: 'Les ressources s’ouvrent dans un nouvel onglet', noTopic: 'Thème introuvable',
-      tabHome: 'Accueil', tabQr: 'QR', tabTeacher: 'Enseignant', back: 'Retour', close: 'Fermer',
+      tabHome: 'Ressources', tabFav: 'Favoris', tabTeacher: 'Enseignant', back: 'Retour', close: 'Fermer',
+      favOn: 'Ajouter aux favoris', favOff: 'Retirer des favoris', favAdded: 'Ajouté aux favoris', favRemoved: 'Retiré des favoris',
+      favCount: n => `${n} favori${n > 1 ? 's' : ''}`, favFound: n => `${n} résultat${n > 1 ? 's' : ''}`, favSearch: 'Chercher (titre, thème, description)', clearQ: 'Effacer',
+      filter: 'Filtre', sortK: 'Tri', sortAdded: 'Ajout récent', sortTitle: 'Titre', sortTopic: 'Thème', reset: 'Réinitialiser', showN: n => `Voir ${n} ressource${n > 1 ? 's' : ''}`,
+      inGroups: 'dans les groupes choisis', favEmpty: 'Aucun favori pour l’instant', favEmptyHint: 'Touchez ☆ dans les ressources pour en ajouter', toLib: 'Aller aux ressources',
+      favNone: 'Aucun résultat', favNeedLogin: 'Connectez-vous (enseignant)', favNeedLoginP: 'Les favoris servent à l’enseignant : il les garde puis les montre aux élèves par QR en classe.',
+      favLoginBtn: 'Se connecter', backLib: 'Retour aux ressources', homeQrBtn: 'QR de l’accueil',
       qrTitle: 'Codes QR', print: 'Imprimer', qrByTopic: 'QR par thème', homeQr: 'Page d’accueil', topicQr: 'Tout le thème · choisir son niveau', qrByMat: 'QR par ressource', noMat: 'Ressource introuvable', openMat: 'Ouvrir cette ressource',
       qrIntro: 'Un seul QR par feuille : plusieurs QR côte à côte perturbent l’appareil photo. L’impression met un QR par page.',
       scan: 'Scannez avec l’appareil photo', scanOther: '휴대폰 카메라로 찍으세요',
@@ -559,6 +630,8 @@
   let installEvt = null;     // 안드로이드 크롬이 주는 '앱 설치' 기회
   let installHide = false;   // 홈 화면 추가 안내를 닫았는지(이번에 열어 둔 동안만)
   let upSrc = 'link';        // 올리기 화면: 'link'(링크, 왼쪽·처음) 또는 'file'(파일 PDF/이미지, 오른쪽) — 2026-10-24 휴먼쌤
+  // 즐겨찾기 화면 상태(이번에 열어 둔 동안만): 찾는 글자, 필터(묶음·주제·레벨·유형 여러 개), 정렬, 필터 창 열림
+  let favQ = '', favF = { group: [], topic: [], level: [], type: [] }, favSort = 'added', favSheet = false;
 
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -637,8 +710,13 @@
       return Promise.resolve({ ok: true, teacher: { name, school: b.school }, code });
     }
     const tc = teachers.find(x => x.code === String(b.code || ''));
-    if (b.action === 'login') return Promise.resolve(tc ? { ok: true, teacher: { name: tc.name, school: tc.school } } : { ok: false, error: 'bad_code' });
+    const favs = Object.assign({}, s.favs);   // 시험 모드 즐겨찾기: 이 기기에만(교사 코드별)
+    if (b.action === 'login') return Promise.resolve(tc ? { ok: true, teacher: { name: tc.name, school: tc.school }, favs: favs[tc.code] || [] } : { ok: false, error: 'bad_code' });
     if (!tc) return Promise.resolve({ ok: false, error: 'bad_code' });
+    if (b.action === 'fav') {
+      const list = (favs[tc.code] || []).filter(x => x !== String(b.id)); if (b.on) list.unshift(String(b.id));
+      favs[tc.code] = list; s.favs = favs; mockSave(s); return Promise.resolve({ ok: true, favs: list });
+    }
     if (b.action === 'upload') {
       const m = Object.assign({}, b.material, { id: 'u' + Date.now(), by: tc.name, date: new Date().toISOString().slice(0, 10) });
       if (b.file) m.url = 'https://example.org/oneshot-file/' + encodeURIComponent(b.file.name);   // 시험 모드: 드라이브 대신 견본 주소
@@ -669,7 +747,10 @@
     return `<div class="lang${small ? ' sm' : ''}"><button type="button" data-lang="ko" class="${lang === 'ko' ? 'on' : ''}">${small ? '한' : '한국어'}</button><button type="button" data-lang="fr" class="${lang === 'fr' ? 'on' : ''}">FR</button></div>`;
   }
   function appTitle() { return data.settings.title || CFG.TITLE || '한글원샷'; }
-  function barHome() { return `<header class="appbar"><a class="brand" href="#/"><span class="logo">${ICON.target}</span><span>${esc(appTitle())}</span></a>${langToggle()}</header>`; }
+  // 자료실 위: 첫 화면 QR 단추(QR 탭을 없애며 옮김, 2026-10-24)
+  function barHome() { return `<header class="appbar"><a class="brand" href="#/"><span class="logo">${ICON.target}</span><span>${esc(appTitle())}</span></a><span class="hbtns">${langToggle(true)}<a class="circ" href="#/qr" aria-label="${esc(t('homeQrBtn'))}">${ICON.qr}</a></span></header>`; }
+  const isFav = id => !!(teacher && (teacher.favs || []).includes(id));
+  const starBtn = m => { const on = isFav(m.id); return `<button type="button" class="star${on ? ' on' : ''}" data-fav="${esc(m.id)}" aria-pressed="${on}" aria-label="${esc(t(on ? 'favOff' : 'favOn'))}">${ICON.star}</button>`; };
   function barSub(title, backHref, right) {
     const left = backHref ? `<a class="circ" href="${backHref}" aria-label="${esc(t('back'))}">${ICON.back}</a>` : '<span class="circ ghost"></span>';
     return `<header class="appbar">${left}<b class="atitle">${esc(title)}</b>${right || langToggle(true)}</header>`;
@@ -761,7 +842,7 @@
     const sel = `<div class="lvsel">${LEVEL_KEYS.map(k => `<button type="button" class="lvbtn k-${k}${k === cur ? ' on' : ''}${cnt(k) ? '' : ' zero'}" data-level="${k}" aria-pressed="${k === cur}">
       <div class="k">${k}</div><div class="d">${esc(levelDesc(k))}</div><span class="n">${esc(t('cnt')(cnt(k)))}</span></button>`).join('')}</div>`;
     const items = list.length
-      ? list.map(m => `<div class="item mat"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m)}${goBtn(m)}</a><a class="qrbtn" href="#/mq/${encodeURIComponent(m.id)}" aria-label="QR">${ICON.qr}</a></div>`).join('')
+      ? list.map(m => `<div class="item mat"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m)}${goBtn(m)}</a>${teacher ? starBtn(m) : ''}<a class="qrbtn" href="#/mq/${encodeURIComponent(m.id)}" aria-label="QR">${ICON.qr}</a></div>`).join('')
       : `<div class="emptycard"><div class="e">🌱</div>${esc(t('empty'))}<small>${esc(teacher ? t('emptyTeacher') : t('emptyHint'))}</small></div>`;
     const other = [levelDescOther(cur), t('mats')(list.length)].filter(Boolean).join(' · ');
     const fab = teacher ? `<a class="fab" href="#/upload/${encodeURIComponent(name)}/${encodeURIComponent(cur)}">${ICON.plus}<span>${esc(t('upload'))}</span></a>` : '';
@@ -789,9 +870,96 @@
     }
     const rows = data.topics.map(x => { const ic = topicIcon(x), L = topicLabel(x);
       return `<a class="trow" href="#/qr/${encodeURIComponent(x.name)}"><span class="em${ic.txt ? ' txt' : ''}" style="background:${x.color}">${esc(ic.v)}</span><b>${esc(L.big)}</b>${ICON.right}</a>`; }).join('');
-    return barSub(t('qrTitle'), '', printBtn) + `<div class="pad">${note}<div class="qrlist">${qrCard('', appTitle(), t('homeQr'), fullUrl('#/'))}</div>
+    return barSub(t('qrTitle'), '#/', printBtn) + `<div class="pad">${note}<div class="qrlist">${qrCard('', appTitle(), t('homeQr'), fullUrl('#/'))}</div>
       ${rows ? `<div class="noprint"><div class="sec"><h2>${esc(t('qrByTopic'))}</h2><span>${esc(t('nTopics')(data.topics.length))}</span></div>${rows}</div>` : ''}</div>`;
   }
+  // ---------- 즐겨찾기(#/fav) ----------
+  // 교사가 자료실에서 ☆로 담아 둔 자료. 글자 찾기(제목·주제·설명·유형) + 필터(묶음·주제·레벨·유형) + 정렬. 카드마다 QR 단추(학생에게 보여 주기).
+  const FAV_KEYS = ['group', 'topic', 'level', 'type'];
+  const favLab = k => t({ group: 'fGroup', topic: 'fTopic', level: 'fLevel', type: 'fType' }[k]);
+  function groupOf(m) { const tp = data.topics.find(x => x.name === m.topic); return tp ? tp.group : m.group; }
+  function favAll() { const by = new Map(data.materials.map(m => [m.id, m])); return ((teacher && teacher.favs) || []).map(id => by.get(id)).filter(Boolean); }
+  function favVal(m, k) { return k === 'group' ? groupOf(m) : m[k]; }
+  function favShown() {
+    const q = favQ.replace(/\s+/g, '').toLowerCase();
+    let list = favAll().filter(m => (!q || [m.title, m.topic, m.desc, m.type, groupOf(m)].join('').replace(/\s+/g, '').toLowerCase().includes(q))
+      && FAV_KEYS.every(k => !favF[k].length || favF[k].includes(favVal(m, k))));
+    if (favSort === 'title') list = list.slice().sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+    if (favSort === 'topic') {
+      const ord = new Map(data.topics.map((x, i) => [x.name, i]));
+      list = list.slice().sort((a, b) => (ord.get(a.topic) - ord.get(b.topic)) || (LEVEL_KEYS.indexOf(a.level) - LEVEL_KEYS.indexOf(b.level)));
+    }
+    return list;
+  }
+  // 필터 칩에 쓸 값: 담은 자료에 실제로 있는 것만(레벨은 늘 하·중·상). 주제는 고른 묶음이 있으면 그 안에서.
+  function favChoices(all) {
+    const uniq = a => [...new Set(a)];
+    const topicOrder = data.topics.map(x => x.name), groupOrder = data.groups.map(g => g.name);
+    const inG = m => !favF.group.length || favF.group.includes(groupOf(m));
+    const byOrder = (vals, order) => vals.sort((a, b) => (order.indexOf(a) + 1 || 1e9) - (order.indexOf(b) + 1 || 1e9));
+    return {
+      group: byOrder(uniq(all.map(groupOf)), groupOrder),
+      topic: byOrder(uniq(all.filter(inG).map(m => m.topic)), topicOrder),
+      level: LEVEL_KEYS.slice(),
+      type: byOrder(uniq(all.map(m => m.type)), TYPES)
+    };
+  }
+  function favRow(m) {
+    return `<div class="item mat fav"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m, true)}</a>`
+      + `<a class="qrpill" href="#/mq/${encodeURIComponent(m.id)}">${ICON.qr}<span>QR</span></a>${starBtn(m)}</div>`;
+  }
+  function favListHtml(all, shown) {
+    if (!all.length) return `<div class="emptycard"><div class="e">⭐</div>${esc(t('favEmpty'))}<small>${esc(t('favEmptyHint'))}</small><a class="btn" href="#/">${esc(t('toLib'))}</a></div>`;
+    if (!shown.length) return `<div class="emptycard"><div class="e">🔍</div>${esc(t('favNone'))}<button type="button" class="btn" data-freset>${esc(t('reset'))}</button></div>`;
+    return shown.map(favRow).join('');
+  }
+  function viewFav() {
+    if (!teacher) {   // 로그인 전: 탭은 그대로, 안내창 → 선생님 탭
+      return `<header class="appbar"><b class="atitle">${esc(t('tabFav'))}</b>${langToggle(true)}</header><div class="pad favghost"><i></i><i></i><i></i><i></i></div>
+        <div class="fdim"></div><div class="fmodal" role="dialog" aria-modal="true" aria-labelledby="favNeed"><div class="e">⭐</div><h2 id="favNeed">${esc(t('favNeedLogin'))}</h2>
+        <p>${esc(t('favNeedLoginP'))}</p><a class="btn" href="#/login" data-tofav>${esc(t('favLoginBtn'))}</a><a class="later" href="#/">${esc(t('backLib'))}</a></div>`;
+    }
+    const all = favAll(), shown = favShown(), ch = favChoices(all);
+    const nF = FAV_KEYS.reduce((s, k) => s + favF[k].length, 0);
+    const sortLab = t({ added: 'sortAdded', title: 'sortTitle', topic: 'sortTopic' }[favSort]);
+    const chip = k => { const v = favF[k]; const lab = favLab(k) + (v.length === 1 ? ' · ' + v[0] : v.length ? ' · ' + v.length : ''); return `<button type="button" class="fc${v.length ? ' on' : ''}" data-fsheet>${esc(lab)}</button>`; };
+    const head = `<header class="appbar favtop"><b class="atitle">${esc(t('tabFav'))}</b><span class="hbtns"><span class="cnt">${esc(t('favCount')(all.length))}</span>${langToggle(true)}</span></header>`;
+    const tools = all.length ? `<label class="srch">${ICON.search}<input id="favQ" type="search" enterkeyhint="search" placeholder="${esc(t('favSearch'))}" value="${esc(favQ)}" aria-label="${esc(t('favSearch'))}">`
+        + `<button type="button" class="sx" data-favqx aria-label="${esc(t('clearQ'))}"${favQ ? '' : ' hidden'}>✕</button></label>`
+        + `<div class="fchips"><button type="button" class="fc flt" data-fsheet>${esc(t('filter'))}${nF ? ` <em>${nF}</em>` : ''}</button>${FAV_KEYS.map(chip).join('')}</div>`
+        + `<div class="rhead"><b id="favFound">${esc(t('favFound')(shown.length))}</b><button type="button" data-fsheet>${esc(sortLab)} ▾</button></div>` : '';
+    let sheet = '';
+    if (favSheet && all.length) {
+      const grp = (k, sub) => ch[k].length ? `<div class="fgrp"><span class="lab">${esc(favLab(k))}${sub ? ` <small>· ${esc(sub)}</small>` : ''}</span><div class="cks">${ch[k].map(v =>
+        `<button type="button" class="ck${k === 'level' ? ' k-' + esc(v) : ''}${favF[k].includes(v) ? ' on' : ''}" data-fk="${k}" data-fv="${esc(v)}" aria-pressed="${favF[k].includes(v)}">${esc(v)}</button>`).join('')}</div></div>` : '';
+      const srt = ['added', 'title', 'topic'].map(s => `<button type="button" class="ck srt${favSort === s ? ' on' : ''}" data-fsort="${s}" aria-pressed="${favSort === s}">${esc(t({ added: 'sortAdded', title: 'sortTitle', topic: 'sortTopic' }[s]))}</button>`).join('');
+      sheet = `<div class="fdim" data-fclose></div><div class="fsheet" role="dialog" aria-modal="true" aria-label="${esc(t('filter'))}"><div class="handle"></div>
+        <div class="shtop"><h1>${esc(t('filter'))}</h1><button type="button" data-freset>${esc(t('reset'))}</button></div>
+        ${grp('group')}${grp('topic', favF.group.length ? t('inGroups') : '')}${grp('level')}${grp('type')}
+        <div class="fgrp"><span class="lab">${esc(t('sortK'))}</span><div class="cks">${srt}</div></div>
+        <div class="fbtns"><button type="button" class="gbtn" data-fclose>${esc(t('close'))}</button><button type="button" class="btn" data-fclose>${esc(t('showN')(shown.length))}</button></div></div>`;
+    }
+    return head + `<div class="pad">${tools}<div id="favList">${favListHtml(all, shown)}</div></div>` + sheet;
+  }
+  // 찾는 글자를 칠 때는 목록만 다시 그린다(칸이 포커스를 잃지 않게)
+  function drawFavList() {
+    const all = favAll(), shown = favShown(), L = $('#favList'), F = $('#favFound'), X = $('[data-favqx]');
+    if (L) L.innerHTML = favListHtml(all, shown);
+    if (F) F.textContent = t('favFound')(shown.length);
+    if (X) X.hidden = !favQ;
+  }
+  async function toggleFav(b) {
+    if (!teacher) return;
+    const id = b.dataset.fav, on = !isFav(id), before = (teacher.favs || []).slice();
+    teacher.favs = on ? [id].concat(before.filter(x => x !== id)) : before.filter(x => x !== id);
+    saveTeacher(teacher); render(true); toast(t(on ? 'favAdded' : 'favRemoved'));
+    try {
+      const r = await api.post({ action: 'fav', code: teacher.code, id, on });
+      if (r.ok && Array.isArray(r.favs)) { teacher.favs = r.favs; saveTeacher(teacher); }
+      else throw new Error(r.error || 'fav');
+    } catch (ex) { if (teacher) { teacher.favs = before; saveTeacher(teacher); render(true); } toast(t('netErr')); }
+  }
+
   // 자료 하나의 QR: 찍으면 그 자료(링크)가 바로 열린다.
   function viewMatQr(id) {
     const m = data.materials.find(x => x.id === id);
@@ -876,11 +1044,12 @@
     </form>`;
   }
 
-  function renderTabs(page, parts) {
-    const qrHref = (page === 't' || page === 'qr') && parts[1] ? '#/qr/' + encodeURIComponent(parts[1]) : '#/qr';
-    const on = { home: page === '' || page === 't', qr: page === 'qr' || page === 'mq', tc: ['login', 'join', 'mine', 'upload'].includes(page) };
-    $('#tabbar').innerHTML = `<a class="tab${on.home ? ' on' : ''}" href="#/">${ICON.home}<span>${esc(t('tabHome'))}</span></a>
-      <a class="tab${on.qr ? ' on' : ''}" href="${qrHref}">${ICON.qr}<span>${esc(t('tabQr'))}</span></a>
+  // 아래 탭: 자료실 · 즐겨찾기 · 선생님(2026-10-24 휴먼쌤 "이 QR탭을 없애고 ... '홈' 탭은 '자료실' 탭으로 ... 'QR탭'을 '즐겨찾기'로")
+  function renderTabs(page) {
+    const tc = ['login', 'join', 'mine', 'upload'].includes(page);
+    const on = { fav: page === 'fav', tc, lib: page !== 'fav' && !tc };
+    $('#tabbar').innerHTML = `<a class="tab${on.lib ? ' on' : ''}" href="#/">${ICON.shelf}<span>${esc(t('tabHome'))}</span></a>
+      <a class="tab${on.fav ? ' on' : ''}" href="#/fav">${ICON.star}<span>${esc(t('tabFav'))}</span></a>
       <a class="tab${on.tc ? ' on' : ''}" href="${teacher ? '#/mine' : '#/login'}">${ICON.person}<span>${esc(t('tabTeacher'))}</span></a>`;
   }
 
@@ -890,6 +1059,8 @@
     const parts = route(), page = parts[0] || '', v = $('#screen');
     document.documentElement.lang = lang;
     $('#app').classList.toggle('notab', page === 'upload' && !!teacher);
+    $('#app').classList.toggle('dimtab', page === 'fav' && !teacher);   // 로그인 안내창 위로도 아래 탭은 누를 수 있게
+    if (page !== 'fav') favSheet = false;
     if (loadError) {
       v.innerHTML = barHome() + `<div class="pad"><div class="emptycard" style="margin-top:18px"><div class="e">😢</div>${esc(t('loadErr'))}<button type="button" class="btn" id="retry">${esc(t('retry'))}</button></div></div>`;
       $('#retry').onclick = boot; renderTabs(page, parts); return;
@@ -902,6 +1073,7 @@
       case 't': v.innerHTML = viewTopic(parts[1] || '', normLevel(parts[2]), fromQr); title = (parts[1] || '') + ' · ' + title; break;
       case 'qr': v.innerHTML = viewQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'mq': v.innerHTML = viewMatQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
+      case 'fav': v.innerHTML = viewFav(); title = t('tabFav') + ' · ' + title; break;
       case 'login': v.innerHTML = teacher ? viewMine() : viewLogin(true); bindLogin(); break;
       case 'join': v.innerHTML = teacher && !joined ? viewMine() : viewJoin(); bindJoin(); title = t('joinTitle') + ' · ' + title; break;
       case 'mine': v.innerHTML = viewMine(); bindLogin(); break;
@@ -921,7 +1093,7 @@
       try {
         const r = await api.post({ action: 'login', code });
         if (r.ok) {
-          teacher = { code, name: r.teacher.name, school: r.teacher.school }; saveTeacher(teacher); toast(t('loggedIn'));
+          teacher = { code, name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : [] }; saveTeacher(teacher); toast(t('loggedIn'));
           const go = afterLogin || '#/mine'; afterLogin = '';
           if (location.hash === go) render(); else location.hash = go;
         } else err.textContent = r.error === 'too_many' ? t('tooMany') : t('badCode');
@@ -1087,8 +1259,23 @@
     if (e.target.closest('[data-install]')) { const ev = installEvt; if (ev) { ev.prompt(); Promise.resolve(ev.userChoice).catch(() => {}).then(() => { installEvt = null; render(true); }); } return; }
     if (e.target.closest('[data-install-x]')) { installHide = true; render(true); return; }
     if (e.target.closest('[data-logout]')) { teacher = null; saveTeacher(null); toast(t('logout')); if (location.hash === '#/') render(); else location.hash = '#/'; return; }
-    const H = e.target.closest('[data-hide]'); if (H) { e.preventDefault(); hideMat(H); }
+    const H = e.target.closest('[data-hide]'); if (H) { e.preventDefault(); hideMat(H); return; }
+    // 즐겨찾기: ☆ 담기·빼기, 필터 창 열기·닫기, 필터·정렬 고르기, 초기화, 찾는 글자 지우기, 로그인 안내 → 로그인 뒤 즐겨찾기로
+    const FV = e.target.closest('[data-fav]'); if (FV) { e.preventDefault(); toggleFav(FV); return; }
+    if (e.target.closest('[data-fsheet]')) { favSheet = true; render(true); return; }
+    if (e.target.closest('[data-fclose]')) { favSheet = false; render(true); return; }
+    const FK = e.target.closest('[data-fk]'); if (FK) {
+      const k = FK.dataset.fk, v = FK.dataset.fv, a = favF[k];
+      favF[k] = a.includes(v) ? a.filter(x => x !== v) : a.concat(v);
+      if (k === 'group' && favF.group.length) favF.topic = favF.topic.filter(tn => { const tp = data.topics.find(x => x.name === tn); return tp && favF.group.includes(tp.group); });
+      render(true); return;
+    }
+    const FS = e.target.closest('[data-fsort]'); if (FS) { favSort = FS.dataset.fsort; render(true); return; }
+    if (e.target.closest('[data-freset]')) { favF = { group: [], topic: [], level: [], type: [] }; favSort = 'added'; favQ = ''; render(true); return; }
+    if (e.target.closest('[data-favqx]')) { favQ = ''; const i = $('#favQ'); if (i) { i.value = ''; i.focus(); } drawFavList(); return; }
+    if (e.target.closest('[data-tofav]')) afterLogin = '#/fav';
   });
+  document.addEventListener('input', e => { if (e.target && e.target.id === 'favQ') { favQ = e.target.value; drawFavList(); } });
 
   let toastTimer;
   function toast(msg) { const el = $('#toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('on'), 1900); }
@@ -1098,6 +1285,20 @@
     loadError = false; $('#screen').innerHTML = `<div class="loading"><span class="e">🐯</span>${esc(t('loading'))}</div>`;
     try { await reload(); } catch (e) { loadError = true; }
     render();
+    refreshTeacher();
+  }
+  // 로그인해 둔 기기: 즐겨찾기를 서버에서 다시 받아 맞춘다(다른 기기에서 담은 것도 보이게). 코드가 없어졌으면 로그아웃.
+  async function refreshTeacher() {
+    if (!teacher) return;
+    try {
+      const r = await api.post({ action: 'login', code: teacher.code });
+      if (!teacher) return;
+      if (r.ok) {
+        teacher = Object.assign({}, teacher, { name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : (teacher.favs || []) });
+        saveTeacher(teacher);
+        if (['t', 'fav', 'mine'].includes(route()[0] || '')) render(true);
+      } else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); render(true); }
+    } catch (e) {}
   }
   window.addEventListener('hashchange', () => render());
   // 홈 화면에 추가: 크롬이 설치 기회를 주면 첫 화면 안내에 '추가' 단추를 단다. 서비스 워커는 앱처럼 열리게 하는 최소한의 것(sw.js).
