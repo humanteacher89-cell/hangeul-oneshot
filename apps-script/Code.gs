@@ -220,7 +220,7 @@ function doPost(e) {
 // 대량 올리기(휴먼쌤 2026-10-24 "우선은 내가 당장 한번에 올리고 싶어서 2번이 좋을거 같아" · "링크 형식은 드라이브에 안 들어가잖아").
 // 편집기에서 importAll 을 실행하면(올린이·학교 = '교사' 탭 첫 줄):
 //  1) 파일: 내 드라이브 '한글원샷 올리기' → <주제> 폴더 → 하·중·상 폴더 안의 PDF·사진을 자료로 올리고 '한글원샷 자료' 폴더로 옮긴다.
-//     제목 = 파일 이름, 유형 = PDF '학습지'·사진 '기타'. 처음 실행하면 '주제' 탭 주제마다 폴더와 하·중·상 폴더를 만든다.
+//     제목 = 파일 이름, 유형 = PDF '활동지'·사진 '기타'. 처음 실행하면 '주제' 탭 주제마다 폴더와 하·중·상 폴더를 만든다.
 //     새 주제는 같은 자리에 폴더를 직접 만들면 된다(묶음은 '주제' 탭에 있으면 그 묶음, 없으면 '기타').
 //  2) 링크: 시트 '올리기' 탭 한 줄(주제·레벨·제목·링크, 유형·설명은 골라서)을 자료로 옮기고 그 줄을 지운다.
 //     유형을 비우면 유튜브·비메오는 '영상', 그 밖은 '기타'. 틀린 줄은 남기고 '확인' 칸에 까닭을 적는다.
@@ -275,7 +275,7 @@ function importAll() {
         if (FILE_EXT.indexOf(ext) < 0) { skipped.push(topic + '/' + level + '/' + raw + ' (PDF·사진만)'); return; }
         var title = raw.slice(0, raw.length - ext.length - 1).trim();
         f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-        add(topic, level, title, ext === 'pdf' ? '학습지' : '기타', f.getUrl(), '');   // 유형 5가지(게임·학습지·영상·퀴즈·기타, 휴먼쌤 2026-10-24)
+        add(topic, level, title, ext === 'pdf' ? '활동지' : '기타', f.getUrl(), '');   // 유형 5가지(게임·활동지·영상·퀴즈·기타, 휴먼쌤 2026-10-24·25)
         f.setName(day + ' ' + raw); f.setDescription([topic, level, title, school, by].join(' · ')); f.moveTo(store);
         nf++;
       });
