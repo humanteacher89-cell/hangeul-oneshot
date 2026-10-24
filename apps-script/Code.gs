@@ -275,7 +275,7 @@ function importAll() {
         if (FILE_EXT.indexOf(ext) < 0) { skipped.push(topic + '/' + level + '/' + raw + ' (PDF·사진만)'); return; }
         var title = raw.slice(0, raw.length - ext.length - 1).trim();
         f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-        add(topic, level, title, ext === 'pdf' ? '활동지' : '기타', f.getUrl(), '');   // 유형 5가지(게임·활동지·영상·퀴즈·기타, 휴먼쌤 2026-10-24·25)
+        add(topic, level, title, ext === 'pdf' ? '활동지' : '기타', f.getUrl(), '');   // 유형 5가지(앱·활동지·영상·퀴즈·기타, 휴먼쌤 2026-10-24·25)
         f.setName(day + ' ' + raw); f.setDescription([topic, level, title, school, by].join(' · ')); f.moveTo(store);
         nf++;
       });

@@ -38,7 +38,7 @@ window.ONESHOT_SAMPLE = {
   materials: [
     { id: "s01", group: "한글 기초", topic: "자음과 모음", level: "하", title: "자음 14개 소리 듣고 따라 하기", type: "듣기", url: "https://example.org/jaeum-sori", desc: "그림을 보며 소리를 따라 해요", minutes: 10, school: "파리 한글학교" },
     { id: "s02", group: "한글 기초", topic: "자음과 모음", level: "하", title: "모음 쓰기 연습지", type: "활동지", url: "https://example.org/moeum-sseugi", desc: "점선을 따라 쓰고 색칠해요", minutes: 15, school: "보르도 한글학교" },
-    { id: "s03", group: "한글 기초", topic: "자음과 모음", level: "하", title: "자모 짝 맞추기 게임", type: "게임", url: "https://example.org/jamo-game", desc: "", minutes: 10, school: "스트라스부르 한글학교" },
+    { id: "s03", group: "한글 기초", topic: "자음과 모음", level: "하", title: "자모 짝 맞추기 게임", type: "앱", url: "https://example.org/jamo-game", desc: "", minutes: 10, school: "스트라스부르 한글학교" },
     { id: "s04", group: "한글 기초", topic: "자음과 모음", level: "중", title: "자모 합쳐서 글자 만들기", type: "쓰기", url: "https://example.org/geulja", desc: "ㄱ+ㅏ=가, 카드를 조합해요", minutes: 15, school: "파리 한글학교" },
     { id: "s05", group: "한글 기초", topic: "받침", level: "하", title: "받침 소리 비교 듣기", type: "듣기", url: "https://example.org/batchim-sori", desc: "'강'과 '간'의 차이", minutes: 10, school: "파리 한글학교" },
     { id: "s06", group: "한글 기초", topic: "받침", level: "중", title: "받침 있는 낱말 받아쓰기", type: "쓰기", url: "https://example.org/batchim-dict", desc: "10문제", minutes: 15, school: "마르세유 한글학교" },
@@ -50,7 +50,7 @@ window.ONESHOT_SAMPLE = {
     { id: "s12", group: "일상", topic: "인사하기", level: "상", title: "높임말 인사 역할놀이 대본", type: "말하기", url: "https://example.org/honorific-roleplay", desc: "할머니께, 선생님께, 친구에게", minutes: 20, school: "파리 한글학교" },
     { id: "s13", group: "일상", topic: "우리 가족", level: "하", title: "가족 노래 듣고 따라 부르기", type: "듣기", url: "https://example.org/family-song", desc: "", minutes: 10, school: "보르도 한글학교" },
     { id: "s14", group: "일상", topic: "우리 가족", level: "하", title: "가족 단어 그림 카드", type: "어휘", url: "https://example.org/family-cards", desc: "엄마·아빠·언니·오빠·동생", minutes: 10, school: "파리 한글학교" },
-    { id: "s15", group: "일상", topic: "우리 가족", level: "하", title: "가족 단어 짝 맞추기", type: "게임", url: "https://example.org/family-match", desc: "", minutes: 10, school: "스트라스부르 한글학교" },
+    { id: "s15", group: "일상", topic: "우리 가족", level: "하", title: "가족 단어 짝 맞추기", type: "앱", url: "https://example.org/family-match", desc: "", minutes: 10, school: "스트라스부르 한글학교" },
     { id: "s16", group: "일상", topic: "우리 가족", level: "중", title: "민수네 가족 이야기 읽기", type: "읽기", url: "https://example.org/minsu-family", desc: "짧은 글 + 질문 3개", minutes: 15, school: "보르도 한글학교" },
     { id: "s17", group: "일상", topic: "우리 가족", level: "중", title: "우리 가족 소개 문장 쓰기", type: "쓰기", url: "https://example.org/family-writing", desc: "활동지, 문장 3개", minutes: 15, school: "파리 한글학교" },
     { id: "s18", group: "일상", topic: "우리 가족", level: "중", title: "짝과 가족 묻고 답하기", type: "말하기", url: "https://example.org/family-talk", desc: "이 사람은 누구예요?", minutes: 10, school: "파리 한글학교" },
