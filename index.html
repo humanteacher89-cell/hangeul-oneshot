@@ -305,30 +305,21 @@
   .srch input::-webkit-search-cancel-button { display: none; }
   .srch.lib { margin: 14px 0 2px; }
   .srch .sx { flex: none; width: 28px; height: 28px; border: 0; border-radius: 50%; background: #F1E7DA; color: #8A7B6C; font-size: 13px; font-weight: 900; display: grid; place-items: center; padding: 0; }
-  .fchips { display: flex; gap: 6px; margin: 12px -20px 0; padding: 2px 20px 4px; overflow-x: auto; scrollbar-width: none; }
-  .fchips::-webkit-scrollbar { display: none; }
-  .fc { flex: none; display: flex; align-items: center; gap: 4px; padding: 7px 11px; border-radius: 999px; background: #fff; border: 2px solid var(--line); font-size: 13.5px; font-weight: 800; color: #6E5E50; }
-  .fc.on { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .fc.flt { border-color: var(--coral); color: var(--coral-d); }
-  .fc em { font-style: normal; font-size: 11.5px; }
+  /* 즐겨찾기 필터: 팝업 없이 화면 안에서 바로 누른다(2026-10-25 휴먼쌤). 줄마다 이름 + 칩(폰은 옆으로 밀기, PC는 줄바꿈) */
+  .fpanel { margin-top: 8px; background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 4px 0; }
+  .frow { display: flex; align-items: center; gap: 8px; padding: 6px 0 6px 14px; }
+  .frow + .frow { border-top: 1px dashed var(--line); }
+  .frow .fl { flex: none; min-width: 46px; max-width: 86px; font-size: 13px; font-weight: 900; color: var(--sub); line-height: 1.2; }
+  .fopts { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 1px 14px 1px 0; }
+  .fopts::-webkit-scrollbar { display: none; }
+  .fo { flex: none; padding: 6px 12px; border: 0; border-radius: 999px; background: #F6EFE6; font-size: 13.5px; font-weight: 800; color: #6E5E50; white-space: nowrap; }
+  .fo.on { background: var(--ink); color: #fff; }
+  .fo.k-하.on { background: var(--g); } .fo.k-중.on { background: var(--bl); } .fo.k-상.on { background: var(--pu); }
+  .fo.srt.on { background: var(--bl); }
   .rhead { display: flex; justify-content: space-between; align-items: center; margin: 14px 2px 10px; }
   .rhead b { font-size: 17px; font-weight: 900; }
-  .rhead button { border: 0; background: none; padding: 4px 2px; font-size: 13px; font-weight: 800; color: var(--sub); }
+  .rhead button { border: 0; background: none; padding: 4px 2px; font-size: 13.5px; font-weight: 800; color: var(--coral-d); }
   .fdim { position: fixed; inset: 0; z-index: 45; background: rgba(36,24,14,.42); }
-  .fsheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 46; max-width: 480px; max-height: 86vh; margin: 0 auto; overflow-y: auto; background: var(--bg);
-            border-radius: 30px 30px 0 0; padding: 10px 20px calc(22px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 30px rgba(0,0,0,.14); }
-  .fsheet .shtop button { border: 0; background: none; font-size: 14px; font-weight: 800; color: var(--coral-d); padding: 6px 2px; }
-  .fgrp { margin-top: 14px; }
-  .fgrp .lab { display: block; margin: 0 0 7px 2px; font-size: 13.5px; font-weight: 900; color: #6E5E50; }
-  .fgrp .lab small { font-weight: 700; color: var(--sub); }
-  .cks { display: flex; flex-wrap: wrap; gap: 7px; }
-  .ck { display: flex; align-items: center; gap: 5px; padding: 7px 12px; border-radius: 999px; background: #fff; border: 2px solid var(--line); font-size: 14px; font-weight: 800; color: #6E5E50; }
-  .ck.on { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .ck.on:before { content: "✓"; font-weight: 900; }
-  .ck.k-하.on { background: var(--g); border-color: var(--g); } .ck.k-중.on { background: var(--bl); border-color: var(--bl); } .ck.k-상.on { background: var(--pu); border-color: var(--pu); }
-  .ck.srt.on { background: var(--bl); border-color: var(--bl); }
-  .fbtns { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; margin-top: 18px; }
-  .fbtns .btn { margin: 0; height: 54px; }
   .gbtn { height: 54px; border-radius: 18px; border: 2px solid var(--line); background: #fff; font-size: 16px; font-weight: 900; color: #6E5E50; }
   .favghost { opacity: .35; }
   .favghost i { display: block; height: 76px; border-radius: 21px; background: #fff; border: 2px solid var(--line); margin-bottom: 12px; }
@@ -522,16 +513,17 @@
       all: '전체', nTopics: n => `${n}개`, nItems: n => `${n}개`, cnt: n => `${n}개`, waiting: '자료를 기다려요',
       fromQr: 'QR로 바로 왔어요', hand: '막히면 손을 들어 선생님을 불러요', handOther: 'Besoin d’aide ? Lève la main !',
       mats: n => `자료 ${n}개`, empty: '아직 자료가 없어요', emptyHint: '다른 레벨도 둘러보세요', emptyTeacher: '‘자료 올리기’로 올리면 여기 생겨요',
-      min: '분', newtab: '자료는 새 창에서 열려요', noTopic: '주제를 찾지 못했어요',
+      min: '분', newtab: '자료는 새 창에서 열려요', noTopic: '소주제를 찾지 못했어요',
       tabHome: '자료실', tabFav: '즐겨찾기', tabTeacher: '선생님', back: '뒤로', close: '닫기',
       // 즐겨찾기(#/fav, 2026-10-24 휴먼쌤: 교사가 담아 두었다가 학생에게 QR로 보여 주는 곳)
       favOn: '즐겨찾기에 담기', favOff: '즐겨찾기에서 빼기', favAdded: '즐겨찾기에 담았어요', favRemoved: '즐겨찾기에서 뺐어요',
-      favCount: n => `담은 자료 ${n}개`, favFound: n => `찾은 자료 ${n}개`, libSearch: '자료 찾기 (제목·주제·설명)', clearQ: '지우기',
-      filter: '필터', sortK: '정렬', sortAdded: '담은 순', sortTitle: '제목순', sortTopic: '주제순', reset: '초기화', showN: n => `자료 ${n}개 보기`,
-      inGroups: '고른 묶음 안에서', favEmpty: '아직 담은 자료가 없어요', favEmptyHint: '자료실에서 ☆를 눌러 담아요', toLib: '자료실로 가기',
+      favCount: n => `담은 자료 ${n}개`, favFound: n => `찾은 자료 ${n}개`, libSearch: '자료 찾기 (제목·소주제·설명)', clearQ: '지우기',
+      // 용어(2026-10-25 휴먼쌤 "묶음은 대주제, 주제는 소주제 이렇게 변경")
+      sortK: '정렬', sortAdded: '담은 순', sortTitle: '제목순', sortTopic: '소주제순', reset: '초기화',
+      favEmpty: '아직 담은 자료가 없어요', favEmptyHint: '자료실에서 ☆를 눌러 담아요', toLib: '자료실로 가기',
       favNone: '찾는 자료가 없어요', favNeedLogin: '선생님 로그인해주세요', favNeedLoginP: '즐겨찾기는 선생님이 자료를 담아 두었다가 수업 때 학생에게 QR로 보여 주는 곳이에요.',
       favLoginBtn: '선생님 로그인하러 가기', backLib: '자료실로 돌아가기', homeQrBtn: '첫 화면 QR',
-      qrTitle: 'QR 코드', print: '인쇄', qrByTopic: '주제별 QR', homeQr: '첫 화면', topicQr: '주제 전체 · 하·중·상 고르기', qrByMat: '자료별 QR', noMat: '자료를 찾을 수 없어요', openMat: '이 자료 열어 보기',
+      qrTitle: 'QR 코드', print: '인쇄', qrByTopic: '소주제별 QR', homeQr: '첫 화면', topicQr: '소주제 전체 · 하·중·상 고르기', qrByMat: '자료별 QR', noMat: '자료를 찾을 수 없어요', openMat: '이 자료 열어 보기',
       qrIntro: 'QR은 종이 한 장에 하나씩 붙이세요. 여러 개가 가까이 있으면 카메라가 어느 것을 찍을지 헷갈려요. 인쇄하면 한 장에 하나씩 나와요.',
       scan: '휴대폰 카메라로 찍으세요', scanOther: 'Scannez avec l’appareil photo',
       teacherLogin: '선생님 로그인', loginHint: '협의회·학교에서 받은 코드를 넣으세요.', codePh: '코드', login: '로그인', loggedIn: '로그인했어요',
@@ -551,11 +543,11 @@
       dupName: '같은 이름이 이미 있어요. 이름 뒤에 도시를 붙여 주세요(예: 김지영 보르도).', tooMany: '시도가 너무 많아요. 10분 뒤 다시 해 보세요.',
       joinedTitle: '가입했어요!', joinedCode: '내 로그인 코드', joinedKeep: '이 코드를 꼭 적어 두세요. 다른 기기에서 로그인할 때 써요. 잊으면 협의회(휴먼쌤)에 물어보세요.',
       copyCode: '코드 복사', codeCopied: '복사했어요', copySel: '글을 골라 두었어요 · 길게 눌러 복사', start: '시작하기', mockJoin: '시험용 가입 코드: HANGEUL',
-      fTopic: '주제', fGroup: '묶음', fGroupHint: '새 주제예요. 어느 묶음에 넣을까요?', fLevel: '레벨', fTitle: '자료 제목', fType: '유형',
-      cbOpen: '목록 열기', cbNone: '고를 것이 없어요', cbNewTopic: s => `‘${s}’ 새 주제로 쓰기`, cbNewGroup: s => `‘${s}’ 새 묶음으로 쓰기`,
+      fTopic: '소주제', fGroup: '대주제', fGroupHint: '새 소주제예요. 어느 대주제에 넣을까요?', fLevel: '레벨', fTitle: '자료 제목', fType: '유형',
+      cbOpen: '목록 열기', cbNone: '고를 것이 없어요', cbNewTopic: s => `‘${s}’ 새 소주제로 쓰기`, cbNewGroup: s => `‘${s}’ 새 대주제로 쓰기`,
       fUrl: '링크', fMin: '걸리는 시간', fDesc: '한 줄 설명', optional: '(선택)', fSchool: '소속 학교', phSchool: '학교를 골라 주세요', needSchool: '소속 학교를 골라 주세요',
-      phTopic: '주제를 고르거나 새로 적어요', phTitle: '예: 가족 단어 그림 카드', phDesc: '예: 그림을 보며 따라 해요', phGroup: '예: 일상',
-      paste: '붙여넣기', previewCap: '학습자에게 이렇게 보여요', submit: '올리기', required: '주제·레벨·제목·링크는 꼭 적어 주세요',
+      phTopic: '소주제를 고르거나 새로 적어요', phTitle: '예: 가족 단어 그림 카드', phDesc: '예: 그림을 보며 따라 해요', phGroup: '예: 음식',
+      paste: '붙여넣기', previewCap: '학습자에게 이렇게 보여요', submit: '올리기', required: '소주제·레벨·제목·링크는 꼭 적어 주세요',
       srcFile: '파일(PDF/이미지)', srcLink: '링크', fSrc: '자료', pickFile: '파일 고르기', fileWhat: n => `PDF·이미지 · ${n}MB까지`,
       fileKeep: '파일은 한글원샷 보관함(휴먼쌤 드라이브)에 저장돼요. 내 드라이브에서 지워도 자료는 남아요.',
       fileBig: n => `파일이 커요. ${n}MB까지 올릴 수 있어요. 영상은 유튜브 ‘일부 공개’ 링크로 올려 주세요.`,
@@ -574,18 +566,18 @@
     },
     fr: {
       hi: 'Bonjour !', hero: 'Qu’allons-nous<br>apprendre ?', heroOther: '오늘은 무엇을 배워 볼까요?',
-      all: 'Tout', nTopics: n => `${n} thème${n > 1 ? 's' : ''}`, nItems: n => String(n), cnt: n => String(n), waiting: 'Bientôt des ressources',
+      all: 'Tout', nTopics: n => `${n} sous-thème${n > 1 ? 's' : ''}`, nItems: n => String(n), cnt: n => String(n), waiting: 'Bientôt des ressources',
       fromQr: 'Ouvert par QR', hand: 'Besoin d’aide ? Lève la main !', handOther: '막히면 손을 들어 선생님을 불러요',
       mats: n => `${n} ressource${n > 1 ? 's' : ''}`, empty: 'Pas encore de ressource', emptyHint: 'Regarde les autres niveaux', emptyTeacher: 'Ajoutez une ressource pour la voir ici',
-      min: ' min', newtab: 'Les ressources s’ouvrent dans un nouvel onglet', noTopic: 'Thème introuvable',
+      min: ' min', newtab: 'Les ressources s’ouvrent dans un nouvel onglet', noTopic: 'Sous-thème introuvable',
       tabHome: 'Ressources', tabFav: 'Favoris', tabTeacher: 'Enseignant', back: 'Retour', close: 'Fermer',
       favOn: 'Ajouter aux favoris', favOff: 'Retirer des favoris', favAdded: 'Ajouté aux favoris', favRemoved: 'Retiré des favoris',
-      favCount: n => `${n} favori${n > 1 ? 's' : ''}`, favFound: n => `${n} résultat${n > 1 ? 's' : ''}`, libSearch: 'Chercher une ressource (titre, thème, description)', clearQ: 'Effacer',
-      filter: 'Filtre', sortK: 'Tri', sortAdded: 'Ajout récent', sortTitle: 'Titre', sortTopic: 'Thème', reset: 'Réinitialiser', showN: n => `Voir ${n} ressource${n > 1 ? 's' : ''}`,
-      inGroups: 'dans les groupes choisis', favEmpty: 'Aucun favori pour l’instant', favEmptyHint: 'Touchez ☆ dans les ressources pour en ajouter', toLib: 'Aller aux ressources',
+      favCount: n => `${n} favori${n > 1 ? 's' : ''}`, favFound: n => `${n} résultat${n > 1 ? 's' : ''}`, libSearch: 'Chercher une ressource (titre, sous-thème, description)', clearQ: 'Effacer',
+      sortK: 'Tri', sortAdded: 'Ajout récent', sortTitle: 'Titre', sortTopic: 'Sous-thème', reset: 'Réinitialiser',
+      favEmpty: 'Aucun favori pour l’instant', favEmptyHint: 'Touchez ☆ dans les ressources pour en ajouter', toLib: 'Aller aux ressources',
       favNone: 'Aucun résultat', favNeedLogin: 'Connectez-vous (enseignant)', favNeedLoginP: 'Les favoris servent à l’enseignant : il les garde puis les montre aux élèves par QR en classe.',
       favLoginBtn: 'Se connecter', backLib: 'Retour aux ressources', homeQrBtn: 'QR de l’accueil',
-      qrTitle: 'Codes QR', print: 'Imprimer', qrByTopic: 'QR par thème', homeQr: 'Page d’accueil', topicQr: 'Tout le thème · choisir son niveau', qrByMat: 'QR par ressource', noMat: 'Ressource introuvable', openMat: 'Ouvrir cette ressource',
+      qrTitle: 'Codes QR', print: 'Imprimer', qrByTopic: 'QR par sous-thème', homeQr: 'Page d’accueil', topicQr: 'Tout le sous-thème · choisir son niveau', qrByMat: 'QR par ressource', noMat: 'Ressource introuvable', openMat: 'Ouvrir cette ressource',
       qrIntro: 'Un seul QR par feuille : plusieurs QR côte à côte perturbent l’appareil photo. L’impression met un QR par page.',
       scan: 'Scannez avec l’appareil photo', scanOther: '휴대폰 카메라로 찍으세요',
       teacherLogin: 'Espace enseignant', loginHint: 'Entrez le code reçu de votre école.', codePh: 'Code', login: 'Connexion', loggedIn: 'Connecté',
@@ -604,11 +596,11 @@
       dupName: 'Ce nom existe déjà. Ajoutez la ville (ex. Kim Jiyoung Bordeaux).', tooMany: 'Trop d’essais. Réessayez dans 10 minutes.',
       joinedTitle: 'Inscription réussie !', joinedCode: 'Votre code de connexion', joinedKeep: 'Notez bien ce code : il sert à vous connecter sur un autre appareil. En cas d’oubli, contactez l’association (Humanssaem).',
       copyCode: 'Copier le code', codeCopied: 'Copié', copySel: 'Texte sélectionné · appuyez longuement pour copier', start: 'Commencer', mockJoin: 'Code d’inscription de test : HANGEUL',
-      fTopic: 'Thème', fGroup: 'Groupe', fGroupHint: 'Nouveau thème : dans quel groupe ?', fLevel: 'Niveau', fTitle: 'Titre', fType: 'Type',
-      cbOpen: 'Ouvrir la liste', cbNone: 'Aucun choix', cbNewTopic: s => `Nouveau thème : « ${s} »`, cbNewGroup: s => `Nouveau groupe : « ${s} »`,
+      fTopic: 'Sous-thème', fGroup: 'Thème principal', fGroupHint: 'Nouveau sous-thème : dans quel thème principal ?', fLevel: 'Niveau', fTitle: 'Titre', fType: 'Type',
+      cbOpen: 'Ouvrir la liste', cbNone: 'Aucun choix', cbNewTopic: s => `Nouveau sous-thème : « ${s} »`, cbNewGroup: s => `Nouveau thème principal : « ${s} »`,
       fUrl: 'Lien', fMin: 'Durée', fDesc: 'Description', optional: '(facultatif)', fSchool: 'Votre école', phSchool: 'Choisir l’école', needSchool: 'Choisissez votre école',
-      phTopic: 'Choisir ou créer un thème', phTitle: 'ex. Cartes images de la famille', phDesc: 'ex. Répéter en regardant les images', phGroup: 'ex. 일상',
-      paste: 'Coller', previewCap: 'Aperçu côté élève', submit: 'Ajouter', required: 'Thème, niveau, titre et lien sont obligatoires',
+      phTopic: 'Choisir ou créer un sous-thème', phTitle: 'ex. Cartes images de la famille', phDesc: 'ex. Répéter en regardant les images', phGroup: 'ex. 일상',
+      paste: 'Coller', previewCap: 'Aperçu côté élève', submit: 'Ajouter', required: 'Sous-thème, niveau, titre et lien sont obligatoires',
       srcFile: 'Fichier (PDF/image)', srcLink: 'Lien', fSrc: 'Ressource', pickFile: 'Choisir un fichier', fileWhat: n => `PDF ou image · ${n} Mo max`,
       fileKeep: 'Le fichier est conservé dans l’archive Hangeul Oneshot. Il reste disponible même si vous le supprimez de votre Drive.',
       fileBig: n => `Fichier trop lourd : ${n} Mo maximum. Pour une vidéo, collez un lien YouTube « non répertorié ».`,
@@ -639,7 +631,7 @@
   let installHide = false;   // 홈 화면 추가 안내를 닫았는지(이번에 열어 둔 동안만)
   let upSrc = 'link';        // 올리기 화면: 'link'(링크, 왼쪽·처음) 또는 'file'(파일 PDF/이미지, 오른쪽) — 2026-10-24 휴먼쌤
   // 즐겨찾기 화면 상태(이번에 열어 둔 동안만): 찾는 글자, 필터(묶음·주제·레벨·유형 여러 개), 정렬, 필터 창 열림
-  let libQ = '', favF ={ group: [], topic: [], level: [], type: [] }, favSort = 'added', favSheet = false;
+  let libQ = '', favF ={ group: [], topic: [], level: [], type: [] }, favSort = 'added';
 
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -925,7 +917,7 @@
     }
     return list;
   }
-  // 필터 칩에 쓸 값: 담은 자료에 실제로 있는 것만(레벨은 늘 하·중·상). 주제는 고른 묶음이 있으면 그 안에서.
+  // 필터 칩에 쓸 값: 담은 자료에 실제로 있는 것만. 소주제는 고른 대주제가 있으면 그 안에서.
   function favChoices(all) {
     const uniq = a => [...new Set(a)];
     const topicOrder = data.topics.map(x => x.name), groupOrder = data.groups.map(g => g.name);
@@ -934,7 +926,7 @@
     return {
       group: byOrder(uniq(all.map(groupOf)), groupOrder),
       topic: byOrder(uniq(all.filter(inG).map(m => m.topic)), topicOrder),
-      level: LEVEL_KEYS.slice(),
+      level: LEVEL_KEYS.filter(k => all.some(m => m.level === k)),
       type: byOrder(uniq(all.map(m => m.type)), TYPES)
     };
   }
@@ -955,23 +947,16 @@
     }
     const all = favAll(), shown = favShown(), ch = favChoices(all);
     const nF = FAV_KEYS.reduce((s, k) => s + favF[k].length, 0);
-    const sortLab = t({ added: 'sortAdded', title: 'sortTitle', topic: 'sortTopic' }[favSort]);
-    const chip = k => { const v = favF[k]; const lab = favLab(k) + (v.length === 1 ? ' · ' + v[0] : v.length ? ' · ' + v.length : ''); return `<button type="button" class="fc${v.length ? ' on' : ''}" data-fsheet>${esc(lab)}</button>`; };
     const head = `<header class="appbar favtop"><b class="atitle">${esc(t('tabFav'))}</b><span class="hbtns"><span class="cnt">${esc(t('favCount')(all.length))}</span>${langToggle(true)}</span></header>`;
-    const tools = all.length ? `<div class="fchips"><button type="button" class="fc flt" data-fsheet>${esc(t('filter'))}${nF ? ` <em>${nF}</em>` : ''}</button>${FAV_KEYS.map(chip).join('')}</div>`
-        + `<div class="rhead"><b id="favFound">${esc(t('favFound')(shown.length))}</b><button type="button" data-fsheet>${esc(sortLab)} ▾</button></div>` : '';
-    let sheet = '';
-    if (favSheet && all.length) {
-      const grp = (k, sub) => ch[k].length ? `<div class="fgrp"><span class="lab">${esc(favLab(k))}${sub ? ` <small>· ${esc(sub)}</small>` : ''}</span><div class="cks">${ch[k].map(v =>
-        `<button type="button" class="ck${k === 'level' ? ' k-' + esc(v) : ''}${favF[k].includes(v) ? ' on' : ''}" data-fk="${k}" data-fv="${esc(v)}" aria-pressed="${favF[k].includes(v)}">${esc(v)}</button>`).join('')}</div></div>` : '';
-      const srt = ['added', 'title', 'topic'].map(s => `<button type="button" class="ck srt${favSort === s ? ' on' : ''}" data-fsort="${s}" aria-pressed="${favSort === s}">${esc(t({ added: 'sortAdded', title: 'sortTitle', topic: 'sortTopic' }[s]))}</button>`).join('');
-      sheet = `<div class="fdim" data-fclose></div><div class="fsheet" role="dialog" aria-modal="true" aria-label="${esc(t('filter'))}"><div class="handle"></div>
-        <div class="shtop"><h1>${esc(t('filter'))}</h1><button type="button" data-freset>${esc(t('reset'))}</button></div>
-        ${grp('group')}${grp('topic', favF.group.length ? t('inGroups') : '')}${grp('level')}${grp('type')}
-        <div class="fgrp"><span class="lab">${esc(t('sortK'))}</span><div class="cks">${srt}</div></div>
-        <div class="fbtns"><button type="button" class="gbtn" data-fclose>${esc(t('close'))}</button><button type="button" class="btn" data-fclose>${esc(t('showN')(shown.length))}</button></div></div>`;
-    }
-    return head + `<div class="pad">${tools}<div id="favList">${favListHtml(all, shown)}</div></div>` + sheet;
+    // 필터: 팝업 없이 이 화면 안에서 바로 누른다(2026-10-25 휴먼쌤 "별도 팝업창 띄우지말고 여기 내에서 클릭으로 해결할수있께").
+    // 줄마다 하나만 고르고, 고른 칩을 다시 누르거나 '전체'를 누르면 풀린다. 고를 것이 하나뿐인 줄은 감춘다.
+    const fo = (k, v, lab, on, cls) => `<button type="button" class="fo${cls || ''}${on ? ' on' : ''}" data-fk="${k}" data-fv="${esc(v)}" aria-pressed="${on}">${esc(lab)}</button>`;
+    const row = k => (ch[k].length > 1 || favF[k].length) ? `<div class="frow"><span class="fl">${esc(favLab(k))}</span><div class="fopts">${fo(k, '', t('all'), !favF[k].length)}`
+      + ch[k].map(v => fo(k, v, v, favF[k].includes(v), k === 'level' ? ' k-' + v : '')).join('') + `</div></div>` : '';
+    const srt = ['added', 'title', 'topic'].map(s => `<button type="button" class="fo srt${favSort === s ? ' on' : ''}" data-fsort="${s}" aria-pressed="${favSort === s}">${esc(t({ added: 'sortAdded', title: 'sortTitle', topic: 'sortTopic' }[s]))}</button>`).join('');
+    const tools = all.length ? `<div class="fpanel">${FAV_KEYS.map(row).join('')}${all.length > 1 ? `<div class="frow"><span class="fl">${esc(t('sortK'))}</span><div class="fopts">${srt}</div></div>` : ''}</div>`
+        + `<div class="rhead"><b id="favFound">${esc(t('favFound')(shown.length))}</b>${nF ? `<button type="button" data-freset>${esc(t('reset'))}</button>` : ''}</div>` : '';
+    return head + `<div class="pad">${tools}<div id="favList">${favListHtml(all, shown)}</div></div>`;
   }
   async function toggleFav(b) {
     if (!teacher) return;
@@ -1085,7 +1070,6 @@
     document.documentElement.lang = lang;
     $('#app').classList.toggle('notab', page === 'upload' && !!teacher);
     $('#app').classList.toggle('dimtab', page === 'fav' && !teacher);   // 로그인 안내창 위로도 아래 탭은 누를 수 있게
-    if (page !== 'fav') favSheet = false;
     if (loadError) {
       v.innerHTML = barHome() + `<div class="pad"><div class="emptycard" style="margin-top:18px"><div class="e">😢</div>${esc(t('loadErr'))}<button type="button" class="btn" id="retry">${esc(t('retry'))}</button></div></div>`;
       $('#retry').onclick = boot; renderTabs(page, parts); return;
@@ -1285,13 +1269,11 @@
     if (e.target.closest('[data-install-x]')) { installHide = true; render(true); return; }
     if (e.target.closest('[data-logout]')) { teacher = null; saveTeacher(null); toast(t('logout')); if (location.hash === '#/') render(); else location.hash = '#/'; return; }
     const H = e.target.closest('[data-hide]'); if (H) { e.preventDefault(); hideMat(H); return; }
-    // 즐겨찾기: ☆ 담기·빼기, 필터 창 열기·닫기, 필터·정렬 고르기, 초기화, 찾는 글자 지우기, 로그인 안내 → 로그인 뒤 즐겨찾기로
+    // 즐겨찾기: ☆ 담기·빼기, 필터(줄마다 하나, 다시 누르거나 '전체'면 풀림)·정렬 고르기, 초기화 / 자료실 찾는 글자 지우기 / 로그인 안내 → 로그인 뒤 즐겨찾기로
     const FV = e.target.closest('[data-fav]'); if (FV) { e.preventDefault(); toggleFav(FV); return; }
-    if (e.target.closest('[data-fsheet]')) { favSheet = true; render(true); return; }
-    if (e.target.closest('[data-fclose]')) { favSheet = false; render(true); return; }
     const FK = e.target.closest('[data-fk]'); if (FK) {
-      const k = FK.dataset.fk, v = FK.dataset.fv, a = favF[k];
-      favF[k] = a.includes(v) ? a.filter(x => x !== v) : a.concat(v);
+      const k = FK.dataset.fk, v = FK.dataset.fv;
+      favF[k] = !v || (favF[k].length === 1 && favF[k][0] === v) ? [] : [v];
       if (k === 'group' && favF.group.length) favF.topic = favF.topic.filter(tn => { const tp = data.topics.find(x => x.name === tn); return tp && favF.group.includes(tp.group); });
       render(true); return;
     }
