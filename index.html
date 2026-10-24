@@ -208,6 +208,17 @@
   .btn svg { width: 20px; height: 20px; }
   .err { min-height: 1em; margin: 10px 0 0; color: #D93A1E; font-size: 13.5px; font-weight: 800; }
   .mockcodes { margin: 14px 0 0; padding: 8px 10px; border-radius: 12px; background: #FFF1D6; color: #8A5A00; font-size: 12.5px; font-weight: 800; }
+  /* 가입(#/join) */
+  .joinrow { margin: 16px 0 0; font-size: 14px; font-weight: 700; color: var(--sub); }
+  .joinrow a { color: var(--coral-d); font-weight: 900; text-decoration: underline; text-underline-offset: 3px; }
+  .joinp { text-align: left; }
+  .joinp > h1, .joinp > .hint { text-align: center; }
+  .privacy { margin: 18px 0 0; padding: 11px 12px; border-radius: 14px; background: #FFF6EA; color: #6E5E50; font-size: 12.5px; font-weight: 700; line-height: 1.55; }
+  .agree { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 14.5px; font-weight: 800; }
+  .agree input { flex: none; width: 22px; height: 22px; accent-color: var(--coral); }
+  .lab2 { margin: 18px 0 0; font-size: 13.5px; font-weight: 900; color: #6E5E50; }
+  .newcode { margin: 6px 0 12px; font-size: 36px; font-weight: 900; letter-spacing: .12em; user-select: all; }
+  .keep { margin: 14px 0 0; font-size: 13px; font-weight: 700; color: #A86A00; line-height: 1.5; }
   .me { display: flex; align-items: center; gap: 12px; margin-top: 4px; background: #fff; border: 2px solid var(--line); border-radius: 22px; padding: 14px; box-shadow: var(--press); }
   .me .av { flex: none; width: 52px; height: 52px; border-radius: 18px; background: #FFE6D3; display: grid; place-items: center; font-size: 28px; line-height: 1; }
   .me .nm { flex: 1; min-width: 0; }
@@ -390,7 +401,7 @@
     .mqr .qrlist { grid-template-columns: minmax(0, 420px); justify-content: center; }
     .qrnote { max-width: 760px; }
     /* 선생님 */
-    #loginForm { max-width: 460px; margin-left: auto; margin-right: auto; }
+    #loginForm, #joinForm, .joined { max-width: 460px; margin-left: auto; margin-right: auto; }
     .panel + .tip { max-width: 460px; margin-left: auto; margin-right: auto; }
     .me, .pad > .btn, .entry { max-width: 760px; }
     /* 자료 올리기: 왼쪽 칸들, 오른쪽 미리 보기 */
@@ -497,6 +508,17 @@
       loadErr: '자료를 불러오지 못했어요.', retry: '다시 시도',
       logout: '로그아웃', upload: '자료 올리기', myMats: '내가 올린 자료', noMine: '아직 올린 자료가 없어요', hide: '숨기기', hidden: '숨겼어요', uploaded: '올렸어요!',
       notOwner: '내가 올린 자료만 숨길 수 있어요',
+      // 가입(#/join)
+      joinAsk: '처음이세요?', joinLink: '가입하기', joinTitle: '선생님 가입', joinHint: '협의회에서 받은 가입 코드로 바로 가입해요.',
+      fName: '이름', phName: '예: 김수현', nameHint: '자료에 올린이로 보여요. 같은 이름이 있으면 뒤에 도시를 붙여요(예: 김지영 리옹).',
+      fJoin: '가입 코드', phJoin: '협의회에서 받은 코드',
+      privacy: '이름·학교와 올린 자료는 휴먼쌤 구글 계정에 보관돼요. 올린 파일은 링크를 아는 누구나 볼 수 있어요. 학생 이름·사진·성적이 든 파일은 올리지 마세요.',
+      agree: '위 안내를 읽었고 동의해요', joinBtn: '가입하기', joining: '가입하는 중…',
+      needName: '이름을 적어 주세요', needJoin: '가입 코드를 넣어 주세요', needAgree: '안내를 읽고 동의에 표시해 주세요',
+      badJoin: '가입 코드가 맞지 않아요', joinClosed: '지금은 가입을 받지 않아요. 협의회에 물어보세요.',
+      dupName: '같은 이름이 이미 있어요. 이름 뒤에 도시를 붙여 주세요(예: 김지영 리옹).', tooMany: '시도가 너무 많아요. 10분 뒤 다시 해 보세요.',
+      joinedTitle: '가입했어요!', joinedCode: '내 로그인 코드', joinedKeep: '이 코드를 꼭 적어 두세요. 다른 기기에서 로그인할 때 써요. 잊으면 협의회(휴먼쌤)에 물어보세요.',
+      copyCode: '코드 복사', codeCopied: '복사했어요', start: '시작하기', mockJoin: '시험용 가입 코드: HANGEUL',
       fTopic: '주제', fGroup: '묶음', fGroupHint: '새 주제예요. 어느 묶음에 넣을까요?', fLevel: '레벨', fTitle: '자료 제목', fType: '유형',
       fUrl: '링크', fMin: '걸리는 시간', fDesc: '한 줄 설명', fSchool: '소속 학교', phSchool: '학교를 골라 주세요', needSchool: '소속 학교를 골라 주세요',
       phTopic: '주제를 고르거나 새로 적어요', phTitle: '예: 가족 단어 그림 카드', phDesc: '예: 그림을 보며 따라 해요', phGroup: '예: 일상',
@@ -545,6 +567,16 @@
       loadErr: 'Impossible de charger les ressources.', retry: 'Réessayer',
       logout: 'Déconnexion', upload: 'Ajouter une ressource', myMats: 'Mes ressources', noMine: 'Aucune ressource ajoutée', hide: 'Masquer', hidden: 'Masqué', uploaded: 'Ajouté !',
       notOwner: 'Vous ne pouvez masquer que vos ressources',
+      joinAsk: 'Première fois ?', joinLink: 'Créer un compte', joinTitle: 'Inscription enseignant', joinHint: 'Avec le code d’inscription reçu de l’association, l’inscription est immédiate.',
+      fName: 'Nom', phName: 'ex. Kim Suhyeon', nameHint: 'Affiché comme auteur des ressources. Si ce nom existe déjà, ajoutez la ville (ex. Kim Jiyoung Lyon).',
+      fJoin: 'Code d’inscription', phJoin: 'Code reçu de l’association',
+      privacy: 'Votre nom, votre école et vos ressources sont conservés sur le compte Google de Humanssaem. Les fichiers envoyés sont visibles par toute personne qui a le lien. N’envoyez aucun fichier contenant le nom, la photo ou les notes d’un élève.',
+      agree: 'J’ai lu et j’accepte', joinBtn: 'S’inscrire', joining: 'Inscription…',
+      needName: 'Indiquez votre nom', needJoin: 'Entrez le code d’inscription', needAgree: 'Cochez la case pour accepter',
+      badJoin: 'Code d’inscription incorrect', joinClosed: 'Les inscriptions sont fermées pour le moment. Contactez l’association.',
+      dupName: 'Ce nom existe déjà. Ajoutez la ville (ex. Kim Jiyoung Lyon).', tooMany: 'Trop d’essais. Réessayez dans 10 minutes.',
+      joinedTitle: 'Inscription réussie !', joinedCode: 'Votre code de connexion', joinedKeep: 'Notez bien ce code : il sert à vous connecter sur un autre appareil. En cas d’oubli, contactez l’association (Humanssaem).',
+      copyCode: 'Copier le code', codeCopied: 'Copié', start: 'Commencer', mockJoin: 'Code d’inscription de test : HANGEUL',
       fTopic: 'Thème', fGroup: 'Groupe', fGroupHint: 'Nouveau thème : dans quel groupe ?', fLevel: 'Niveau', fTitle: 'Titre', fType: 'Type',
       fUrl: 'Lien', fMin: 'Durée', fDesc: 'Description', fSchool: 'Votre école', phSchool: 'Choisir l’école', needSchool: 'Choisissez votre école',
       phTopic: 'Choisir ou créer un thème', phTitle: 'ex. Cartes images de la famille', phDesc: 'ex. Répéter en regardant les images', phGroup: 'ex. 일상',
@@ -586,6 +618,7 @@
   let groupFilter = '';
   let firstRender = true;
   let afterLogin = '';
+  let joined = null;         // 방금 가입한 결과(로그인 코드를 한 번 크게 보여 주려고. 가입 화면을 떠나면 잊는다)
   let installEvt = null;     // 안드로이드 크롬이 주는 '앱 설치' 기회
   let installHide = false;   // 홈 화면 추가 안내를 닫았는지(이번에 열어 둔 동안만)
   let upSrc = 'file';        // 올리기 화면: 'file'(파일 올리기) 또는 'link'(링크 붙여넣기)
@@ -667,7 +700,7 @@
       return r.json();
     }
   };
-  function mockStore() { try { return JSON.parse(localStorage.getItem('oneshot.mock') || '{"uploads":[],"hidden":[]}'); } catch (e) { return { uploads: [], hidden: [] }; } }
+  function mockStore() { try { return JSON.parse(localStorage.getItem('oneshot.mock') || '{"uploads":[],"hidden":[],"teachers":[]}'); } catch (e) { return { uploads: [], hidden: [], teachers: [] }; } }
   function mockSave(s) { try { localStorage.setItem('oneshot.mock', JSON.stringify(s)); } catch (e) {} }
   function mockData() {
     const s = mockStore();
@@ -676,7 +709,16 @@
   }
   function mockPost(b) {
     const s = mockStore();
-    const tc = (SAMPLE.teachers || []).find(x => x.code === String(b.code || ''));
+    const teachers = [...(SAMPLE.teachers || []), ...(s.teachers || [])];
+    if (b.action === 'join') {   // 시험 모드 가입: 가입 코드는 sample-data.js joinCode, 만든 교사는 이 기기에만 남는다
+      if (String(b.joinCode || '').replace(/\s+/g, '').toUpperCase() !== String(SAMPLE.joinCode || '').toUpperCase()) return Promise.resolve({ ok: false, error: 'bad_join' });
+      const name = String(b.name || '').replace(/\s+/g, ' ').trim(), key = x => String(x).replace(/\s+/g, '').toLowerCase();
+      if (teachers.some(x => key(x.name) === key(name))) return Promise.resolve({ ok: false, error: 'dup_name' });
+      const code = String(10000000 + Math.floor(Math.random() * 90000000));
+      s.teachers = [...(s.teachers || []), { code, name, school: b.school }]; mockSave(s);
+      return Promise.resolve({ ok: true, teacher: { name, school: b.school }, code });
+    }
+    const tc = teachers.find(x => x.code === String(b.code || ''));
     if (b.action === 'login') return Promise.resolve(tc ? { ok: true, teacher: { name: tc.name, school: tc.school } } : { ok: false, error: 'bad_code' });
     if (!tc) return Promise.resolve({ ok: false, error: 'bad_code' });
     if (b.action === 'upload') {
@@ -854,7 +896,25 @@
       <div class="bigav">👩‍🏫</div><h1>${esc(t('teacherLogin'))}</h1><p class="hint">${esc(t('loginHint'))}</p>
       <input class="codein" name="code" inputmode="numeric" autocomplete="off" placeholder="${esc(t('codePh'))}" aria-label="${esc(t('codePh'))}">
       <p class="err" id="loginErr"></p><button class="btn" type="submit">${esc(t('login'))}</button>
+      <p class="joinrow">${esc(t('joinAsk'))} <a href="#/join">${esc(t('joinLink'))}</a></p>
       ${MOCK ? `<p class="mockcodes">${esc(t('mockCodes'))}</p>` : ''}</form><p class="tip">${esc(t('loginWhy'))}</p></div>`;
+  }
+  // 가입: 가입 코드를 아는 교사가 이름·학교를 넣으면 서버가 로그인 코드 8자리를 만들어 준다(휴먼쌤 2026-10-24 "B로 해 줘")
+  function viewJoin() {
+    if (joined) return barSub(t('joinTitle'), '', langToggle(true)) + `<div class="pad"><div class="panel joined">
+      <div class="bigav">🎉</div><h1>${esc(t('joinedTitle'))}</h1><p class="hint">${esc(t('teacherName')(joined.name))} · ${esc(joined.school)}</p>
+      <p class="lab2">${esc(t('joinedCode'))}</p><div class="newcode" id="newCode">${esc(joined.code)}</div>
+      <button type="button" class="ghostbtn" data-copycode>${esc(t('copyCode'))}</button>
+      <p class="keep">${esc(t('joinedKeep'))}</p><a class="btn" href="#/mine">${esc(t('start'))}</a></div></div>`;
+    return barSub(t('joinTitle'), '#/login', langToggle(true)) + `<div class="pad"><form class="panel joinp" id="joinForm" novalidate autocomplete="off">
+      <div class="bigav">🙋</div><h1>${esc(t('joinTitle'))}</h1><p class="hint">${esc(t('joinHint'))}</p>
+      <div class="f"><label class="lab" for="j-name">${esc(t('fName'))}</label><div class="inp"><input id="j-name" name="name" maxlength="20" placeholder="${esc(t('phName'))}"></div><p class="lhint">${esc(t('nameHint'))}</p></div>
+      <div class="f"><label class="lab" for="j-school">${esc(t('fSchool'))}</label><div class="inp sel"><select id="j-school" name="school" class="empty">${schoolOptions('')}</select>${ICON.down}</div></div>
+      <div class="f"><label class="lab" for="j-code">${esc(t('fJoin'))}</label><div class="inp"><input id="j-code" name="joinCode" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('phJoin'))}"></div></div>
+      <p class="privacy">${esc(t('privacy'))}</p>
+      <label class="agree"><input type="checkbox" name="agree"><span>${esc(t('agree'))}</span></label>
+      <p class="err" id="joinErr"></p><button class="btn" type="submit" id="joinBtn">${esc(t('joinBtn'))}</button>
+      ${MOCK ? `<p class="mockcodes">${esc(t('mockJoin'))}</p>` : ''}</form></div>`;
   }
   function viewMine() {
     if (!teacher) return viewLogin(true);
@@ -982,7 +1042,7 @@
 
   function renderTabs(page, parts) {
     const qrHref = (page === 't' || page === 'qr') && parts[1] ? '#/qr/' + encodeURIComponent(parts[1]) : '#/qr';
-    const on = { home: page === '' || page === 't', qr: page === 'qr' || page === 'mq', tc: ['login', 'mine', 'upload', 'prompt'].includes(page) };
+    const on = { home: page === '' || page === 't', qr: page === 'qr' || page === 'mq', tc: ['login', 'join', 'mine', 'upload', 'prompt'].includes(page) };
     $('#tabbar').innerHTML = `<a class="tab${on.home ? ' on' : ''}" href="#/">${ICON.home}<span>${esc(t('tabHome'))}</span></a>
       <a class="tab${on.qr ? ' on' : ''}" href="${qrHref}">${ICON.qr}<span>${esc(t('tabQr'))}</span></a>
       <a class="tab${on.tc ? ' on' : ''}" href="${teacher ? '#/mine' : '#/login'}">${ICON.person}<span>${esc(t('tabTeacher'))}</span></a>`;
@@ -1001,12 +1061,14 @@
     const fromQr = firstRender && page === 't';
     firstRender = false;
     if (page !== 'prompt') ps = null;   // 요청문 화면을 떠나면 고른 값을 잊는다
+    if (page !== 'join') joined = null;  // 가입 결과 화면도 떠나면 잊는다(코드는 로그인 상태에 남아 있다)
     let title = appTitle();
     switch (page) {
       case 't': v.innerHTML = viewTopic(parts[1] || '', normLevel(parts[2]), fromQr); title = (parts[1] || '') + ' · ' + title; break;
       case 'qr': v.innerHTML = viewQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'mq': v.innerHTML = viewMatQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'login': v.innerHTML = teacher ? viewMine() : viewLogin(true); bindLogin(); break;
+      case 'join': v.innerHTML = teacher && !joined ? viewMine() : viewJoin(); bindJoin(); title = t('joinTitle') + ' · ' + title; break;
       case 'prompt': v.innerHTML = viewPrompt(); bindPrompt(); title = t('pTitle') + ' · ' + title; break;
       case 'mine': v.innerHTML = viewMine(); bindLogin(); break;
       case 'upload': v.innerHTML = viewUpload(parts[1] || '', normLevel(parts[2])); bindUpload(); bindLogin(); break;
@@ -1028,8 +1090,36 @@
           teacher = { code, name: r.teacher.name, school: r.teacher.school }; saveTeacher(teacher); toast(t('loggedIn'));
           const go = afterLogin || '#/mine'; afterLogin = '';
           if (location.hash === go) render(); else location.hash = go;
-        } else err.textContent = t('badCode');
+        } else err.textContent = r.error === 'too_many' ? t('tooMany') : t('badCode');
       } catch (ex) { err.textContent = t('netErr'); }
+    };
+  }
+  function bindJoin() {
+    const cp = $('[data-copycode]');
+    if (cp) cp.onclick = async () => {
+      try { await navigator.clipboard.writeText(joined.code); toast(t('codeCopied')); }
+      catch (ex) { const r = document.createRange(), s = getSelection(); r.selectNodeContents($('#newCode')); s.removeAllRanges(); s.addRange(r); toast(t('pCopySel')); }
+    };
+    const f = $('#joinForm'); if (!f) return;
+    const el = n => f.elements[n], sch = el('school');
+    sch.onchange = () => sch.classList.toggle('empty', !sch.value);
+    f.onsubmit = async e => {
+      e.preventDefault(); const err = $('#joinErr'); err.textContent = '';
+      const name = el('name').value.replace(/\s+/g, ' ').trim(), school = sch.value, joinCode = el('joinCode').value.trim();
+      if (!name) { el('name').focus(); err.textContent = t('needName'); return; }
+      if (SCHOOLS.length && !school) { sch.focus(); err.textContent = t('needSchool'); return; }
+      if (!joinCode) { el('joinCode').focus(); err.textContent = t('needJoin'); return; }
+      if (!el('agree').checked) { err.textContent = t('needAgree'); return; }
+      const btn = $('#joinBtn'); btn.disabled = true; btn.textContent = t('joining');
+      try {
+        const r = await api.post({ action: 'join', joinCode, name, school, agree: true });
+        if (r.ok) {
+          teacher = { code: r.code, name: r.teacher.name, school: r.teacher.school }; saveTeacher(teacher);
+          joined = { code: r.code, name: r.teacher.name, school: r.teacher.school }; render(); return;
+        }
+        err.textContent = { bad_join: t('badJoin'), join_closed: t('joinClosed'), dup_name: t('dupName'), too_many: t('tooMany'), missing: t('needName'), need_agree: t('needAgree') }[r.error] || t('netErr');
+      } catch (ex) { err.textContent = t('netErr'); }
+      btn.disabled = false; btn.textContent = t('joinBtn');
     };
   }
   function bindUpload() {

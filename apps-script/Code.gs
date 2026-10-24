@@ -7,10 +7,14 @@
  *     내 드라이브에 '한글원샷 자료' 폴더도 만든다(교사가 올린 파일을 모으는 곳). 드라이브 권한 허용 창이 함께 뜬다.
  *  3. 배포 → 새 배포 → 유형 '웹 앱' → 실행 사용자 '나' → 액세스 권한 '모든 사용자' → 배포 → 나온 주소(…/exec)를
  *     페이지의 config.js API_URL에 넣는다. 코드를 고치면 '배포 관리'에서 새 버전으로 다시 배포해야 반영된다.
- *  4. '교사' 탭에 교사 이름·코드를 적는다(코드는 숫자 4~8자리 등 아무 글자. 비활성은 활성 칸에 N).
- *     학교 칸은 올리기 화면에서 처음 골라져 있을 학교일 뿐이라 비워도 된다(교사가 올릴 때 config.js SCHOOLS 17곳 중에서 고른다).
+ *  4. 교사는 페이지에서 직접 가입한다(2026-10-24): '설정' 탭 join_code(가입 코드, setup이 처음 한 번 만든다)를 아는 사람만
+ *     이름·학교를 넣고 가입 → 이 스크립트가 로그인 코드 8자리를 만들어 '교사' 탭에 한 줄 적고 화면에 보여 준다.
+ *     가입 코드가 새면 join_code 값만 바꾸고, 가입을 닫으려면 값을 비운다. 휴먼쌤이 '교사' 탭에 직접 적어도 된다(비활성은 활성 칸에 N).
+ *     학교 칸은 올리기 화면에서 처음 골라져 있을 학교일 뿐이다(교사가 올릴 때 config.js SCHOOLS 17곳 중에서 고른다).
+ *  5. 견본 자료가 남아 있으면 함수 cleanSamples 를 한 번 실행한다('자료' 탭 올린이 '견본' 줄과 '견본' 안내를 지움).
  *
- * 하는 일: GET ?action=data → 자료·주제·설정 JSON(공개 N 제외). POST {action:'login'|'upload'|'hide', code, ...} → 교사 코드 확인 뒤 처리.
+ * 하는 일: GET ?action=data → 자료·주제·설정 JSON(공개 N 제외, join_code는 빼고). POST {action:'join', joinCode, name, school, agree} → 가입.
+ * POST {action:'login'|'upload'|'hide', code, ...} → 교사 코드 확인 뒤 처리. 틀린 코드·가입 코드가 10분에 30번 넘으면 10분 막는다.
  * 파일 올리기(2026-10-18): upload에 file {name, type, data(base64)}가 오면 '한글원샷 자료' 폴더에 저장하고 '링크가 있는 모든 사용자 보기'로 연 뒤
  * 그 링크를 '자료' 탭 링크 칸에 적는다. 파일 주인은 휴먼쌤(이 스크립트 실행 사용자)이라 교사가 자기 드라이브에서 지워도 남는다.
  * 숨기기는 줄의 공개 칸만 N으로 바꾸고 파일은 지우지 않는다(보관).
@@ -20,7 +24,7 @@
 var SHEETS = {
   자료: ['id', '묶음', '주제', '레벨', '제목', '유형', '링크', '설명', '시간', '학교', '올린이', '올린날짜', '공개'],
   주제: ['주제', '프랑스어', '묶음', '순서', '아이콘'],
-  교사: ['이름', '학교', '코드', '활성'],
+  교사: ['이름', '학교', '코드', '활성', '가입일'],
   설정: ['키', '값']
 };
 // '주제' 탭의 아이콘 칸: 이모지 하나(예: 👨‍👩‍👧) 또는 글자. 비우면 페이지가 주제 이름으로 고른다.
@@ -29,6 +33,8 @@ var FILE_MAX_MB = 10;
 var FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'odp', 'ods', 'hwp', 'hwpx', 'txt', 'mp3', 'm4a', 'wav', 'ogg'];
 var FOLDER_NAME = '한글원샷 자료';
 var KEYS = { 자료: ['id', 'group', 'topic', 'level', 'title', 'type', 'url', 'desc', 'minutes', 'school', 'by', 'date', 'pub'], 주제: ['topic', 'fr', 'group', 'order', 'icon'] };
+// 틀린 코드·가입 코드 막기: 앱스 스크립트는 기기를 가릴 수 없어 모든 시도를 함께 센다(10분에 30번 넘으면 10분 동안 'too_many').
+var FAIL_LIMIT = 30, FAIL_WINDOW = 600;
 
 function setup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -36,12 +42,33 @@ function setup() {
     var sh = ss.getSheetByName(name);
     if (!sh) { sh = ss.insertSheet(name); }
     if (sh.getLastRow() === 0) { sh.appendRow(SHEETS[name]); sh.setFrozenRows(1); }
+    // 머리글이 모자라면(예: '가입일' 칸이 생기기 전에 만든 시트) 빈 칸만 채운다
+    var head = sh.getRange(1, 1, 1, SHEETS[name].length).getValues()[0];
+    SHEETS[name].forEach(function (h, i) { if (String(head[i]).trim() === '') sh.getRange(1, i + 1).setValue(h); });
   });
   // 교사 코드 칸은 글자로 둔다(숫자로 두면 0123이 123으로 바뀌어 로그인이 안 된다).
   ss.getSheetByName('교사').getRange('C:C').setNumberFormat('@');
   var st = ss.getSheetByName('설정');
   if (st.getLastRow() < 2) { st.appendRow(['title', '한글원샷']); st.appendRow(['subtitle', '프랑스 한글학교 레벨별 자료']); st.appendRow(['notice', '']); }
+  // 가입 코드: 줄이 없을 때만 무작위로 하나 만든다(값을 비워 두면 가입이 닫힌 것이라 다시 만들지 않는다)
+  if (!rows('설정', ['key', 'value']).some(function (r) { return String(r.key).trim() === 'join_code'; })) st.appendRow(['join_code', newJoinCode()]);
   folder();   // 파일 보관 폴더를 미리 만든다(드라이브 권한도 여기서 허용)
+}
+
+function newJoinCode() {
+  var abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '';   // 헷갈리는 0·O·1·I는 뺐다
+  for (var i = 0; i < 6; i++) s += abc.charAt(Math.floor(Math.random() * abc.length));
+  return s;
+}
+
+// 견본 걷어 내기(휴먼쌤이 Apps Script 편집기에서 한 번 실행): '자료' 탭 올린이 '견본' 줄을 지우고, '설정' notice에 '견본'이 있으면 비운다.
+function cleanSamples() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('자료'), n = 0;
+  var by = sh.getLastRow() > 1 ? sh.getRange(2, 11, sh.getLastRow() - 1, 1).getValues() : [];
+  for (var i = by.length - 1; i >= 0; i--) { if (String(by[i][0]).trim() === '견본') { sh.deleteRow(i + 2); n++; } }
+  var st = ss.getSheetByName('설정'), kv = st.getLastRow() > 1 ? st.getRange(2, 1, st.getLastRow() - 1, 2).getValues() : [];
+  for (var j = 0; j < kv.length; j++) { if (String(kv[j][0]).trim() === 'notice' && String(kv[j][1]).indexOf('견본') >= 0) st.getRange(j + 2, 2).setValue(''); }
+  Logger.log('견본 ' + n + '줄을 지웠어요');
 }
 
 // 교사가 올린 파일을 모으는 폴더. 폴더 id를 스크립트 속성에 적어 두고 찾는다(지워졌으면 새로 만든다).
@@ -89,7 +116,34 @@ function doGet(e) {
   var action = (e && e.parameter && e.parameter.action) || 'data';
   if (action !== 'data') return json({ ok: false, error: 'unknown' });
   var mats = rows('자료', KEYS.자료).filter(function (m) { return String(m.pub).trim().toUpperCase() !== 'N'; });
-  return json({ ok: true, settings: settings(), topics: rows('주제', KEYS.주제), materials: mats, updatedAt: new Date().toISOString() });
+  var st = settings(); delete st.join_code;   // 가입 코드는 공개 자료에 싣지 않는다
+  return json({ ok: true, settings: st, topics: rows('주제', KEYS.주제), materials: mats, updatedAt: new Date().toISOString() });
+}
+
+function tooMany() { return Number(CacheService.getScriptCache().get('fails') || 0) >= FAIL_LIMIT; }
+function addFail() { var c = CacheService.getScriptCache(); c.put('fails', String(Number(c.get('fails') || 0) + 1), FAIL_WINDOW); }
+
+// 가입: 가입 코드가 맞으면 로그인 코드 8자리를 만들어 '교사' 탭에 적는다. 이름은 겹치지 않게 받는다(내 자료·숨기기가 이름으로 주인을 가린다).
+function join(b) {
+  var open = String(settings().join_code || '').trim();
+  if (!open) return json({ ok: false, error: 'join_closed' });
+  var norm = function (s) { return String(s || '').replace(/\s+/g, '').toUpperCase(); };
+  if (norm(b.joinCode) !== norm(open)) { addFail(); return json({ ok: false, error: 'bad_join' }); }
+  var name = String(b.name || '').replace(/\s+/g, ' ').trim().slice(0, 20), school = String(b.school || '').trim().slice(0, 60);
+  if (!name || !school) return json({ ok: false, error: 'missing' });
+  if (b.agree !== true) return json({ ok: false, error: 'need_agree' });
+  var lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    var ts = rows('교사', ['name', 'school', 'code', 'active']);
+    var key = function (s) { return String(s).replace(/\s+/g, '').toLowerCase(); };
+    if (ts.some(function (r) { return key(r.name) === key(name); })) return json({ ok: false, error: 'dup_name' });
+    var used = {}; ts.forEach(function (r) { used[String(r.code).trim()] = true; });
+    var code; do { code = String(10000000 + Math.floor(Math.random() * 90000000)); } while (used[code]);
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('교사');
+    sh.appendRow([name, school, '', '', Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd')]);
+    sh.getRange(sh.getLastRow(), 3).setNumberFormat('@').setValue(code);
+    return json({ ok: true, teacher: { name: name, school: school }, code: code });
+  } finally { lock.releaseLock(); }
 }
 
 function findTeacher(code) {
@@ -100,8 +154,10 @@ function findTeacher(code) {
 
 function doPost(e) {
   var b; try { b = JSON.parse(e.postData.contents); } catch (ex) { return json({ ok: false, error: 'bad_json' }); }
+  if (tooMany()) return json({ ok: false, error: 'too_many' });
+  if (b.action === 'join') return join(b);
   var tc = findTeacher(b.code);
-  if (!tc) return json({ ok: false, error: 'bad_code' });
+  if (!tc) { addFail(); return json({ ok: false, error: 'bad_code' }); }
   if (b.action === 'login') return json({ ok: true, teacher: tc });
 
   // 파일은 시트 잠금 전에 드라이브에 저장한다(느린 일이라 다른 교사의 올리기를 막지 않게)

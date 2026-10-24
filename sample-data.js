@@ -13,6 +13,8 @@ window.ONESHOT_SAMPLE = {
     { code: "1234", name: "김선생", school: "파리 한글학교" },
     { code: "5678", name: "이선생", school: "리옹 에콜리움 한글학교" }
   ],
+  // 가입 코드(시험용). 실제로는 시트 '설정' 탭 join_code. 시험 모드에서 가입한 교사는 그 기기에만 남는다.
+  joinCode: "HANGEUL",
 
   // 주제 탭(선택): 순서·프랑스어 이름·묶음
   topics: [
