@@ -17,13 +17,13 @@ window.ONESHOT_CONFIG = {
   // 자료 유형(올리기 화면의 선택지). 시트에 다른 말을 적어도 그대로 보여 준다.
   TYPES: ["듣기", "읽기", "쓰기", "말하기", "어휘", "문법", "게임", "영상", "활동지", "퀴즈", "기타"],
 
-  // 소속 학교(자료 올리기에서 고른다). XR개발부 '프랑스 한글학교 로비'의 학교 17곳과 같은 목록(휴먼쌤 2026-10-06 결정, 10-07 이 앱에도 쓰기로 함).
+  // 소속 학교(가입·자료 올리기에서 고른다). 처음엔 XR개발부 '프랑스 한글학교 로비'의 17곳(휴먼쌤 2026-10-06 결정)이었고,
+  // 2026-10-24 휴먼쌤 "아직 리옹 학교가 남아있어 빼야돼"로 리옹 에콜리움을 빼 16곳(교사연수 학교 목록과 같음).
   // 시트 '자료' 탭 '학교' 칸에는 ko 이름이 그대로 적힌다. 학교를 더하거나 빼려면 이 목록만 고친다. 화면에서는 이름순으로 보인다.
   SCHOOLS: [
     { ko: "파리 한글학교", fr: "École coréenne de Paris", city: "파리", cityFr: "Paris" },
     { ko: "오페라 한글학교", fr: "École coréenne de l'Opéra de Paris", city: "파리", cityFr: "Paris" },
     { ko: "파리 아리솔 한글학교", fr: "École coréenne Arissol", city: "파리", cityFr: "Paris" },
-    { ko: "리옹 에콜리움 한글학교", fr: "Lium École coréenne", city: "리옹", cityFr: "Lyon" },
     { ko: "그르노블 한글학교", fr: "Association franco-coréenne de Grenoble et de l'Isère", city: "그르노블", cityFr: "Grenoble" },
     { ko: "스트라스부르 한글학교", fr: "École coréenne de Strasbourg", city: "스트라스부르", cityFr: "Strasbourg" },
     { ko: "툴루즈 한글학교", fr: "École coréenne de Toulouse", city: "툴루즈", cityFr: "Toulouse" },
