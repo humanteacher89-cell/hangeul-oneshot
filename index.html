@@ -260,6 +260,25 @@
   .inp.sel select.empty { color: #BFAF9E; }
   .inp.sel option { color: var(--ink); }
   .inp.sel svg { flex: none; width: 18px; height: 18px; color: var(--sub); pointer-events: none; }
+  /* 고르기 목록(주제·묶음): 브라우저 기본 목록(datalist) 대신 앱 모양. 적으면 걸러지고, 딱 맞는 게 없으면 '새로 쓰기' 줄 */
+  .cbx { position: relative; }
+  .cbx .tog { flex: none; width: 36px; height: 36px; border: 0; border-radius: 10px; background: none; color: var(--sub); display: grid; place-items: center; padding: 0; }
+  .cbx .tog svg { width: 18px; height: 18px; transition: transform .15s; }
+  .cbx.open .tog svg { transform: rotate(180deg); }
+  .cblist { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px); max-height: min(320px, 46vh); overflow-y: auto; overscroll-behavior: contain;
+            background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 6px; box-shadow: 0 14px 30px rgba(80,55,30,.18); }
+  .cblist .gh { padding: 9px 10px 4px; font-size: 12px; font-weight: 900; color: var(--sub); }
+  .cbo { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; border-radius: 12px; padding: 8px 10px; text-align: left;
+         font: inherit; font-size: 15.5px; font-weight: 800; color: var(--ink); }
+  .cbo .em { flex: none; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; font-size: 17px; line-height: 1; }
+  .cbo .em.txt { font-size: 13px; font-weight: 900; color: #6E5E50; }
+  .cbo small { margin-left: auto; padding-left: 8px; font-size: 12.5px; font-weight: 700; color: var(--sub); text-align: right; }
+  .cbo.on { background: #FFF1EA; }
+  @media (hover: hover) { .cbo:hover { background: #FFF1EA; } }
+  .cbo.cur { color: var(--coral-d); }
+  .cbo.new { color: var(--coral-d); }
+  .cbo.new .em { background: #FFEDE6; color: var(--coral); font-size: 20px; font-weight: 900; }
+  .cbempty { padding: 12px 10px; font-size: 13.5px; font-weight: 700; color: var(--sub); }
   .lhint { display: flex; gap: 7px; align-items: flex-start; margin: 8px 2px 0; font-size: 12.5px; font-weight: 700; color: var(--sub); line-height: 1.45; }
   .lhint .m { flex: none; width: 17px; height: 17px; margin-top: 1px; border-radius: 50%; display: grid; place-items: center; background: #C9BBAB; color: #fff;
               font-size: 11px; font-weight: 900; line-height: 1; }
@@ -402,7 +421,7 @@
 
   // 자료 유형 그림과 바탕색
   const TYPE_ICON = { '듣기': ['🎧', '#E3F0FF'], '읽기': ['📖', '#E3F5EA'], '쓰기': ['✏️', '#FFE9DE'], '말하기': ['💬', '#FFE4EE'], '어휘': ['🔤', '#FFF0D6'],
-    '문법': ['🧩', '#EAF0F2'], '게임': ['🎮', '#EFE7FF'], '영상': ['🎬', '#FFE3E3'], '활동지': ['📝', '#DDF4F1'], '퀴즈': ['❓', '#F1E8FF'], '기타': ['📎', '#F1ECE6'] };
+    '문법': ['🧩', '#EAF0F2'], '게임': ['🎮', '#EFE7FF'], '영상': ['🎬', '#FFE3E3'], '활동지': ['📝', '#DDF4F1'], '학습지': ['📝', '#DDF4F1'], '퀴즈': ['❓', '#F1E8FF'], '기타': ['📎', '#F1ECE6'] };
   // 주제 카드 바탕색(주제 순서대로 돌아가며)
   const PASTELS = ['#FFE6D3', '#DCEEFF', '#FFF0C2', '#DFF5E7', '#ECE4FF', '#FFE1E8', '#D7F2F4', '#F6EAD7'];
   // 주제 그림: 시트 '주제' 탭의 '아이콘' 칸이 먼저, 비어 있으면 주제 이름으로 고르고, 그래도 없으면 첫 글자
@@ -460,15 +479,16 @@
       joinedTitle: '가입했어요!', joinedCode: '내 로그인 코드', joinedKeep: '이 코드를 꼭 적어 두세요. 다른 기기에서 로그인할 때 써요. 잊으면 협의회(휴먼쌤)에 물어보세요.',
       copyCode: '코드 복사', codeCopied: '복사했어요', copySel: '글을 골라 두었어요 · 길게 눌러 복사', start: '시작하기', mockJoin: '시험용 가입 코드: HANGEUL',
       fTopic: '주제', fGroup: '묶음', fGroupHint: '새 주제예요. 어느 묶음에 넣을까요?', fLevel: '레벨', fTitle: '자료 제목', fType: '유형',
-      fUrl: '링크', fMin: '걸리는 시간', fDesc: '한 줄 설명', fSchool: '소속 학교', phSchool: '학교를 골라 주세요', needSchool: '소속 학교를 골라 주세요',
+      cbOpen: '목록 열기', cbNone: '고를 것이 없어요', cbNewTopic: s => `‘${s}’ 새 주제로 쓰기`, cbNewGroup: s => `‘${s}’ 새 묶음으로 쓰기`,
+      fUrl: '링크', fMin: '걸리는 시간', fDesc: '한 줄 설명', optional: '(선택)', fSchool: '소속 학교', phSchool: '학교를 골라 주세요', needSchool: '소속 학교를 골라 주세요',
       phTopic: '주제를 고르거나 새로 적어요', phTitle: '예: 가족 단어 그림 카드', phDesc: '예: 그림을 보며 따라 해요', phGroup: '예: 일상',
       paste: '붙여넣기', previewCap: '학습자에게 이렇게 보여요', submit: '올리기', required: '주제·레벨·제목·링크는 꼭 적어 주세요',
-      srcFile: 'PDF·사진', srcLink: '영상 링크', fSrc: '자료', pickFile: '파일 고르기', fileWhat: n => `PDF·사진 · ${n}MB까지`,
+      srcFile: '파일(PDF/이미지)', srcLink: '링크', fSrc: '자료', pickFile: '파일 고르기', fileWhat: n => `PDF·이미지 · ${n}MB까지`,
       fileKeep: '파일은 한글원샷 보관함(휴먼쌤 드라이브)에 저장돼요. 내 드라이브에서 지워도 자료는 남아요.',
       fileBig: n => `파일이 커요. ${n}MB까지 올릴 수 있어요. 영상은 유튜브 ‘일부 공개’ 링크로 올려 주세요.`,
-      fileBad: '이 파일 형식은 올릴 수 없어요. PDF·사진 파일만 돼요.', needFile: '올릴 파일을 골라 주세요',
+      fileBad: '이 파일 형식은 올릴 수 없어요. PDF·이미지 파일만 돼요.', needFile: '올릴 파일을 골라 주세요',
       uploading: '올리는 중…', fileReadErr: '파일을 읽지 못했어요. 다시 골라 주세요.',
-      lkAny: '유튜브 같은 영상 링크를 붙여 넣어 주세요', lkBad: 'https://로 시작하는 링크를 붙여 넣어 주세요',
+      lkAny: '웹앱/유튜브 등 링크를 붙여넣어주세요', lkBad: 'https://로 시작하는 링크를 붙여 넣어 주세요',
       lkLocal: '내 컴퓨터에서만 열리는 주소예요. 공개 주소를 넣어 주세요', lkDrive: '구글 드라이브 파일 · 공유를 ‘링크가 있는 모든 사용자’로 해 주세요',
       lkFolder: '드라이브 폴더예요 · 파일 하나의 링크가 학습자에게 더 쉬워요', lkDocs: '구글 문서·슬라이드 · 공유를 ‘링크가 있는 모든 사용자(뷰어)’로 해 주세요',
       lkForm: '구글 설문지 · 학습자가 바로 답할 수 있어요', lkCopy: '사본 만들기 링크 · 학습자에게 구글 계정이 있어야 해요', lkYoutube: '유튜브 영상',
@@ -506,15 +526,16 @@
       joinedTitle: 'Inscription réussie !', joinedCode: 'Votre code de connexion', joinedKeep: 'Notez bien ce code : il sert à vous connecter sur un autre appareil. En cas d’oubli, contactez l’association (Humanssaem).',
       copyCode: 'Copier le code', codeCopied: 'Copié', copySel: 'Texte sélectionné · appuyez longuement pour copier', start: 'Commencer', mockJoin: 'Code d’inscription de test : HANGEUL',
       fTopic: 'Thème', fGroup: 'Groupe', fGroupHint: 'Nouveau thème : dans quel groupe ?', fLevel: 'Niveau', fTitle: 'Titre', fType: 'Type',
-      fUrl: 'Lien', fMin: 'Durée', fDesc: 'Description', fSchool: 'Votre école', phSchool: 'Choisir l’école', needSchool: 'Choisissez votre école',
+      cbOpen: 'Ouvrir la liste', cbNone: 'Aucun choix', cbNewTopic: s => `Nouveau thème : « ${s} »`, cbNewGroup: s => `Nouveau groupe : « ${s} »`,
+      fUrl: 'Lien', fMin: 'Durée', fDesc: 'Description', optional: '(facultatif)', fSchool: 'Votre école', phSchool: 'Choisir l’école', needSchool: 'Choisissez votre école',
       phTopic: 'Choisir ou créer un thème', phTitle: 'ex. Cartes images de la famille', phDesc: 'ex. Répéter en regardant les images', phGroup: 'ex. 일상',
       paste: 'Coller', previewCap: 'Aperçu côté élève', submit: 'Ajouter', required: 'Thème, niveau, titre et lien sont obligatoires',
-      srcFile: 'PDF · photo', srcLink: 'Lien vidéo', fSrc: 'Ressource', pickFile: 'Choisir un fichier', fileWhat: n => `PDF ou photo · ${n} Mo max`,
+      srcFile: 'Fichier (PDF/image)', srcLink: 'Lien', fSrc: 'Ressource', pickFile: 'Choisir un fichier', fileWhat: n => `PDF ou image · ${n} Mo max`,
       fileKeep: 'Le fichier est conservé dans l’archive Hangeul Oneshot. Il reste disponible même si vous le supprimez de votre Drive.',
       fileBig: n => `Fichier trop lourd : ${n} Mo maximum. Pour une vidéo, collez un lien YouTube « non répertorié ».`,
-      fileBad: 'Format non accepté. PDF ou photo uniquement.', needFile: 'Choisissez un fichier à envoyer',
+      fileBad: 'Format non accepté. PDF ou image uniquement.', needFile: 'Choisissez un fichier à envoyer',
       uploading: 'Envoi…', fileReadErr: 'Lecture du fichier impossible. Choisissez-le à nouveau.',
-      lkAny: 'Collez le lien d’une vidéo (YouTube…)', lkBad: 'Collez un lien qui commence par https://',
+      lkAny: 'Collez un lien (web app, YouTube…)', lkBad: 'Collez un lien qui commence par https://',
       lkLocal: 'Adresse locale (votre ordinateur). Utilisez une adresse publique', lkDrive: 'Fichier Google Drive · partage « Tous les utilisateurs disposant du lien »',
       lkFolder: 'Dossier Drive · un lien vers un seul fichier est plus simple pour l’élève', lkDocs: 'Google Docs/Slides · partage « Tous les utilisateurs disposant du lien » (lecteur)',
       lkForm: 'Google Forms · l’élève peut répondre directement', lkCopy: 'Lien « créer une copie » · l’élève doit avoir un compte Google', lkYoutube: 'Vidéo YouTube',
@@ -537,7 +558,7 @@
   let joined = null;         // 방금 가입한 결과(로그인 코드를 한 번 크게 보여 주려고. 가입 화면을 떠나면 잊는다)
   let installEvt = null;     // 안드로이드 크롬이 주는 '앱 설치' 기회
   let installHide = false;   // 홈 화면 추가 안내를 닫았는지(이번에 열어 둔 동안만)
-  let upSrc = 'file';        // 올리기 화면: 'file'(파일 올리기) 또는 'link'(링크 붙여넣기)
+  let upSrc = 'link';        // 올리기 화면: 'link'(링크, 왼쪽·처음) 또는 'file'(파일 PDF/이미지, 오른쪽) — 2026-10-24 휴먼쌤
 
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -834,22 +855,21 @@
       <div class="shtop"><h1>${esc(t('upload'))}</h1><a class="xbtn" href="${back}" aria-label="${esc(t('close'))}">${ICON.x}</a></div>
       <div class="who"><span class="av">👩‍🏫</span>${esc(t('teacherName')(teacher.name))}</div>
       <div class="f"><label class="lab" for="f-school">${esc(t('fSchool'))}</label><div class="inp sel"><select id="f-school" name="school"${teacher.school ? '' : ' class="empty"'}>${schoolOptions(teacher.school)}</select>${ICON.down}</div></div>
-      <div class="f"><label class="lab" for="f-topic">${esc(t('fTopic'))}</label><div class="inp"><input id="f-topic" name="topic" list="dl-topic" placeholder="${esc(t('phTopic'))}" value="${esc(tp ? tp.name : '')}"></div>
-        <datalist id="dl-topic">${data.topics.map(x => `<option value="${esc(x.name)}">`).join('')}</datalist></div>
-      <div class="f" id="groupField" hidden><label class="lab" for="f-group">${esc(t('fGroup'))} <small>${esc(t('fGroupHint'))}</small></label><div class="inp"><input id="f-group" name="group" list="dl-group" placeholder="${esc(t('phGroup'))}"></div>
-        <datalist id="dl-group">${data.groups.map(g => `<option value="${esc(g.name)}">`).join('')}</datalist></div>
+      <div class="f cbx" data-cb="topic"><label class="lab" for="f-topic">${esc(t('fTopic'))}</label><div class="inp"><input id="f-topic" name="topic" placeholder="${esc(t('phTopic'))}" value="${esc(tp ? tp.name : '')}" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cbl-topic"><button type="button" class="tog" tabindex="-1" aria-label="${esc(t('cbOpen'))}">${ICON.down}</button></div>
+        <div class="cblist" id="cbl-topic" role="listbox" hidden></div></div>
+      <div class="f cbx" data-cb="group" id="groupField" hidden><label class="lab" for="f-group">${esc(t('fGroup'))} <small>${esc(t('fGroupHint'))}</small></label><div class="inp"><input id="f-group" name="group" placeholder="${esc(t('phGroup'))}" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cbl-group"><button type="button" class="tog" tabindex="-1" aria-label="${esc(t('cbOpen'))}">${ICON.down}</button></div>
+        <div class="cblist" id="cbl-group" role="listbox" hidden></div></div>
       <div class="f"><span class="lab">${esc(t('fLevel'))}</span><div class="seg3">${LEVEL_KEYS.map(k => `<label class="k-${k}"><input type="radio" name="level" value="${k}"${k === preLevel ? ' checked' : ''}><span>${k}<small>${esc(levelDesc(k))}</small></span></label>`).join('')}</div></div>
       <div class="f"><label class="lab" for="f-title">${esc(t('fTitle'))}</label><div class="inp"><input id="f-title" name="title" maxlength="60" placeholder="${esc(t('phTitle'))}"></div></div>
       <div class="f"><span class="lab">${esc(t('fType'))}</span><div class="tchips">${TYPES.map((x, i) => `<label><input type="radio" name="type" value="${esc(x)}"${i === 0 ? ' checked' : ''}><span>${(TYPE_ICON[x] || TYPE_ICON['기타'])[0]} ${esc(x)}</span></label>`).join('')}</div></div>
       <div class="f"><span class="lab">${esc(t('fSrc'))}</span>
-        <div class="srcseg" role="group"><button type="button" data-src="file" aria-pressed="${upSrc === 'file'}">${esc(t('srcFile'))}</button><button type="button" data-src="link" aria-pressed="${upSrc === 'link'}">${esc(t('srcLink'))}</button></div>
+        <div class="srcseg" role="group"><button type="button" data-src="link" aria-pressed="${upSrc === 'link'}">${esc(t('srcLink'))}</button><button type="button" data-src="file" aria-pressed="${upSrc === 'file'}">${esc(t('srcFile'))}</button></div>
         <div id="srcFile"${upSrc === 'file' ? '' : ' hidden'}><label class="filebox" id="fileBox"><input id="f-file" type="file" accept="${FILE_EXT.map(x => '.' + x).join(',')}" aria-label="${esc(t('pickFile'))}">
           <span class="fi">${ICON.upfile}</span><span class="fn" id="fileName">${esc(t('pickFile'))}<small>${esc(t('fileWhat')(FILE_MAX_MB))}</small></span></label>
           <p class="lhint" id="fileHint" aria-live="polite"><span class="m">i</span><span>${esc(t('fileKeep'))}</span></p></div>
         <div id="srcLink"${upSrc === 'link' ? '' : ' hidden'}><div class="inp"><input id="f-url" name="url" type="url" inputmode="url" placeholder="https://" aria-label="${esc(t('fUrl'))}"><button type="button" class="paste" data-paste>${esc(t('paste'))}</button></div>
           <p class="lhint" id="urlHint" aria-live="polite">${linkHint(linkCheck(''))}</p></div></div>
-      <div class="f"><span class="lab">${esc(t('fMin'))}</span><div class="stepper"><button type="button" data-step="-5" aria-label="-5">−</button><div class="sv"><input name="minutes" type="number" min="0" max="180" inputmode="numeric" value="10" aria-label="${esc(t('fMin'))}"><span>${esc(t('min').trim())}</span></div><button type="button" data-step="5" aria-label="+5">+</button></div></div>
-      <div class="f"><label class="lab" for="f-desc">${esc(t('fDesc'))}</label><div class="inp"><input id="f-desc" name="desc" maxlength="80" placeholder="${esc(t('phDesc'))}"></div></div>
+      <div class="f"><label class="lab" for="f-desc">${esc(t('fDesc'))} <small>${esc(t('optional'))}</small></label><div class="inp"><input id="f-desc" name="desc" maxlength="80" placeholder="${esc(t('phDesc'))}"></div></div>
       <div class="f pvf"><span class="lab">${esc(t('previewCap'))}</span><div id="upPreview"></div></div>
       <p class="err" id="upErr"></p>
       <div class="cta"><button class="btn" type="submit" id="upBtn">${esc(t('submit'))}</button></div>
@@ -936,13 +956,67 @@
       btn.disabled = false; btn.textContent = t('joinBtn');
     };
   }
+  // 고르기 목록(주제·묶음 칸): items = [{ v, label, sub, em, emTxt, bg, group }]. 적은 글자로 거르고, 딱 맞는 게 없으면 '새로 쓰기' 줄을 둔다.
+  // 고르면 칸에 v를 넣고 change를 보내 폼이 다시 맞춘다(input을 보내면 목록이 다시 열려서).
+  function bindCombo(box, items, newLabel) {
+    const inp = box.querySelector('input'), list = box.querySelector('.cblist'), tog = box.querySelector('.tog');
+    const norm = s => String(s || '').replace(/\s+/g, '').toLowerCase();
+    let shown = [], at = -1, hasNew = false;
+    const draw = () => {
+      const q = norm(inp.value), exact = items.some(x => norm(x.v) === q);
+      shown = q && !exact ? items.filter(x => norm(x.v + ' ' + x.label + ' ' + (x.sub || '')).includes(q)) : items;   // 딱 맞으면 다 보여 준다(다른 것으로 바꾸기 쉽게)
+      hasNew = !!q && !exact;
+      let html = '', g = null;
+      shown.forEach((x, i) => {
+        if (x.group && x.group !== g) { g = x.group; html += `<div class="gh">${esc(g)}</div>`; }
+        html += `<button type="button" class="cbo${i === at ? ' on' : ''}${norm(x.v) === q ? ' cur' : ''}" data-i="${i}" role="option" aria-selected="${norm(x.v) === q}">`
+          + (x.em != null ? `<span class="em${x.emTxt ? ' txt' : ''}" style="background:${x.bg || '#F6EEE4'}">${esc(x.em)}</span>` : '')
+          + `<span>${esc(x.label)}</span>${x.sub ? `<small>${esc(x.sub)}</small>` : ''}</button>`;
+      });
+      if (hasNew) html += `<button type="button" class="cbo new${at === shown.length ? ' on' : ''}" data-new="1" role="option"><span class="em">+</span><span>${esc(newLabel(inp.value.trim()))}</span></button>`;
+      list.innerHTML = html || `<div class="cbempty">${esc(t('cbNone'))}</div>`;
+    };
+    const open = () => { at = -1; draw(); list.hidden = false; box.classList.add('open'); inp.setAttribute('aria-expanded', 'true'); };
+    const close = () => { list.hidden = true; box.classList.remove('open'); inp.setAttribute('aria-expanded', 'false'); };
+    const done = () => { close(); inp.dispatchEvent(new Event('change', { bubbles: true })); };
+    inp.addEventListener('focus', open);
+    inp.addEventListener('input', () => { if (list.hidden) open(); else { at = -1; draw(); } });
+    inp.addEventListener('blur', () => setTimeout(close, 150));
+    inp.addEventListener('keydown', e => {
+      const n = shown.length + (hasNew ? 1 : 0);
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && n) {
+        e.preventDefault(); if (list.hidden) open();
+        const d = e.key === 'ArrowDown' ? 1 : -1;
+        at = at < 0 ? (d > 0 ? 0 : n - 1) : (at + d + n) % n; draw();
+        const on = list.querySelector('.cbo.on'); if (on) on.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter' && !list.hidden && at >= 0) {
+        e.preventDefault(); if (at < shown.length) inp.value = shown[at].v; done();
+      } else if (e.key === 'Escape') close();
+    });
+    // 목록을 눌러도 칸이 포커스를 잃지 않게(그래야 누르기 전에 목록이 닫히지 않는다). 손가락으로 끌어 내리는 것은 그대로 된다.
+    list.addEventListener('pointerdown', e => e.preventDefault());
+    list.addEventListener('click', e => {
+      const b = e.target.closest('.cbo'); if (!b) return;
+      if (!b.dataset.new) inp.value = shown[+b.dataset.i].v;
+      done();
+    });
+    tog.addEventListener('pointerdown', e => e.preventDefault());
+    tog.addEventListener('click', () => { if (list.hidden) { inp.focus(); open(); } else close(); });
+  }
+  function topicItems() {
+    return data.groups.flatMap(g => g.topics.map(tp => { const L = topicLabel(tp), ic = topicIcon(tp); return { v: tp.name, label: L.big, sub: L.small, em: ic.v, emTxt: ic.txt, bg: tp.color, group: g.name }; }));
+  }
+
   function bindUpload() {
     const f = $('#upForm'); if (!f) return;
     const el = n => f.elements[n];
+    f.querySelectorAll('.cbx').forEach(box => box.dataset.cb === 'topic'
+      ? bindCombo(box, topicItems(), s => t('cbNewTopic')(s))
+      : bindCombo(box, data.groups.map(g => ({ v: g.name, label: g.name, sub: t('nTopics')(g.topics.length) })), s => t('cbNewGroup')(s)));
     const topicNames = data.topics.map(x => x.name);
     const syncGroup = () => { const v = el('topic').value.trim(); $('#groupField').hidden = !v || topicNames.includes(v); };
     const pv = () => {
-      const m = normMaterial({ title: el('title').value || t('phTitle'), type: el('type').value, minutes: el('minutes').value, school: el('school').value,
+      const m = normMaterial({ title: el('title').value || t('phTitle'), type: el('type').value, minutes: 0, school: el('school').value,
         desc: el('desc').value, url: '#', topic: 'x', level: el('level').value || LEVEL_KEYS[0] }, 0);
       $('#upPreview').innerHTML = `<div class="item">${matInner(m)}${goBtn(m)}</div>`;
     };
@@ -966,14 +1040,13 @@
     });
     const readB64 = fl => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1] || ''); r.onerror = () => no(r.error); r.readAsDataURL(fl); });
     f.addEventListener('input', sync); f.addEventListener('change', sync); sync();
-    f.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { const i = el('minutes'); i.value = Math.max(0, Math.min(180, (Number(i.value) || 0) + Number(b.dataset.step))); pv(); });
     const ps = f.querySelector('[data-paste]');
     if (ps) ps.onclick = async () => { try { const s = (await navigator.clipboard.readText()).trim(); if (s) { el('url').value = s; sync(); } else el('url').focus(); } catch (ex) { el('url').focus(); } };
     f.onsubmit = async e => {
       e.preventDefault(); const err = $('#upErr'); err.textContent = '';
       const topic = el('topic').value.trim(); const known = data.topics.find(x => x.name === topic);
       const material = { group: known ? known.group : (el('group').value.trim() || '기타'), topic, level: el('level').value || '', title: el('title').value.trim(),
-        type: el('type').value, url: upSrc === 'link' ? el('url').value.trim() : '', desc: el('desc').value.trim(), minutes: Number(el('minutes').value) || 0, school: el('school').value.trim() };
+        type: el('type').value, url: upSrc === 'link' ? el('url').value.trim() : '', desc: el('desc').value.trim(), minutes: 0, school: el('school').value.trim() };
       const fail = msg => { err.textContent = msg; toast(msg); };
       if (SCHOOLS.length && !material.school) { el('school').focus(); return fail(t('needSchool')); }
       const fl = upSrc === 'file' ? $('#f-file').files[0] : null;
