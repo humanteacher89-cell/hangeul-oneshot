@@ -316,6 +316,7 @@
   .fo.on { background: var(--ink); color: #fff; }
   .fo.k-하.on { background: var(--g); } .fo.k-중.on { background: var(--bl); } .fo.k-상.on { background: var(--pu); }
   .fo.srt.on { background: var(--bl); }
+  .fo.zero:not(.on) { opacity: .6; }   /* 담은 자료가 없는 레벨 */
   .rhead { display: flex; justify-content: space-between; align-items: center; margin: 14px 2px 10px; }
   .rhead b { font-size: 17px; font-weight: 900; }
   .rhead button { border: 0; background: none; padding: 4px 2px; font-size: 13.5px; font-weight: 800; color: var(--coral-d); }
@@ -917,7 +918,7 @@
     }
     return list;
   }
-  // 필터 칩에 쓸 값: 담은 자료에 실제로 있는 것만. 소주제는 고른 대주제가 있으면 그 안에서.
+  // 필터 칩에 쓸 값: 담은 자료에 실제로 있는 것만(레벨은 늘 하·중·상, 휴먼쌤 10-25 "레벨은 상  은 없어,"). 소주제는 고른 대주제가 있으면 그 안에서.
   function favChoices(all) {
     const uniq = a => [...new Set(a)];
     const topicOrder = data.topics.map(x => x.name), groupOrder = data.groups.map(g => g.name);
@@ -926,7 +927,7 @@
     return {
       group: byOrder(uniq(all.map(groupOf)), groupOrder),
       topic: byOrder(uniq(all.filter(inG).map(m => m.topic)), topicOrder),
-      level: LEVEL_KEYS.filter(k => all.some(m => m.level === k)),
+      level: LEVEL_KEYS.slice(),
       type: byOrder(uniq(all.map(m => m.type)), TYPES)
     };
   }
@@ -952,7 +953,7 @@
     // 줄마다 하나만 고르고, 고른 칩을 다시 누르거나 '전체'를 누르면 풀린다. 고를 것이 하나뿐인 줄은 감춘다.
     const fo = (k, v, lab, on, cls) => `<button type="button" class="fo${cls || ''}${on ? ' on' : ''}" data-fk="${k}" data-fv="${esc(v)}" aria-pressed="${on}">${esc(lab)}</button>`;
     const row = k => (ch[k].length > 1 || favF[k].length) ? `<div class="frow"><span class="fl">${esc(favLab(k))}</span><div class="fopts">${fo(k, '', t('all'), !favF[k].length)}`
-      + ch[k].map(v => fo(k, v, v, favF[k].includes(v), k === 'level' ? ' k-' + v : '')).join('') + `</div></div>` : '';
+      + ch[k].map(v => fo(k, v, v, favF[k].includes(v), k === 'level' ? ' k-' + v + (all.some(m => m.level === v) ? '' : ' zero') : '')).join('') + `</div></div>` : '';
     const srt = ['added', 'title', 'topic'].map(s => `<button type="button" class="fo srt${favSort === s ? ' on' : ''}" data-fsort="${s}" aria-pressed="${favSort === s}">${esc(t({ added: 'sortAdded', title: 'sortTitle', topic: 'sortTopic' }[s]))}</button>`).join('');
     const tools = all.length ? `<div class="fpanel">${FAV_KEYS.map(row).join('')}${all.length > 1 ? `<div class="frow"><span class="fl">${esc(t('sortK'))}</span><div class="fopts">${srt}</div></div>` : ''}</div>`
         + `<div class="rhead"><b id="favFound">${esc(t('favFound')(shown.length))}</b>${nF ? `<button type="button" data-freset>${esc(t('reset'))}</button>` : ''}</div>` : '';
