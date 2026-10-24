@@ -10,8 +10,10 @@
  *  4. 교사는 페이지에서 직접 가입한다(2026-10-24): '설정' 탭 join_code(가입 코드, setup이 처음 한 번 만든다)를 아는 사람만
  *     이름·학교를 넣고 가입 → 이 스크립트가 로그인 코드 8자리를 만들어 '교사' 탭에 한 줄 적고 화면에 보여 준다.
  *     가입 코드가 새면 join_code 값만 바꾸고, 가입을 닫으려면 값을 비운다. 휴먼쌤이 '교사' 탭에 직접 적어도 된다(비활성은 활성 칸에 N).
- *     학교 칸은 올리기 화면에서 처음 골라져 있을 학교일 뿐이다(교사가 올릴 때 config.js SCHOOLS 17곳 중에서 고른다).
+ *     학교 칸은 올리기 화면에서 처음 골라져 있을 학교일 뿐이다(교사가 올릴 때 config.js SCHOOLS 16곳 중에서 고른다).
  *  5. 견본 자료가 남아 있으면 함수 cleanSamples 를 한 번 실행한다('자료' 탭 올린이 '견본' 줄과 '견본' 안내를 지움).
+ *  6. 대량 올리기(2026-10-24): 함수 importAll 을 실행하면 드라이브 '한글원샷 올리기\<주제>\<하·중·상>\'의 PDF·사진과
+ *     시트 '올리기' 탭의 링크 줄을 한꺼번에 '자료' 탭에 올린다(처음 실행하면 폴더와 탭을 만든다). 자세히는 importAll 위 주석.
  *
  * 하는 일: GET ?action=data → 자료·주제·설정 JSON(공개 N 제외, join_code는 빼고). POST {action:'join', joinCode, name, school, agree} → 가입.
  * POST {action:'login'|'upload'|'hide', code, ...} → 교사 코드 확인 뒤 처리. 틀린 코드·가입 코드가 10분에 30번 넘으면 10분 막는다.
@@ -25,7 +27,8 @@ var SHEETS = {
   자료: ['id', '묶음', '주제', '레벨', '제목', '유형', '링크', '설명', '시간', '학교', '올린이', '올린날짜', '공개'],
   주제: ['주제', '프랑스어', '묶음', '순서', '아이콘'],
   교사: ['이름', '학교', '코드', '활성', '가입일'],
-  설정: ['키', '값']
+  설정: ['키', '값'],
+  올리기: ['주제', '레벨', '제목', '링크', '유형', '설명', '확인']
 };
 // '주제' 탭의 아이콘 칸: 이모지 하나(예: 👨‍👩‍👧) 또는 글자. 비우면 페이지가 주제 이름으로 고른다.
 // 파일 올리기 한도·형식(index.html의 FILE_MAX_MB·FILE_EXT와 같게). 폴더 이름은 처음 만들 때만 쓰고, 그 뒤로는 폴더 id로 찾는다(이름을 바꿔도 됨).
@@ -191,4 +194,92 @@ function doPost(e) {
     }
     return json({ ok: false, error: 'unknown' });
   } finally { lock.releaseLock(); }
+}
+
+// 대량 올리기(휴먼쌤 2026-10-24 "우선은 내가 당장 한번에 올리고 싶어서 2번이 좋을거 같아" · "링크 형식은 드라이브에 안 들어가잖아").
+// 편집기에서 importAll 을 실행하면(올린이·학교 = '교사' 탭 첫 줄):
+//  1) 파일: 내 드라이브 '한글원샷 올리기' → <주제> 폴더 → 하·중·상 폴더 안의 PDF·사진을 자료로 올리고 '한글원샷 자료' 폴더로 옮긴다.
+//     제목 = 파일 이름, 유형 = PDF '활동지'·사진 '기타'. 처음 실행하면 '주제' 탭 주제마다 폴더와 하·중·상 폴더를 만든다.
+//     새 주제는 같은 자리에 폴더를 직접 만들면 된다(묶음은 '주제' 탭에 있으면 그 묶음, 없으면 '기타').
+//  2) 링크: 시트 '올리기' 탭 한 줄(주제·레벨·제목·링크, 유형·설명은 골라서)을 자료로 옮기고 그 줄을 지운다.
+//     유형을 비우면 유튜브·비메오는 '영상', 그 밖은 '기타'. 틀린 줄은 남기고 '확인' 칸에 까닭을 적는다.
+//  5분이 넘으면 멈춘다. 다시 실행하면 남은 것부터 한다(올린 파일은 옮기고 올린 줄은 지우니 겹치지 않는다).
+var IMPORT_FOLDER_NAME = '한글원샷 올리기', LEVELS = ['하', '중', '상'], IMPORT_LIMIT_MS = 300000;
+
+function importAll() {
+  var t0 = Date.now(), seq = 0, more = false, nf = 0, nl = 0, skipped = [];
+  var late = function () { if (!more && Date.now() - t0 > IMPORT_LIMIT_MS) more = true; return more; };
+  var groups = {}; rows('주제', KEYS.주제).forEach(function (t) { groups[String(t.topic).trim()] = String(t.group).trim(); });
+  var me = rows('교사', ['name', 'school'])[0] || { name: '휴먼쌤', school: '' };
+  var by = String(me.name).trim(), school = String(me.school).trim(), day = Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd');
+  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('자료');
+  var add = function (topic, level, title, type, url, desc) {
+    var lock = LockService.getScriptLock(); lock.waitLock(10000);
+    try { sh.appendRow(['m' + (t0 + seq++).toString(36), groups[topic] || '기타', topic, level, String(title).slice(0, 60), type, url, String(desc || '').slice(0, 80), '', school, by, day, '']); }
+    finally { lock.releaseLock(); }
+  };
+  // 이름순으로 늘어놓되, order가 있으면 그 순서가 먼저(주제는 '주제' 탭 순서, 레벨은 하·중·상)
+  var list = function (it, order) {
+    var a = []; while (it.hasNext()) a.push(it.next());
+    var rank = function (x) { var i = order ? order.indexOf(x.getName().trim()) : -1; return i < 0 ? 1e9 : i; };
+    return a.sort(function (x, y) { return rank(x) - rank(y) || (x.getName() < y.getName() ? -1 : x.getName() > y.getName() ? 1 : 0); });
+  };
+
+  // 1) 파일
+  var inbox = importFolder(Object.keys(groups)), store = folder();
+  list(inbox.getFiles()).forEach(function (f) { skipped.push(f.getName() + ' (주제 → 하·중·상 폴더 안에)'); });
+  list(inbox.getFolders(), Object.keys(groups)).forEach(function (tf) {
+    var topic = tf.getName().trim();
+    list(tf.getFiles()).forEach(function (f) { skipped.push(topic + '/' + f.getName() + ' (하·중·상 폴더 안에)'); });
+    list(tf.getFolders(), LEVELS).forEach(function (lf) {
+      var level = lf.getName().trim();
+      if (LEVELS.indexOf(level) < 0) { skipped.push(topic + '/' + level + ' (레벨 폴더 이름은 하·중·상)'); return; }
+      list(lf.getFiles()).forEach(function (f) {
+        if (late()) return;
+        var raw = f.getName(), ext = (raw.match(/\.([a-z0-9]+)$/i) || ['', ''])[1].toLowerCase();
+        if (FILE_EXT.indexOf(ext) < 0) { skipped.push(topic + '/' + level + '/' + raw + ' (PDF·사진만)'); return; }
+        var title = raw.slice(0, raw.length - ext.length - 1).trim();
+        f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        add(topic, level, title, ext === 'pdf' ? '활동지' : '기타', f.getUrl(), '');
+        f.setName(day + ' ' + raw); f.setDescription([topic, level, title, school, by].join(' · ')); f.moveTo(store);
+        nf++;
+      });
+    });
+  });
+
+  // 2) 링크: 올린 줄은 빼고 남은 줄(틀린 줄·못 한 줄)만 다시 적는다(행 삭제는 마지막 줄에서 막힐 수 있어 쓰지 않음)
+  var ish = importSheet(), n = Math.max(ish.getLastRow() - 1, 0), v = n ? ish.getRange(2, 1, n, 7).getValues() : [], keep = [];
+  v.forEach(function (r, i) {
+    var topic = String(r[0]).trim(), level = String(r[1]).trim(), title = String(r[2]).trim(), url = String(r[3]).trim();
+    if (!topic && !level && !title && !url) return;
+    if (late()) { keep.push(r); return; }
+    var why = !topic ? '주제를 넣어 주세요' : LEVELS.indexOf(level) < 0 ? '레벨은 하·중·상' : !title ? '제목을 넣어 주세요' : !/^https?:\/\//i.test(url) ? '링크는 https://로 시작' : '';
+    if (why) { r[6] = why; keep.push(r); skipped.push('올리기 ' + (i + 2) + '행 (' + why + ')'); return; }
+    var type = String(r[4]).trim() || (/^https?:\/\/(www\.|m\.)?(youtube\.com|youtu\.be|vimeo\.com)\//i.test(url) ? '영상' : '기타');
+    add(topic, level, title, type, url, r[5]);
+    nl++;
+  });
+  if (n) { ish.getRange(2, 1, n, 7).clearContent(); if (keep.length) ish.getRange(2, 1, keep.length, 7).setValues(keep); }
+
+  var msg = '파일 ' + nf + '개·링크 ' + nl + '개를 자료로 올렸어요.' + (more ? ' 5분이 넘어 멈췄어요. 한 번 더 실행하면 이어서 해요.' : '') +
+    (skipped.length ? ' 건너뜀 ' + skipped.length + '개: ' + skipped.join(', ') : '');
+  Logger.log(msg);
+  return msg;
+}
+
+// 대량 올리기 폴더. 없으면 만들고(id는 스크립트 속성), '주제' 탭 주제마다 하·중·상 폴더를 채워 둔다(있는 폴더는 그대로).
+function importFolder(topics) {
+  var props = PropertiesService.getScriptProperties(), id = props.getProperty('IMPORT_FOLDER_ID'), f = null;
+  if (id) { try { f = DriveApp.getFolderById(id); if (f.isTrashed()) f = null; } catch (ex) { f = null; } }
+  if (!f) { f = DriveApp.createFolder(IMPORT_FOLDER_NAME); props.setProperty('IMPORT_FOLDER_ID', f.getId()); }
+  var sub = function (p, name) { var it = p.getFoldersByName(name); return it.hasNext() ? it.next() : p.createFolder(name); };
+  (topics || []).forEach(function (t) { var tf = sub(f, t); LEVELS.forEach(function (l) { sub(tf, l); }); });
+  return f;
+}
+
+function importSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('올리기');
+  if (!sh) sh = ss.insertSheet('올리기');
+  if (sh.getLastRow() === 0) { sh.appendRow(SHEETS.올리기); sh.setFrozenRows(1); }
+  return sh;
 }
