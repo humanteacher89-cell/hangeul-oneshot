@@ -21,7 +21,8 @@ window.ONESHOT_CONFIG = {
   TYPES: ["앱", "활동지", "영상", "퀴즈", "기타"],
 
   // 소속 학교(가입·자료 올리기에서 고른다). 처음엔 XR개발부 '프랑스 한글학교 로비'의 17곳(휴먼쌤 2026-10-06 결정)이었고,
-  // 2026-10-24 휴먼쌤 "아직 리옹 학교가 남아있어 빼야돼"로 리옹 에콜리움을 빼 16곳(교사연수 학교 목록과 같음).
+  // 2026-10-24 휴먼쌤 "아직 리옹 학교가 남아있어 빼야돼"로 리옹 에콜리움을 빼 16곳이었다가,
+  // 2026-10-25 휴먼쌤 "학교 중에서 에콜리움 한글학교 -> 이게 빠졌어."로 '에콜리움 한글학교'(리옹 2구, Lium École coréenne)를 다시 넣어 17곳.
   // 시트 '자료' 탭 '학교' 칸에는 ko 이름이 그대로 적힌다. 학교를 더하거나 빼려면 이 목록만 고친다. 화면에서는 이름순으로 보인다.
   SCHOOLS: [
     { ko: "파리 한글학교", fr: "École coréenne de Paris", city: "파리", cityFr: "Paris" },
@@ -39,6 +40,7 @@ window.ONESHOT_CONFIG = {
     { ko: "투르 한글학교", fr: "École coréenne de Tours", city: "투르", cityFr: "Tours" },
     { ko: "브레스트 한글학교", fr: "École coréenne de Brest", city: "브레스트", cityFr: "Brest" },
     { ko: "마르세유 한글학교", fr: "École coréenne de Marseille", city: "마르세유", cityFr: "Marseille" },
-    { ko: "르망 한글학교", fr: "Le Mans École coréenne", city: "르망", cityFr: "Le Mans" }
+    { ko: "르망 한글학교", fr: "Le Mans École coréenne", city: "르망", cityFr: "Le Mans" },
+    { ko: "에콜리움 한글학교", fr: "Lium École coréenne", city: "리옹", cityFr: "Lyon" }
   ]
 };
