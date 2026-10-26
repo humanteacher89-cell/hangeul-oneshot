@@ -242,6 +242,11 @@
   .qrbtn svg { width: 20px; height: 20px; }
   @media screen { .mqr .qrcard .qr img, .mqr .qrcard .qr canvas { width: min(270px, 70vw) !important; height: min(270px, 70vw) !important; } }
   .mqr .openlink { display: block; margin-top: 14px; text-align: center; font-size: 14px; font-weight: 800; color: var(--sub); text-decoration: underline; }
+  .mgh { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; margin: 18px 4px 8px; }
+  .mgh b { font-size: 16px; font-weight: 900; }
+  .mgh span { font-size: 12.5px; font-weight: 700; color: var(--sub); }
+  .mchips { margin-top: 4px; }
+  .mchips .chip small { margin-left: 2px; font-size: 12px; opacity: .7; }
   .hidebtn { flex: none; border: 2px solid #F6CFC4; background: #FFF5F2; color: #D93A1E; border-radius: 999px; padding: 7px 11px; font-size: 12.5px; font-weight: 900; }
 
   /* 자료 올리기(아래에서 올라온 창 모양) */
@@ -538,8 +543,9 @@
       loginWhy: '로그인하면 자료를 올리고, 내가 올린 자료를 숨길 수 있어요.',
       mockCodes: '시험용 코드: 1234 (김선생·파리), 5678 (이선생·보르도)', badCode: '코드가 맞지 않아요', netErr: '연결이 안 돼요. 잠시 뒤 다시 해 보세요.',
       loadErr: '자료를 불러오지 못했어요.', retry: '다시 시도',
-      logout: '로그아웃', upload: '자료 올리기', myMats: '내가 올린 자료', noMine: '아직 올린 자료가 없어요', hide: '숨기기', hidden: '숨겼어요', uploaded: '올렸어요!',
-      notOwner: '내가 올린 자료만 숨길 수 있어요',
+      logout: '로그아웃', upload: '자료 올리기', myMats: '내가 올린 자료', noMine: '아직 올린 자료가 없어요', uploaded: '올렸어요!',
+      del: '삭제', deleted: '삭제했어요', delAsk: s => `‘${s}’ 자료를 삭제할까요?\n삭제하면 자료실과 즐겨찾기에서도 사라져요.`, lvDate: (lv, d) => `레벨 ${lv}${d ? ' · ' + d : ''}`,
+      notOwner: '내가 올린 자료만 삭제할 수 있어요',
       // 가입(#/join)
       joinAsk: '처음이세요?', joinLink: '가입하기', joinTitle: '선생님 가입', joinHint: '협의회에서 받은 가입 코드로 바로 가입해요.',
       fName: '이름', phName: '예: 김수현', nameHint: '자료에 올린이로 보여요. 같은 이름이 있으면 뒤에 도시를 붙여요(예: 김지영 보르도).',
@@ -567,7 +573,7 @@
       lkFolder: '드라이브 폴더예요 · 파일 하나의 링크가 학습자에게 더 쉬워요', lkDocs: '구글 문서·슬라이드 · 공유를 ‘링크가 있는 모든 사용자(뷰어)’로 해 주세요',
       lkForm: '구글 설문지 · 학습자가 바로 답할 수 있어요', lkCopy: '사본 만들기 링크 · 학습자에게 구글 계정이 있어야 해요', lkYoutube: '유튜브 영상',
       lkSite: '웹사이트 · 직접 만든 사이트도 공개 주소면 돼요', lkHttp: 'http 주소는 휴대폰에서 막힐 수 있어요 · https 주소를 권해요',
-      mineTip: '고치려면 숨기고 다시 올려 주세요', total: n => `자료 ${n}개`, updated: '갱신', loading: '불러오는 중…',
+      mineTip: '고치려면 삭제하고 다시 올려 주세요', total: n => `자료 ${n}개`, updated: '갱신', loading: '불러오는 중…',
       installTitle: '홈 화면에 추가하기', installSub: '주소창 없이 앱처럼 바로 열려요', installBtn: '추가',
       installIos: s => `공유 버튼 ${s} 누르고 → ‘홈 화면에 추가’`,
       mockNote: '견본 자료로 보는 중 · 올린 자료는 이 기기에만 남아요',
@@ -593,8 +599,9 @@
       loginWhy: 'Connecté, vous pouvez ajouter des ressources et masquer les vôtres.',
       mockCodes: 'Codes de test : 1234 (Paris), 5678 (Bordeaux)', badCode: 'Code incorrect', netErr: 'Connexion impossible. Réessayez plus tard.',
       loadErr: 'Impossible de charger les ressources.', retry: 'Réessayer',
-      logout: 'Déconnexion', upload: 'Ajouter une ressource', myMats: 'Mes ressources', noMine: 'Aucune ressource ajoutée', hide: 'Masquer', hidden: 'Masqué', uploaded: 'Ajouté !',
-      notOwner: 'Vous ne pouvez masquer que vos ressources',
+      logout: 'Déconnexion', upload: 'Ajouter une ressource', myMats: 'Mes ressources', noMine: 'Aucune ressource ajoutée', uploaded: 'Ajouté !',
+      del: 'Supprimer', deleted: 'Supprimé', delAsk: s => `Supprimer « ${s} » ?\nElle disparaîtra aussi de la bibliothèque et des favoris.`, lvDate: (lv, d) => `Niveau ${lv}${d ? ' · ' + d : ''}`,
+      notOwner: 'Vous ne pouvez supprimer que vos ressources',
       joinAsk: 'Première fois ?', joinLink: 'Créer un compte', joinTitle: 'Inscription enseignant', joinHint: 'Avec le code d’inscription reçu de l’association, l’inscription est immédiate.',
       fName: 'Nom', phName: 'ex. Kim Suhyeon', nameHint: 'Affiché comme auteur des ressources. Si ce nom existe déjà, ajoutez la ville (ex. Kim Jiyoung Bordeaux).',
       fJoin: 'Code d’inscription', phJoin: 'Code reçu de l’association',
@@ -621,7 +628,7 @@
       lkFolder: 'Dossier Drive · un lien vers un seul fichier est plus simple pour l’élève', lkDocs: 'Google Docs/Slides · partage « Tous les utilisateurs disposant du lien » (lecteur)',
       lkForm: 'Google Forms · l’élève peut répondre directement', lkCopy: 'Lien « créer une copie » · l’élève doit avoir un compte Google', lkYoutube: 'Vidéo YouTube',
       lkSite: 'Site web · votre propre site fonctionne s’il est public', lkHttp: 'Les liens http peuvent être bloqués sur mobile · préférez https',
-      mineTip: 'Pour modifier : masquez puis ajoutez à nouveau', total: n => `${n} ressources`, updated: 'mis à jour', loading: 'Chargement…',
+      mineTip: 'Pour modifier : supprimez puis ajoutez à nouveau', total: n => `${n} ressources`, updated: 'mis à jour', loading: 'Chargement…',
       installTitle: 'Ajouter à l’écran d’accueil', installSub: 'S’ouvre comme une appli, sans barre d’adresse', installBtn: 'Ajouter',
       installIos: s => `Touchez Partager ${s} puis « Sur l’écran d’accueil »`,
       mockNote: 'Données d’exemple · vos ajouts restent sur cet appareil',
@@ -732,9 +739,11 @@
       if (b.file) m.url = 'https://example.org/oneshot-file/' + encodeURIComponent(b.file.name);   // 시험 모드: 드라이브 대신 견본 주소
       s.uploads.push(m); mockSave(s); return Promise.resolve({ ok: true, id: m.id });
     }
-    if (b.action === 'hide') {
+    if (b.action === 'hide' || b.action === 'delete') {
       const all = [...SAMPLE.materials, ...s.uploads]; const m = all.find(x => String(x.id) === String(b.id));
-      if (m && m.by && m.by !== tc.name) return Promise.resolve({ ok: false, error: 'not_owner' });
+      if (!m || s.hidden.includes(String(b.id))) return Promise.resolve({ ok: false, error: 'not_found' });
+      if (m.by && m.by !== tc.name) return Promise.resolve({ ok: false, error: 'not_owner' });
+      if (b.action === 'delete') s.uploads = s.uploads.filter(x => String(x.id) !== String(b.id));
       s.hidden.push(String(b.id)); mockSave(s); return Promise.resolve({ ok: true });
     }
     return Promise.resolve({ ok: false, error: 'unknown' });
@@ -769,9 +778,11 @@
     const [emo, bg] = TYPE_ICON[m.type] || TYPE_ICON['기타'];
     // 학교 뒤에 올린 선생님 이름(휴먼쌤 2026-10-26 "카드에 이름이 보이도록"). 학교 칸이 '휴먼쌤'인 휴먼쌤 자료는 이름을 붙이지 않는다.
     // 유형은 그림 아래로, 학교 이름 끝의 '한글학교'는 뺀다(휴먼쌤 2026-10-26 "몽펠리에 한글학교 처럼 뒷부분의 '한글학교'는 생략해줘").
+    // withTopic: true = 소주제 · 레벨(찾기·즐겨찾기), 'mine' = 레벨 · 올린 날짜(내 자료는 소주제별로 묶여 있어서)
     const by = withTopic || m.school === '휴먼쌤' ? '' : m.by;
     const school = withTopic ? '' : m.school.replace(/\s*한글학교$/, '');
-    const meta = [withTopic ? `${m.topic} · ${m.level}` : '', m.minutes ? m.minutes + t('min') : '', school, by].filter(Boolean).join(' · ');
+    const meta = withTopic === 'mine' ? t('lvDate')(m.level, m.date)
+      : [withTopic ? `${m.topic} · ${m.level}` : '', m.minutes ? m.minutes + t('min') : '', school, by].filter(Boolean).join(' · ');
     return `<span class="tic"><span class="ti" style="background:${bg}">${emo}</span>${m.type ? `<span class="ty">${esc(m.type)}</span>` : ''}</span>`
       + `<span class="tx"><span class="tt">${esc(m.title)}</span>${meta ? `<span class="meta">${esc(meta)}</span>` : ''}${m.desc ? `<span class="ds">${esc(m.desc)}</span>` : ''}</span>`;
   }
@@ -1027,12 +1038,26 @@
       <p class="err" id="joinErr"></p><button class="btn" type="submit" id="joinBtn">${esc(t('joinBtn'))}</button>
       ${MOCK ? `<p class="mockcodes">${esc(t('mockJoin'))}</p>` : ''}</form></div>`;
   }
+  // 내 자료: 대주제 칩으로 고르고, 소주제마다 머리를 달아 묶는다(휴먼쌤 2026-10-26 "내가 올린 자료도 많아지면 ... 쭈르륵 아래쪽으로 길게 뻗치는데 ... 분류")
+  let mineGroup = '';
   function viewMine() {
     if (!teacher) return viewLogin(true);
     const mine = data.materials.filter(m => m.by === teacher.name);
-    const items = mine.length
-      ? mine.map(m => `<div class="item mine"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m, true)}</a><button type="button" class="hidebtn" data-hide="${esc(m.id)}">${esc(t('hide'))}</button></div>`).join('')
-      : `<div class="emptycard"><div class="e">📭</div>${esc(t('noMine'))}</div>`;
+    const tpOf = new Map(data.topics.map(tp => [tp.name, tp]));
+    const gOf = m => (tpOf.get(m.topic) || {}).group || m.group || '기타';
+    const groups = data.groups.map(g => ({ name: g.name, n: mine.filter(m => gOf(m) === g.name).length })).filter(g => g.n);
+    if (!groups.some(g => g.name === mineGroup)) mineGroup = '';
+    const chips = groups.length > 1 ? `<div class="chips mchips">${[{ name: '', n: mine.length }].concat(groups).map(g =>
+      `<button type="button" class="chip${g.name === mineGroup ? ' on' : ''}" data-mg="${esc(g.name)}">${esc(g.name || t('all'))} <small>${g.n}</small></button>`).join('')}</div>` : '';
+    const lvI = l => { const i = LEVEL_KEYS.indexOf(l); return i < 0 ? 9 : i; };
+    const secs = data.topics.map(tp => {
+      const list = mine.filter(m => m.topic === tp.name && (!mineGroup || gOf(m) === mineGroup))
+        .sort((a, b) => lvI(a.level) - lvI(b.level) || String(b.date).localeCompare(String(a.date)));
+      if (!list.length) return '';
+      return `<div class="mgh"><b>${esc(topicLabel(tp).big)}</b><span>${esc(tp.group)} · ${esc(t('nItems')(list.length))}</span></div>`
+        + list.map(m => `<div class="item mine"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m, 'mine')}</a><button type="button" class="hidebtn" data-del="${esc(m.id)}">${esc(t('del'))}</button></div>`).join('');
+    }).join('');
+    const items = mine.length ? chips + secs : `<div class="emptycard"><div class="e">📭</div>${esc(t('noMine'))}</div>`;
     return barSub(t('tabTeacher'), '', langToggle(true)) + `<div class="pad"><div class="minewrap">
       <div class="me"><span class="av">👩‍🏫</span><div class="nm"><b>${esc(t('teacherName')(teacher.name))}</b><span>${esc(teacher.school)}</span></div><button type="button" class="ghostbtn" data-logout>${esc(t('logout'))}</button></div>
       <a class="btn" href="#/upload">${ICON.plus}<span>${esc(t('upload'))}</span></a>
@@ -1272,11 +1297,15 @@
       btn.disabled = false; btn.textContent = t('submit');
     };
   }
-  async function hideMat(b) {
+  // 내 자료 삭제(휴먼쌤 2026-10-26 "로그인 후 내가 올린 자료를 '삭제'할 수 있는 기능도 넣어줘"). 한 번 묻고 지운다(이미 지워졌으면 목록만 새로).
+  async function delMat(b) {
+    const m = data.materials.find(x => String(x.id) === b.dataset.del);
+    if (!confirm(t('delAsk')(m ? m.title : ''))) return;
     b.disabled = true;
     try {
-      const r = await api.post({ action: 'hide', code: teacher.code, id: b.dataset.hide });
-      if (r.ok) { await reload(); toast(t('hidden')); render(true); }
+      const r = await api.post({ action: 'delete', code: teacher.code, id: b.dataset.del });
+      if (r.ok || r.error === 'not_found') { await reload(); toast(t('deleted')); render(true); }
+      else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); location.hash = '#/login'; }
       else toast(r.error === 'not_owner' ? t('notOwner') : t('netErr'));
     } catch (ex) { toast(t('netErr')); }
     b.disabled = false;
@@ -1291,7 +1320,8 @@
     if (e.target.closest('[data-install]')) { const ev = installEvt; if (ev) { ev.prompt(); Promise.resolve(ev.userChoice).catch(() => {}).then(() => { installEvt = null; render(true); }); } return; }
     if (e.target.closest('[data-install-x]')) { installHide = true; render(true); return; }
     if (e.target.closest('[data-logout]')) { teacher = null; saveTeacher(null); toast(t('logout')); if (location.hash === '#/') render(); else location.hash = '#/'; return; }
-    const H = e.target.closest('[data-hide]'); if (H) { e.preventDefault(); hideMat(H); return; }
+    const D = e.target.closest('[data-del]'); if (D) { e.preventDefault(); delMat(D); return; }
+    const MG = e.target.closest('[data-mg]'); if (MG) { mineGroup = MG.dataset.mg; render(true); return; }
     // 즐겨찾기: ☆ 담기·빼기, 필터(줄마다 하나, 다시 누르거나 '전체'면 풀림)·정렬 고르기, 초기화 / 자료실 찾는 글자 지우기 / 로그인 안내 → 로그인 뒤 즐겨찾기로
     const FV = e.target.closest('[data-fav]'); if (FV) { e.preventDefault(); toggleFav(FV); return; }
     const FK = e.target.closest('[data-fk]'); if (FK) {

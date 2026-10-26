@@ -16,10 +16,11 @@
  *     시트 '올리기' 탭의 링크 줄을 한꺼번에 '자료' 탭에 올린다(처음 실행하면 폴더와 탭을 만든다). 자세히는 importAll 위 주석.
  *
  * 하는 일: GET ?action=data → 자료·주제·설정 JSON(공개 N 제외, join_code는 빼고). POST {action:'join', joinCode, name, school, agree} → 가입.
- * POST {action:'login'|'upload'|'hide'|'fav', code, ...} → 교사 코드 확인 뒤 처리(login은 즐겨찾기 목록도, fav {id, on}은 담기·빼기). 틀린 코드·가입 코드가 10분에 30번 넘으면 10분 막는다.
+ * POST {action:'login'|'upload'|'delete'|'hide'|'fav', code, ...} → 교사 코드 확인 뒤 처리(login은 즐겨찾기 목록도, fav {id, on}은 담기·빼기). 틀린 코드·가입 코드가 10분에 30번 넘으면 10분 막는다.
+ * 삭제(2026-10-26)는 자기가 올린 줄을 '지운 자료' 탭으로 옮기고 '자료' 탭에서 지운다. 올리기로 저장한 파일은 휴지통으로.
  * 파일 올리기(2026-10-18): upload에 file {name, type, data(base64)}가 오면 '한글원샷 자료' 폴더에 저장하고 '링크가 있는 모든 사용자 보기'로 연 뒤
  * 그 링크를 '자료' 탭 링크 칸에 적는다. 파일 주인은 휴먼쌤(이 스크립트 실행 사용자)이라 교사가 자기 드라이브에서 지워도 남는다.
- * 숨기기는 줄의 공개 칸만 N으로 바꾸고 파일은 지우지 않는다(보관).
+ * 숨기기(옛 화면)는 줄의 공개 칸만 N으로 바꾸고 파일은 지우지 않는다(보관).
  * 시트는 아무와도 공유하지 않는다(스크립트가 '나'로 실행되어 읽고 쓴다). 교사·학습자는 페이지만 본다.
  */
 
@@ -28,7 +29,8 @@ var SHEETS = {
   주제: ['주제', '프랑스어', '묶음', '순서', '아이콘'],
   교사: ['이름', '학교', '코드', '활성', '가입일', '즐겨찾기'],   // 즐겨찾기 = 자료 id를 쉼표로(최근에 담은 것이 앞, 2026-10-24)
   설정: ['키', '값'],
-  올리기: ['주제', '레벨', '제목', '링크', '유형', '설명', '확인']
+  올리기: ['주제', '레벨', '제목', '링크', '유형', '설명', '확인'],
+  '지운 자료': ['id', '묶음', '주제', '레벨', '제목', '유형', '링크', '설명', '시간', '학교', '올린이', '올린날짜', '공개', '지운날짜']   // 교사가 삭제한 줄(2026-10-26)
 };
 // '주제' 탭의 아이콘 칸: 이모지 하나(예: 👨‍👩‍👧) 또는 글자. 비우면 페이지가 주제 이름으로 고른다.
 // 파일 올리기 한도·형식(index.html의 FILE_MAX_MB·FILE_EXT와 같게). 폴더 이름은 처음 만들 때만 쓰고, 그 뒤로는 폴더 id로 찾는다(이름을 바꿔도 됨).
@@ -97,6 +99,15 @@ function saveFile(f, m, tc) {
   file.setDescription([m.topic, m.level, m.title, String(m.school || tc.school || ''), tc.name].join(' · '));
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   return file.getUrl();
+}
+
+// 삭제한 자료의 링크가 올리기로 저장한 파일('한글원샷 자료' 폴더 안)이면 휴지통으로. 다른 링크(유튜브·교사 드라이브 등)는 건드리지 않는다.
+function trashUpload(url) {
+  var m = String(url || '').match(/\/file\/d\/([\w-]+)/); if (!m) return;
+  try {
+    var f = DriveApp.getFileById(m[1]), fid = folder().getId(), ps = f.getParents();
+    while (ps.hasNext()) { if (ps.next().getId() === fid) { f.setTrashed(true); return; } }
+  } catch (ex) {}
 }
 
 function json(obj) {
@@ -203,7 +214,23 @@ function doPost(e) {
         Number(m.minutes) || '', String(m.school || tc.school || '').slice(0, 60), tc.name, Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd'), '']);
       return json({ ok: true, id: id });
     }
-    if (b.action === 'hide') {
+    // 삭제(휴먼쌤 2026-10-26 "로그인 후 내가 올린 자료를 '삭제'할 수 있는 기능도 넣어줘"): 자기가 올린 줄만.
+    // 줄은 '지운 자료' 탭으로 옮겨 두고(휴먼쌤이 되살릴 수 있게) '자료' 탭에서 지운다. 올리기로 저장한 드라이브 파일은 휴지통으로(30일 안에 되살릴 수 있음).
+    if (b.action === 'delete') {
+      var dv = sh.getRange(2, 1, Math.max(sh.getLastRow() - 1, 1), 13).getValues();
+      for (var k = 0; k < dv.length; k++) {
+        if (String(dv[k][0]) !== String(b.id)) continue;
+        if (String(dv[k][10]).trim() !== tc.name) return json({ ok: false, error: 'not_owner' });
+        var ss = SpreadsheetApp.getActiveSpreadsheet(), bin = ss.getSheetByName('지운 자료');
+        if (!bin) { bin = ss.insertSheet('지운 자료'); bin.appendRow(SHEETS['지운 자료']); bin.setFrozenRows(1); }
+        bin.appendRow(dv[k].concat([Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd')]));
+        sh.deleteRow(k + 2);
+        trashUpload(dv[k][6]);
+        return json({ ok: true });
+      }
+      return json({ ok: false, error: 'not_found' });
+    }
+    if (b.action === 'hide') {   // 옛 화면(숨기기 단추)이 남은 기기를 위해 둔다
       var v = sh.getRange(2, 1, Math.max(sh.getLastRow() - 1, 1), 13).getValues();
       for (var i = 0; i < v.length; i++) {
         if (String(v[i][0]) === String(b.id)) {
