@@ -115,6 +115,7 @@
   /* 아래 탭 */
   .tabbar { position: fixed; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 480px; z-index: 30; display: flex; justify-content: space-around;
             background: #FFFDF9; border-top: 2px solid var(--line); box-shadow: 0 -6px 16px rgba(120,90,50,.06); padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); }
+  .sidelogo { display: none; }   /* PC 왼쪽 메뉴에서만 보인다 */
   .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 84px; padding: 2px 0; font-size: 11.5px; font-weight: 800; color: #B6A796; }
   .tab svg { width: 27px; height: 27px; }
   .tab.on { color: var(--coral); }
@@ -393,7 +394,10 @@
     /* 아래 탭 → 왼쪽 메뉴 */
     .tabbar { top: 0; bottom: 0; left: max(0px, calc(50% - 600px)); right: auto; width: 220px; max-width: none; margin: 0; flex-direction: column; justify-content: flex-start;
               gap: 6px; padding: 24px 14px; border-top: 0; border-right: 2px solid var(--line); box-shadow: none; }
-    .tabbar:before { content: ""; display: block; height: 46px; margin: 4px 12px 20px; background: url(icons/logo-h.svg) no-repeat left center / contain; }
+    /* 왼쪽 메뉴 위 로고 = 자료실로 가는 단추(휴먼쌤 2026-10-26 "로고를 누르면 '홈'으로 가게, 즉 '자료실'로 가도록 버튼화") */
+    .sidelogo { display: block; height: 46px; margin: 4px 12px 20px; border-radius: 12px; }
+    .sidelogo img { display: block; height: 100%; width: auto; max-width: 100%; }
+    .sidelogo:focus-visible { outline: 3px solid var(--coral); outline-offset: 4px; }
     .appbar .brand { visibility: hidden; }   /* 로고는 왼쪽 메뉴 위에 한 번만 */
     .tab { flex-direction: row; gap: 12px; width: auto; padding: 12px 14px; border-radius: 16px; font-size: 16px; color: var(--sub); }
     .tab svg { width: 24px; height: 24px; }
@@ -537,7 +541,7 @@
       joinAsk: '처음이세요?', joinLink: '가입하기', joinTitle: '선생님 가입', joinHint: '협의회에서 받은 가입 코드로 바로 가입해요.',
       fName: '이름', phName: '예: 김수현', nameHint: '자료에 올린이로 보여요. 같은 이름이 있으면 뒤에 도시를 붙여요(예: 김지영 보르도).',
       fJoin: '가입 코드', phJoin: '협의회에서 받은 코드',
-      privacy: '이름·학교와 올린 자료는 휴먼쌤 구글 계정에 보관돼요. 올린 파일은 링크를 아는 누구나 볼 수 있어요. 학생 이름·사진·성적이 든 파일은 올리지 마세요.',
+      privacy: '이름·학교와 올린 자료는 휴먼쌤 구글 계정에 보관돼요. 자료 카드에는 올린 선생님 이름과 학교가 보여요. 올린 파일은 링크를 아는 누구나 볼 수 있어요. 학생 이름·사진·성적이 든 파일은 올리지 마세요.',
       agree: '위 안내를 읽었고 동의해요', joinBtn: '가입하기', joining: '가입하는 중…',
       needName: '이름을 적어 주세요', needJoin: '가입 코드를 넣어 주세요', needAgree: '안내를 읽고 동의에 표시해 주세요',
       badJoin: '가입 코드가 맞지 않아요', joinClosed: '지금은 가입을 받지 않아요. 협의회에 물어보세요.',
@@ -591,7 +595,7 @@
       joinAsk: 'Première fois ?', joinLink: 'Créer un compte', joinTitle: 'Inscription enseignant', joinHint: 'Avec le code d’inscription reçu de l’association, l’inscription est immédiate.',
       fName: 'Nom', phName: 'ex. Kim Suhyeon', nameHint: 'Affiché comme auteur des ressources. Si ce nom existe déjà, ajoutez la ville (ex. Kim Jiyoung Bordeaux).',
       fJoin: 'Code d’inscription', phJoin: 'Code reçu de l’association',
-      privacy: 'Votre nom, votre école et vos ressources sont conservés sur le compte Google de Humanssaem. Les fichiers envoyés sont visibles par toute personne qui a le lien. N’envoyez aucun fichier contenant le nom, la photo ou les notes d’un élève.',
+      privacy: 'Votre nom, votre école et vos ressources sont conservés sur le compte Google de Humanssaem. Votre nom et votre école apparaissent sur les fiches de vos ressources. Les fichiers envoyés sont visibles par toute personne qui a le lien. N’envoyez aucun fichier contenant le nom, la photo ou les notes d’un élève.',
       agree: 'J’ai lu et j’accepte', joinBtn: 'S’inscrire', joining: 'Inscription…',
       needName: 'Indiquez votre nom', needJoin: 'Entrez le code d’inscription', needAgree: 'Cochez la case pour accepter',
       badJoin: 'Code d’inscription incorrect', joinClosed: 'Les inscriptions sont fermées pour le moment. Contactez l’association.',
@@ -760,7 +764,9 @@
   }
   function matInner(m, withTopic) {
     const [emo, bg] = TYPE_ICON[m.type] || TYPE_ICON['기타'];
-    const meta = [withTopic ? `${m.topic} · ${m.level}` : '', m.type, m.minutes ? m.minutes + t('min') : '', withTopic ? '' : m.school].filter(Boolean).join(' · ');
+    // 학교 뒤에 올린 선생님 이름(휴먼쌤 2026-10-26 "카드에 이름이 보이도록"). 학교 칸이 '휴먼쌤'인 휴먼쌤 자료는 이름을 붙이지 않는다.
+    const by = withTopic || m.school === '휴먼쌤' ? '' : m.by;
+    const meta = [withTopic ? `${m.topic} · ${m.level}` : '', m.type, m.minutes ? m.minutes + t('min') : '', withTopic ? '' : m.school, by].filter(Boolean).join(' · ');
     return `<span class="ti" style="background:${bg}">${emo}</span><span class="tx"><span class="tt">${esc(m.title)}</span><span class="meta">${esc(meta)}</span>${m.desc ? `<span class="ds">${esc(m.desc)}</span>` : ''}</span>`;
   }
   const goBtn = m => `<span class="go k-${esc(m.level)}">${ICON.out}</span>`;
@@ -1061,7 +1067,8 @@
   function renderTabs(page) {
     const tc = ['login', 'join', 'mine', 'upload'].includes(page);
     const on = { fav: page === 'fav', tc, lib: page !== 'fav' && !tc };
-    $('#tabbar').innerHTML = `<a class="tab${on.lib ? ' on' : ''}" href="#/">${ICON.shelf}<span>${esc(t('tabHome'))}</span></a>
+    $('#tabbar').innerHTML = `<a class="sidelogo" href="#/" aria-label="${esc(t('tabHome'))}"><img src="icons/logo-h.svg" alt="${esc(appTitle())}"></a>
+      <a class="tab${on.lib ? ' on' : ''}" href="#/">${ICON.shelf}<span>${esc(t('tabHome'))}</span></a>
       <a class="tab${on.fav ? ' on' : ''}" href="#/fav">${ICON.star}<span>${esc(t('tabFav'))}</span></a>
       <a class="tab${on.tc ? ' on' : ''}" href="${teacher ? '#/mine' : '#/login'}">${ICON.person}<span>${esc(t('tabTeacher'))}</span></a>`;
   }
@@ -1204,7 +1211,7 @@
     const topicNames = data.topics.map(x => x.name);
     const syncGroup = () => { const v = el('topic').value.trim(); $('#groupField').hidden = !v || topicNames.includes(v); };
     const pv = () => {
-      const m = normMaterial({ title: el('title').value || t('phTitle'), type: el('type').value, minutes: 0, school: el('school').value,
+      const m = normMaterial({ title: el('title').value || t('phTitle'), type: el('type').value, minutes: 0, school: el('school').value, by: teacher ? teacher.name : '',
         desc: el('desc').value, url: '#', topic: 'x', level: el('level').value || LEVEL_KEYS[0] }, 0);
       $('#upPreview').innerHTML = `<div class="item">${matInner(m)}${goBtn(m)}</div>`;
     };
