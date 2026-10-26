@@ -549,6 +549,7 @@
       fUrl: '링크', fMin: '걸리는 시간', fDesc: '한 줄 설명', optional: '(선택)', fSchool: '소속 학교', phSchool: '학교를 골라 주세요', needSchool: '소속 학교를 골라 주세요',
       phTopic: '소주제를 고르거나 새로 적어요', phTitle: '예: 가족 단어 그림 카드', phDesc: '예: 그림을 보며 따라 해요', phGroup: '예: 음식',
       paste: '붙여넣기', previewCap: '학습자에게 이렇게 보여요', submit: '올리기', required: '소주제·레벨·제목·링크는 꼭 적어 주세요',
+      needTopic: '소주제를 고르거나 적어 주세요', needLevel: '레벨(하·중·상)을 골라 주세요', needTitle: '자료 제목을 적어 주세요', needUrl: '링크를 붙여 넣어 주세요',
       srcFile: '파일(PDF/이미지)', srcLink: '링크', fSrc: '자료', pickFile: '파일 고르기', fileWhat: n => `PDF·이미지 · ${n}MB까지`,
       fileKeep: '파일은 한글원샷 보관함(휴먼쌤 드라이브)에 저장돼요. 내 드라이브에서 지워도 자료는 남아요.',
       fileBig: n => `파일이 커요. ${n}MB까지 올릴 수 있어요. 영상은 유튜브 ‘일부 공개’ 링크로 올려 주세요.`,
@@ -602,6 +603,7 @@
       fUrl: 'Lien', fMin: 'Durée', fDesc: 'Description', optional: '(facultatif)', fSchool: 'Votre école', phSchool: 'Choisir l’école', needSchool: 'Choisissez votre école',
       phTopic: 'Choisir ou créer un sous-thème', phTitle: 'ex. Cartes images de la famille', phDesc: 'ex. Répéter en regardant les images', phGroup: 'ex. 일상',
       paste: 'Coller', previewCap: 'Aperçu côté élève', submit: 'Ajouter', required: 'Sous-thème, niveau, titre et lien sont obligatoires',
+      needTopic: 'Choisissez ou écrivez un sous-thème', needLevel: 'Choisissez un niveau (하·중·상)', needTitle: 'Écrivez un titre', needUrl: 'Collez un lien',
       srcFile: 'Fichier (PDF/image)', srcLink: 'Lien', fSrc: 'Ressource', pickFile: 'Choisir un fichier', fileWhat: n => `PDF ou image · ${n} Mo max`,
       fileKeep: 'Le fichier est conservé dans l’archive Hangeul Oneshot. Il reste disponible même si vous le supprimez de votre Drive.',
       fileBig: n => `Fichier trop lourd : ${n} Mo maximum. Pour une vidéo, collez un lien YouTube « non répertorié ».`,
@@ -1171,8 +1173,12 @@
         const d = e.key === 'ArrowDown' ? 1 : -1;
         at = at < 0 ? (d > 0 ? 0 : n - 1) : (at + d + n) % n; draw();
         const on = list.querySelector('.cbo.on'); if (on) on.scrollIntoView({ block: 'nearest' });
-      } else if (e.key === 'Enter' && !list.hidden && at >= 0) {
-        e.preventDefault(); if (at < shown.length) inp.value = shown[at].v; done();
+      } else if (e.key === 'Enter') {
+        // 폰 키보드의 '이동·완료'(엔터)가 폼을 바로 보내지 않게: 적은 글자 그대로 소주제로 쓰고 키보드만 닫는다
+        // (전에는 새 소주제를 적고 엔터를 누르면 레벨·제목이 빈 채로 보내져 '꼭 적어 주세요'가 떴다, 2026-10-26)
+        e.preventDefault(); if (e.isComposing) return;
+        if (!list.hidden && at >= 0 && at < shown.length) inp.value = shown[at].v;
+        done(); inp.blur();
       } else if (e.key === 'Escape') close();
     });
     // 목록을 눌러도 칸이 포커스를 잃지 않게(그래야 누르기 전에 목록이 닫히지 않는다). 손가락으로 끌어 내리는 것은 그대로 된다.
@@ -1233,7 +1239,10 @@
       if (SCHOOLS.length && !material.school) { el('school').focus(); return fail(t('needSchool')); }
       const fl = upSrc === 'file' ? $('#f-file').files[0] : null;
       if (upSrc === 'file') { const fr = fileOk(fl); if (fr.lv === 'bad') return fail(fr.msg); }
-      if (!material.title || !material.topic || !material.level || (upSrc === 'link' && !material.url)) return fail(t('required'));
+      // 빠진 칸을 하나씩 짚어 알려 주고 그 칸으로 데려간다(전에는 네 칸을 한꺼번에 말해 어디가 빠졌는지 몰랐다)
+      const miss = !material.topic ? ['needTopic', el('topic')] : !material.level ? ['needLevel', f.querySelector('.seg3')]
+        : !material.title ? ['needTitle', el('title')] : upSrc === 'link' && !material.url ? ['needUrl', el('url')] : null;
+      if (miss) { miss[1].scrollIntoView({ block: 'center', behavior: 'smooth' }); if (miss[1].focus && miss[1].tagName === 'INPUT') miss[1].focus({ preventScroll: true }); return fail(t(miss[0])); }
       if (upSrc === 'link') { const lk = linkCheck(material.url); if (lk.lv === 'bad') { el('url').focus(); return fail(lk.msg); } }
       const btn = $('#upBtn'); btn.disabled = true; btn.textContent = t('uploading');
       try {
