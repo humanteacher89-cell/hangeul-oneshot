@@ -1,8 +1,9 @@
 // 한글원샷 설정 — 이 파일만 고치면 된다.
 window.ONESHOT_CONFIG = {
-  // 구글 앱스 스크립트 '웹 앱' 주소(https://script.google.com/macros/s/.../exec).
+  // 서버 주소. 새 판(2026-10-30, 가지 v2)은 같은 사이트의 '/api'(Cloudflare 서버 + D1, `cloudflare/`).
+  // 옛 판(시트)은 구글 앱스 스크립트 '웹 앱' 주소 https://script.google.com/macros/s/AKfycbwOIqhLetFQyByTA74HrTk_bhTZEeIvPLREwyMhtTP1SD_LcEeLwsUgnbsNv2TJP_k/exec
   // 비워 두면 시험 모드: sample-data.js의 견본 자료를 쓰고, 올린 자료는 이 브라우저에만 저장된다.
-  API_URL: "https://script.google.com/macros/s/AKfycbwOIqhLetFQyByTA74HrTk_bhTZEeIvPLREwyMhtTP1SD_LcEeLwsUgnbsNv2TJP_k/exec",
+  API_URL: "/api",
 
   TITLE: "한글원샷",
   SUBTITLE: "프랑스 한글학교 레벨별 자료",

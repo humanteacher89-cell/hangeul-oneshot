@@ -1,0 +1,8 @@
+# 비밀(로그인 코드 해시 열쇠)과 만들어지는 것
+.dev.vars
+public/
+.wrangler/
+node_modules/
+__pycache__/
+*.private.json
+*.sql.out

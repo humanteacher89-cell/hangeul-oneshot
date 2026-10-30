@@ -1,0 +1,14 @@
+# 한글원샷 새 판(2026-10-30) — Cloudflare Pages + Functions(서버) + D1(자료) + KV(올린 파일).
+# 이 폴더에서 `wrangler pages deploy` 한다(public/은 deploy.py가 저장소 화면 파일로 채움). 로그인 코드 해시 열쇠는 비밀 CODE_PEPPER(pages secret).
+name = "humanssaem-hangeul-oneshot-v2"
+pages_build_output_dir = "./public"
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hangeul-oneshot"
+database_id = "182b75bc-c800-42fb-b3e1-f884528f59ab"
+
+[[kv_namespaces]]
+binding = "FILES"
+id = "3baf4486f767489b80558e183bf03d57"
