@@ -1232,7 +1232,10 @@
       case 'mine': v.innerHTML = viewMine(); bindLogin(); break;
       case 'upload': v.innerHTML = viewUpload(parts[1] || '', normLevel(parts[2])); bindUpload(); bindLogin(); break;
       case 'admin':
-        v.innerHTML = viewAdmin(parts[1] || ''); bindAdmin(); bindLogin(); title = AT.title + ' · ' + title;
+        // 관리자 화면을 그리다 오류가 나면 빈 화면 대신 오류 글을 보여 준다(휴먼쌤 폰에서 무엇이 막혔는지 알 수 있게, 2026-10-31)
+        try { v.innerHTML = viewAdmin(parts[1] || ''); bindAdmin(); }
+        catch (ex) { console.error('admin', ex); v.innerHTML = admErrView(ex); }
+        bindLogin(); title = AT.title + ' · ' + title;
         if (teacher && teacher.admin && !adm && !admBusy && !admErr) admLoad();
         break;
       default: v.innerHTML = viewHome();
@@ -1430,6 +1433,7 @@
     title: '관리자 화면', entry: '관리자 화면', entrySub: '자료 · 분류 · 교사 · 설정',
     tabs: { mat: '자료', cat: '분류', tc: '교사', set: '설정' },
     notAdmin: '관리자만 볼 수 있어요', toMine: '선생님 화면으로', loadErr: '관리자 자료를 불러오지 못했어요.',
+    viewErr: '관리자 화면을 그리지 못했어요. 아래 글을 그대로 알려 주세요.',
     all: '전체', pub: '공개', hid: '숨김', del: '지움', off: '꺼짐', admin: '관리자', file: '올린 파일', missing: '표에 없음',
     matSearch: '찾기 (제목·소주제·올린이·링크)', tcSearch: '찾기 (이름·학교)', none: '찾는 것이 없어요', count: n => `${n}개`,
     save: '저장', create: '만들기', close: '닫기', open: '열어 보기', view: '소주제 화면', hide: '숨기기', show: '보이기', remove: '삭제', restore: '되살리기',
@@ -1468,13 +1472,18 @@
   const admSt = m => m.deleted ? 'del' : (m.pub ? 'pub' : 'hid');
   const ghost = '<span class="circ ghost"></span>';
 
+  function admErrView(ex) {
+    const msg = String(ex && (ex.message || ex) || '').slice(0, 200) + ' · ' + navigator.userAgent.slice(0, 120);
+    return barSub(AT.title, '#/mine', ghost) + `<div class="pad"><div class="emptycard" style="margin-top:18px"><div class="e">😢</div>${esc(AT.viewErr)}`
+      + `<small style="overflow-wrap:anywhere">${esc(msg)}</small><a class="btn" href="#/mine">${esc(AT.toMine)}</a></div></div>`;
+  }
   async function admLoad() {
     if (admBusy || !teacher) return;
     admBusy = true; admErr = '';
     try {
       const r = await api.post({ action: 'admin', op: 'overview', code: teacher.code });
-      if (r.ok) adm = r; else if (!admFail(r)) admErr = AT.loadErr;
-    } catch (e) { admErr = t('netErr'); }
+      if (r.ok) adm = r; else if (!admFail(r)) admErr = AT.loadErr + (r.error ? ` (${r.error})` : '');
+    } catch (e) { admErr = t('netErr') + ` (${String(e && e.name || e)})`; }
     admBusy = false;
     if (route()[0] === 'admin') render(true);
   }
@@ -1824,6 +1833,10 @@
     } catch (e) {}
   }
   window.addEventListener('hashchange', () => render());
+  // 관리자 화면에서 난 오류는 알림 한 줄로도 보여 준다(폰에서 무엇이 막혔는지 알 수 있게)
+  const admOops = m => { if ((route()[0] || '') === 'admin') toast('오류: ' + String(m || '').slice(0, 80)); };
+  window.addEventListener('error', e => admOops(e.message));
+  window.addEventListener('unhandledrejection', e => admOops(e.reason && (e.reason.message || e.reason)));
   // 홈 화면에 추가: 크롬이 설치 기회를 주면 첫 화면 안내에 '추가' 단추를 단다. 서비스 워커는 앱처럼 열리게 하는 최소한의 것(sw.js).
   window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if ($('.hero')) render(true); });
   window.addEventListener('appinstalled', () => { installEvt = null; if ($('.hero')) render(true); });
