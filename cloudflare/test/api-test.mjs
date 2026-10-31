@@ -52,6 +52,26 @@ const m1 = d.materials.find(m => m.id === u1.id);
 ok(m1 && m1.by === '시험' + tag && m1.school === '보르도 한글학교' && m1.level === '하' && m1.date.length === 10, '읽기에 올린이·학교·레벨·날짜가 맞게 나옴');
 ok(d.topics.some(x => x.topic === T0 && x.group === G) && m1.group === G, '표에 없는 소주제로 올리면 소주제가 생김(대주제 그대로)');
 
+console.log('짧은 QR 번호·자료 QR 넘기기·내 자료(2026-10-31)');
+const qids = d.topics.map(x => Number(x.qid));
+ok(qids.every(q => Number.isInteger(q) && q > 0) && new Set(qids).size === qids.length, '소주제마다 고정 번호(qid), 겹치지 않음');
+ok(!('qid_seq' in d.settings) && !('join_code' in d.settings), '공개 설정에 qid_seq·가입 코드 없음');
+const q0 = Number(d.topics.find(x => x.topic === T0).qid);
+ok(q0 === Math.max(...qids), '새 소주제는 가장 큰 번호');
+ok((await post({ action: 'upload', code: c1, material: Object.assign({}, mat, { level: '최상' }) })).error === 'missing', '하·중·상 아닌 레벨로 올리기 → missing');
+const go = async id => { const r = await fetch(base.replace(/\/$/, '') + '/go/' + encodeURIComponent(id), { redirect: 'manual' }); return { s: r.status, to: r.headers.get('location') || '' }; };
+let g1 = await go(u1.id);
+ok(g1.s === 302 && g1.to === mat.url, '/go/<자료> → 지금 링크로 302');
+ok((await go('nope' + tag)).to === base.replace(/\/$/, '') + '/', '/go/<모르는 id> → 첫 화면');
+const lgm = await post({ action: 'login', code: c1 });
+ok(Array.isArray(lgm.mine) && lgm.mine.includes(u1.id), '로그인 응답에 내 자료 번호(mine)');
+ok(!(await post({ action: 'login', code: c2 })).mine.includes(u1.id), '남의 자료는 내 자료 번호에 없음');
+const uH = await post({ action: 'upload', code: c1, material: Object.assign({}, mat, { title: '시험 휴먼쌤 줄 ' + tag, url: 'https://example.org/h/' + tag, school: '휴먼쌤' }) });
+d = await data();
+const mH = d.materials.find(m => m.id === uH.id);
+ok(uH.ok && mH && mH.by === '' && (await post({ action: 'login', code: c1 })).mine.includes(uH.id), "학교 칸 '휴먼쌤' 자료는 공개 자료에 올린이 이름 없음, 내 자료 번호에는 있음");
+ok((await post({ action: 'delete', code: c1, id: uH.id })).ok, '휴먼쌤 줄 시험 자료 치우기');
+
 console.log('파일');
 const fmeta = name => ({ action: 'upload', code: c1, material: Object.assign({}, mat, { url: '', title: '시험 파일 ' + tag, type: '활동지' }), file: { name, type: 'application/pdf' } });
 ok((await postFile(fmeta('문서.docx'), pdf, 'application/octet-stream')).error === 'file_type', 'docx → file_type');
@@ -90,6 +110,8 @@ ok((await post({ action: 'delete', code: c1, id: u2.id })).error === 'not_found'
 ok((await post({ action: 'hide', code: c1, id: u1.id })).ok, '옛 숨기기');
 d = await data();
 ok(!d.materials.some(m => m.id === u1.id), '숨긴 자료도 읽기에서 빠짐');
+g1 = await go(u1.id);
+ok(g1.s === 302 && g1.to === base.replace(/\/$/, '') + '/#/q/' + q0 + '/1', '/go/<숨긴 자료> → 그 소주제·레벨 짧은 주소(#/q/번호/1)');
 ok((await post({ action: 'delete', code: c1, id: u1.id })).ok, '숨긴 자료 삭제(시험 자료 치우기)');
 ok((await post({ action: 'nope', code: c1 })).error === 'unknown', '모르는 동작 → unknown');
 
@@ -148,6 +170,7 @@ if (A) {
   ok((await adm('topic_save', { from: T1, topic: T1b, fr: 'Test2', group: G, icon: '' })).ok, '소주제 이름 바꾸기');
   d = await data();
   ok(d.topics.some(x => x.topic === T1b && x.fr === 'Test2') && !d.topics.some(x => x.topic === T1), '소주제 표에 새 이름');
+  ok(Number(d.topics.find(x => x.topic === T1b).qid) === Number(o.topics.find(x => x.topic === T1).qid), '이름을 바꿔도 소주제 번호(qid) 그대로');
   ok(d.materials.filter(m => m.id === u3.id || m.id === u4.id).length === 2 && d.materials.filter(m => m.id === u3.id || m.id === u4.id).every(m => m.topic === T1b), '그 소주제 자료도 새 이름으로');
   ok((await adm('topic_save', { from: T1b, topic: T2, group: G })).error === 'dup_topic', '있는 이름으로 바꾸기 → dup_topic');
   ok((await adm('topic_save', { from: 'nope' + tag, topic: 'x' + tag })).error === 'not_found', '없는 소주제 고치기 → not_found');
@@ -171,6 +194,9 @@ if (A) {
   d = await data();
   ok(d.topics.filter(x => [T0, T1b, T2].includes(x.topic)).every(x => x.group === G2) && d.materials.find(m => m.id === u3.id).group === G2, '그 소주제·자료의 대주제가 새 이름');
   ok((await adm('group_rename', { from: 'nope' + tag, to: 'x' })).error === 'not_found', '없는 대주제 → not_found');
+  ok((await adm('group_rename', { from: G2, to: G2, fr: 'Essai ' + tag })).ok && JSON.parse((await data()).settings.group_fr || '{}')[G2] === 'Essai ' + tag, '대주제 프랑스어 이름 → 공개 설정 group_fr');
+  ok((await adm('group_rename', { from: G2, to: G2 + 'b' })).ok && JSON.parse((await data()).settings.group_fr || '{}')[G2 + 'b'] === 'Essai ' + tag, '대주제 이름을 바꾸면 프랑스어 이름도 따라감');
+  ok((await adm('group_rename', { from: G2 + 'b', to: G2, fr: '' })).ok && !(G2 in JSON.parse((await data()).settings.group_fr || '{}')), '프랑스어 이름 비우기 · 이름 되돌리기');
 
   console.log('관리자 — 교사');
   o = await adm('overview');
@@ -198,9 +224,15 @@ if (A) {
   ok(o.settings.join_code === jc0 && (o.settings.notice || '') === nt0 && !('join_code' in d.settings), '되돌린 값 그대로 · 공개 자료에 가입 코드 없음');
 
   console.log('관리자 — 치우기');
+  const qSeen = Math.max(...(await adm('overview')).topics.map(x => Number(x.qid) || 0));   // 지우기 전 가장 큰 번호(시험 소주제 것)
   for (const id of [u3.id, u4.id]) await adm('mat_del', { id });
   ok((await adm('topic_del', { topic: T0 })).ok && (await adm('topic_del', { topic: T1b })).ok && (await adm('topic_del', { topic: T2 })).ok, '시험 소주제 지우기(지운 자료만 남은 소주제)');
   ok((await adm('topic_del', { topic: T2 })).error === 'not_found', '없는 소주제 지우기 → not_found');
+  const qMax = Math.max(...(await adm('overview')).topics.map(x => Number(x.qid) || 0));
+  ok((await adm('topic_save', { topic: T2 + '새', group: G })).ok, '지운 뒤 새 소주제');
+  o = await adm('overview');
+  ok(qSeen > qMax && Number(o.topics.find(x => x.topic === T2 + '새').qid) > qSeen, '지운 소주제 번호는 다시 쓰지 않음(새 번호는 지운 번호보다 큼)');
+  ok((await adm('topic_del', { topic: T2 + '새' })).ok, '그 소주제도 치우기');
   d = await data();
   ok(!d.topics.some(x => String(x.group).startsWith(G)) && !d.materials.some(m => String(m.title).includes(tag)), '시험 소주제·자료가 자료실에 남지 않음');
 }

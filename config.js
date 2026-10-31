@@ -7,6 +7,7 @@ window.ONESHOT_CONFIG = {
 
   TITLE: "한글원샷",
   SUBTITLE: "프랑스 한글학교 레벨별 자료",
+  SUBTITLE_FR: "Ressources de coréen par niveau pour les écoles coréennes de France",   // 프랑스어 화면 부제(서버 설정 subtitle_fr가 먼저, 2026-10-31)
 
   // 레벨은 시트에 적는 글자(하·중·상) 그대로. 설명은 화면에만 보인다.
   LEVELS: [

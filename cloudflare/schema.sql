@@ -13,13 +13,15 @@ CREATE TABLE IF NOT EXISTS teachers (
   joined    TEXT NOT NULL DEFAULT ''       -- 가입일 yyyy-MM-dd(파리)
 );
 
--- 소주제('주제' 탭). grp = 대주제(시트 '묶음'), ord = 순서
+-- 소주제('주제' 탭). grp = 대주제(시트 '묶음'), ord = 순서, qid = 고정 번호(짧은 QR 주소 #/q/<qid>, 이름을 바꿔도 그대로, 다시 쓰지 않음)
+-- 이미 있는 D1에 qid를 더할 때: migrate/20261031-qid-add.sql → 20261031-qid-fill.sql (deploy.py migrate)
 CREATE TABLE IF NOT EXISTS topics (
   topic TEXT PRIMARY KEY,
   fr    TEXT NOT NULL DEFAULT '',
   grp   TEXT NOT NULL DEFAULT '',
   ord   REAL,
-  icon  TEXT NOT NULL DEFAULT ''
+  icon  TEXT NOT NULL DEFAULT '',
+  qid   INTEGER
 );
 
 -- 자료('자료' 탭 + '지운 자료' 탭). 지운 자료는 deleted에 지운 날짜(되살리기 = deleted를 비움). 보이는 순서는 rowid(넣은 순서)
@@ -53,6 +55,7 @@ CREATE TABLE IF NOT EXISTS favs (
 );
 
 -- 설정('설정' 탭): title·subtitle·notice·join_code. join_code는 공개 자료에 싣지 않는다
+-- (2026-10-31) subtitle_fr = 부제 프랑스어, group_fr = 대주제 프랑스어 JSON {대주제: 프랑스어}, qid_seq = 마지막 소주제 번호(공개 안 함)
 CREATE TABLE IF NOT EXISTS settings (
   key   TEXT PRIMARY KEY,
   value TEXT NOT NULL DEFAULT ''

@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFF8EF">
 <meta name="description" content="프랑스 한글학교 레벨별 자료">
+<!-- 링크 미리보기(카카오톡·왓츠앱 등, 2026-10-31). 그림은 절대 주소여야 한다 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="한글원샷">
+<meta property="og:title" content="한글원샷 — 프랑스 한글학교 레벨별 자료">
+<meta property="og:description" content="QR 한 번에 내 레벨 자료가 열려요 · Ressources de coréen par niveau pour les écoles coréennes de France">
+<meta property="og:url" content="https://humanssaem-hangeul-oneshot.pages.dev/">
+<meta property="og:image" content="https://humanssaem-hangeul-oneshot.pages.dev/icons/icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta name="twitter:card" content="summary">
 <title>한글원샷</title>
 <!-- 홈 화면에 추가하면 주소창 없이 앱처럼 열린다(manifest.json · sw.js · icons/) -->
 <link rel="manifest" href="manifest.json">
@@ -64,6 +76,10 @@
   .lang button { border: 0; background: none; padding: 5px 11px; border-radius: 14px; font-size: 13px; font-weight: 800; color: var(--sub); }
   .lang.sm button { padding: 5px 9px; }
   .lang button.on { background: var(--ink); color: #fff; }
+  /* 누르는 자리 넓히기(보이는 크기는 그대로, 손가락 44px 안팎 — 2026-10-31 점검) */
+  .lang button, .srch .sx { position: relative; }
+  .lang button::after { content: ""; position: absolute; inset: -9px -3px; }
+  .srch .sx::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; }
   .circ { flex: none; width: 42px; height: 42px; border-radius: 50%; background: #fff; border: 0; display: grid; place-items: center; box-shadow: 0 3px 0 rgba(43,33,24,.08); }
   .circ svg { width: 22px; height: 22px; }
   .circ.ghost { visibility: hidden; }
@@ -220,6 +236,7 @@
   /* 가입(#/join) */
   .joinrow { margin: 16px 0 0; font-size: 14px; font-weight: 700; color: var(--sub); }
   .joinrow a { color: var(--coral-d); font-weight: 900; text-decoration: underline; text-underline-offset: 3px; }
+  .forgot { margin: 10px 0 0; font-size: 12.5px; font-weight: 700; color: var(--sub); line-height: 1.5; word-break: keep-all; }
   .joinp { text-align: left; }
   .joinp > h1, .joinp > .hint { text-align: center; }
   .privacy { margin: 18px 0 0; padding: 11px 12px; border-radius: 14px; background: #FFF6EA; color: #6E5E50; font-size: 12.5px; font-weight: 700; line-height: 1.55; }
@@ -335,6 +352,7 @@
   .abtns > button:disabled { opacity: .55; }
   .ghd { display: flex; align-items: center; gap: 6px; margin: 20px 2px 8px; min-width: 0; }
   .ghd b { flex: 1; min-width: 0; font-size: 17px; font-weight: 900; overflow-wrap: anywhere; }
+  .ghd b small { margin-left: 4px; font-size: 12.5px; font-weight: 700; color: var(--sub); }
   .ghd .gn { flex: none; font-size: 12.5px; font-weight: 800; color: var(--sub); }
   .mv { flex: none; width: 34px; height: 34px; border-radius: 11px; border: 2px solid var(--line); background: #fff; color: #6E5E50; display: grid; place-items: center; padding: 0; }
   .mv svg { width: 16px; height: 16px; }
@@ -541,8 +559,9 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="config.js" charset="utf-8"></script>
-<script src="sample-data.js" charset="utf-8"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- 견본 자료(sample-data.js)는 시험 모드(API_URL 비움)에서만 받는다. QR 그리기 도구는 저장소 안 vendor/(학교망에서 CDN이 막혀도 되게) — 2026-10-31 -->
+<script>if (!(window.ONESHOT_CONFIG || {}).API_URL) document.write('<script src="sample-data.js" charset="utf-8"><\/script>');</script>
+<script src="vendor/qrcode.min.js"></script>
 <script>
 (function () {
   'use strict';
@@ -614,6 +633,7 @@
       qrIntro: 'QR은 종이 한 장에 하나씩 붙이세요. 여러 개가 가까이 있으면 카메라가 어느 것을 찍을지 헷갈려요. 인쇄하면 한 장에 하나씩 나와요.',
       scan: '휴대폰 카메라로 찍으세요', scanOther: 'Scannez avec l’appareil photo',
       teacherLogin: '선생님 로그인', loginHint: '협의회·학교에서 받은 코드를 넣으세요.', codePh: '코드', login: '로그인', loggedIn: '로그인했어요',
+      loginForgot: '코드를 잊었으면 협의회(휴먼쌤)에게 새 코드를 받으세요.',
       loginWhy: '로그인하면 자료를 올리고, 내가 올린 자료를 숨길 수 있어요.',
       mockCodes: '시험용 코드: 1234 (김선생·파리), 5678 (이선생·보르도)', badCode: '코드가 맞지 않아요', netErr: '연결이 안 돼요. 잠시 뒤 다시 해 보세요.',
       loadErr: '자료를 불러오지 못했어요.', retry: '다시 시도',
@@ -671,6 +691,7 @@
       qrIntro: 'Un seul QR par feuille : plusieurs QR côte à côte perturbent l’appareil photo. L’impression met un QR par page.',
       scan: 'Scannez avec l’appareil photo', scanOther: '휴대폰 카메라로 찍으세요',
       teacherLogin: 'Espace enseignant', loginHint: 'Entrez le code reçu de votre école.', codePh: 'Code', login: 'Connexion', loggedIn: 'Connecté',
+      loginForgot: 'Code oublié ? Demandez-en un nouveau à l’association (Humanssaem).',
       loginWhy: 'Connecté, vous pouvez ajouter des ressources et masquer les vôtres.',
       mockCodes: 'Codes de test : 1234 (Paris), 5678 (Bordeaux)', badCode: 'Code incorrect', netErr: 'Connexion impossible. Réessayez plus tard.',
       loadErr: 'Impossible de charger les ressources.', retry: 'Réessayer',
@@ -704,7 +725,7 @@
       lkForm: 'Google Forms · l’élève peut répondre directement', lkCopy: 'Lien « créer une copie » · l’élève doit avoir un compte Google', lkYoutube: 'Vidéo YouTube',
       lkSite: 'Site web · votre propre site fonctionne s’il est public', lkHttp: 'Les liens http peuvent être bloqués sur mobile · préférez https',
       dupLink: (s, w) => `Ce lien existe déjà : « ${s} » (${w})`, dupAsk: 'Ce lien est déjà dans la bibliothèque.\nL’ajouter quand même ?',
-      mineTip: 'Pour modifier : supprimez puis ajoutez à nouveau', total: n => `${n} ressources`, updated: 'mis à jour', loading: 'Chargement…',
+      mineTip: 'Pour modifier : supprimez puis ajoutez à nouveau', total: n => `${n} ressource${n > 1 ? 's' : ''}`, updated: 'mis à jour', loading: 'Chargement…',
       installTitle: 'Ajouter à l’écran d’accueil', installSub: 'S’ouvre comme une appli, sans barre d’adresse', installBtn: 'Ajouter',
       installIos: s => `Touchez Partager ${s} puis « Sur l’écran d’accueil »`,
       mockNote: 'Données d’exemple · vos ajouts restent sur cet appareil',
@@ -712,8 +733,8 @@
     }
   };
 
-  let lang = 'ko';
-  let data = { settings: {}, topics: [], groups: [], materials: [], updatedAt: '' };
+  let lang = /^fr\b/i.test(navigator.language || '') ? 'fr' : 'ko';   // 기기 언어가 프랑스어면 FR로 시작(저장하지 않음, 2026-10-31)
+  let data = { settings: {}, topics: [], groups: [], materials: [], groupFr: {}, updatedAt: '' };
   let teacher = loadTeacher();
   let loadError = false;
   let groupFilter = '';
@@ -755,21 +776,26 @@
     const meta = {};
     (raw.topics || []).forEach((tp, i) => {
       const n = String(tp.topic || '').trim();
-      if (n) meta[n] = { fr: String(tp.fr || '').trim(), group: String(tp.group || '').trim(), order: Number(tp.order) || (1000 + i), icon: String(tp.icon || '').trim() };
+      if (n) meta[n] = { fr: String(tp.fr || '').trim(), group: String(tp.group || '').trim(), order: Number(tp.order) || (1000 + i), icon: String(tp.icon || '').trim(), qid: Number(tp.qid) || 0 };
     });
-    // 주제 목록: 주제 탭 순서 → 자료에 처음 나온 순서
+    // 주제 목록: 주제 탭 순서 → 자료에 처음 나온 순서. qid = 소주제 고정 번호(짧은 QR 주소 #/q/, 없으면 0)
     const seen = new Map();
-    Object.keys(meta).forEach(n => seen.set(n, { name: n, fr: meta[n].fr, group: meta[n].group, order: meta[n].order, icon: meta[n].icon, counts: {} }));
+    Object.keys(meta).forEach(n => seen.set(n, { name: n, fr: meta[n].fr, group: meta[n].group, order: meta[n].order, icon: meta[n].icon, qid: meta[n].qid, counts: {} }));
     mats.forEach((m, i) => {
-      if (!seen.has(m.topic)) seen.set(m.topic, { name: m.topic, fr: '', group: m.group, order: 5000 + i, icon: '', counts: {} });
+      if (!seen.has(m.topic)) seen.set(m.topic, { name: m.topic, fr: '', group: m.group, order: 5000 + i, icon: '', qid: 0, counts: {} });
       const tp = seen.get(m.topic); if (!tp.group) tp.group = m.group; tp.counts[m.level] = (tp.counts[m.level] || 0) + 1;
     });
     const topics = [...seen.values()].sort((a, b) => a.order - b.order);
     topics.forEach((tp, i) => { if (!tp.group) tp.group = '기타'; tp.color = PASTELS[i % PASTELS.length]; });
     const groups = [];
     topics.forEach(tp => { let g = groups.find(x => x.name === tp.group); if (!g) { g = { name: tp.group, topics: [] }; groups.push(g); } g.topics.push(tp); });
-    data = { settings: raw.settings || {}, topics, groups, materials: mats, updatedAt: raw.updatedAt || '' };
+    let groupFr = {};   // 대주제 프랑스어(설정 group_fr, 관리자 화면 분류 → 이름에서 고침)
+    try { groupFr = JSON.parse((raw.settings || {}).group_fr || '{}') || {}; } catch (e) { groupFr = {}; }
+    data = { settings: raw.settings || {}, topics, groups, materials: mats, groupFr, updatedAt: raw.updatedAt || '' };
   }
+  // 화면에 보이는 대주제 이름(프랑스어 화면이면 프랑스어). 값(고르기·거르기)은 늘 한국어 이름
+  const gName = n => (lang === 'fr' && data.groupFr && data.groupFr[n]) || n;
+  const topicByQid = q => data.topics.find(x => x.qid && String(x.qid) === String(q));
 
   // ---------- 서버(Cloudflare /api, 2026-10-30 새 판) 또는 시험 모드 ----------
   // 읽기는 15초 안에 못 받으면 한 번 더, 로그인·올리기는 60초(파일은 120초)에서 끊는다(시트 서버가 370초 걸린 일, 10-26).
@@ -840,6 +866,11 @@
 
   // ---------- 작은 조각 ----------
   function topicHref(name, level) { return '#/t/' + encodeURIComponent(name) + (level ? '/' + encodeURIComponent(level) : ''); }
+  // 짧은 QR 주소(2026-10-31): 소주제 고정 번호 #/q/<qid>/<1|2|3>(하·중·상). 이름을 바꿔도 인쇄한 QR이 그대로 열리고 QR 칸이 성글다.
+  // 번호가 없으면(시험 모드·번호 매기기 전) 이름 주소 그대로. 옛 #/t/ 주소도 계속 열린다
+  function qHref(tp, level) { const i = LEVEL_KEYS.indexOf(level); return tp && tp.qid ? '#/q/' + tp.qid + (i >= 0 ? '/' + (i + 1) : '') : topicHref(tp ? tp.name : '', level); }
+  // 자료 QR은 /go/<자료 id>를 담는다: 서버가 지금 링크로 넘기므로 관리자 화면에서 링크를 고쳐도 인쇄한 QR은 그대로(시험 모드는 링크 그대로)
+  const goUrl = m => MOCK ? m.url : new URL('go/' + encodeURIComponent(m.id), location.href.split('#')[0]).href;
   function fullUrl(hash) { return location.href.split('#')[0] + hash; }
   function topicLabel(tp) { return lang === 'fr' && tp.fr ? { big: tp.fr, small: tp.name } : { big: tp.name, small: tp.fr }; }
   function topicIcon(tp) {
@@ -932,7 +963,7 @@
     const shown = sel ? groups.filter(g => g.name === sel) : groups;
     const hero = `<section class="hero"><p class="hi">${esc(t('hi'))}</p><h1>${t('hero')}</h1><p class="other">${esc(t('heroOther'))}</p><div class="mascot">🐯</div></section>`;
     const notice = data.settings.notice ? `<div class="notice"><span class="e">📢</span><span>${esc(data.settings.notice)}</span></div>` : '';
-    const chips = groups.length > 1 ? `<div class="chips">${[{ name: '' }].concat(groups).map(g => `<button type="button" class="chip${g.name === sel ? ' on' : ''}" data-group="${esc(g.name)}">${esc(g.name || t('all'))}</button>`).join('')}</div>` : '';
+    const chips = groups.length > 1 ? `<div class="chips">${[{ name: '' }].concat(groups).map(g => `<button type="button" class="chip${g.name === sel ? ' on' : ''}" data-group="${esc(g.name)}">${esc(g.name ? gName(g.name) : t('all'))}</button>`).join('')}</div>` : '';
     const search = data.materials.length ? `<label class="srch lib">${ICON.search}<input id="libQ" type="search" enterkeyhint="search" placeholder="${esc(t('libSearch'))}" value="${esc(libQ)}" aria-label="${esc(t('libSearch'))}">`
       + `<button type="button" class="sx" data-libqx aria-label="${esc(t('clearQ'))}"${libQ ? '' : ' hidden'}>✕</button></label>` : '';
     return barHome() + `<div class="pad">${hero}${notice}${installCard()}${search}${chips}<div id="libBody">${libBody(shown)}</div>${footLine()}</div>`;
@@ -955,7 +986,7 @@
         : `<div class="emptycard"><div class="e">🔍</div>${esc(t('favNone'))}<button type="button" class="btn" data-libqx>${esc(t('clearQ'))}</button></div>`);
     }
     return data.groups.length
-      ? shown.map(g => `<div class="sec"><h2>${esc(g.name)}</h2><span>${esc(t('nTopics')(g.topics.length))}</span></div><div class="grid">${g.topics.map(topicCard).join('')}</div>`).join('')
+      ? shown.map(g => `<div class="sec"><h2>${esc(gName(g.name))}</h2><span>${esc(t('nTopics')(g.topics.length))}</span></div><div class="grid">${g.topics.map(topicCard).join('')}</div>`).join('')
       : `<div class="emptycard" style="margin-top:18px"><div class="e">🌱</div>${esc(t('empty'))}<small>${esc(t('emptyTeacher'))}</small></div>`;
   }
   // 찾는 글자를 칠 때는 아래 목록만 다시 그린다(칸이 포커스를 잃지 않게)
@@ -974,7 +1005,7 @@
   function footLine() {
     const upd = data.updatedAt ? new Date(data.updatedAt) : null;
     const updS = upd && !isNaN(upd) ? `${t('updated')} ${upd.getMonth() + 1}/${upd.getDate()} ${String(upd.getHours()).padStart(2, '0')}:${String(upd.getMinutes()).padStart(2, '0')}` : '';
-    const sub = data.settings.subtitle || CFG.SUBTITLE || '';
+    const sub = (lang === 'fr' && (data.settings.subtitle_fr || CFG.SUBTITLE_FR)) || data.settings.subtitle || CFG.SUBTITLE || '';
     return `<p class="foot">${sub ? esc(sub) + '<br>' : ''}${esc(t('total')(data.materials.length))}${updS ? ' · ' + esc(updS) : ''}${MOCK ? `<br><span class="mock">${esc(t('mockNote'))}</span>` : ''}</p>`;
   }
 
@@ -989,7 +1020,7 @@
     const head = `<div class="thead" style="--tc:${tp.color}">
       <div class="tnav"><a class="circ" href="#/" aria-label="${esc(t('back'))}">${ICON.back}</a>${fromQr ? `<span class="qrtoast">${ICON.qr}<span>${esc(t('fromQr'))}</span></span>` : ''}
         <span class="right">${langToggle(true)}<a class="circ" href="#/qr/${encodeURIComponent(name)}" aria-label="QR">${ICON.qr}</a></span></div>
-      <div class="ttl"><div class="bigem${ic.txt ? ' txt' : ''}">${esc(ic.v)}</div><div class="tx"><p class="grp">${esc(tp.group)}</p><h1>${esc(L.big)}</h1>${L.small ? `<p class="frt">${esc(L.small)}</p>` : ''}</div></div>
+      <div class="ttl"><div class="bigem${ic.txt ? ' txt' : ''}">${esc(ic.v)}</div><div class="tx"><p class="grp">${esc(gName(tp.group))}</p><h1>${esc(L.big)}</h1>${L.small ? `<p class="frt">${esc(L.small)}</p>` : ''}</div></div>
     </div>`;
     const sel = `<div class="lvsel">${LEVEL_KEYS.map(k => `<button type="button" class="lvbtn k-${k}${k === cur ? ' on' : ''}${cnt(k) ? '' : ' zero'}" data-level="${k}" aria-pressed="${k === cur}">
       <div class="k">${k}</div><div class="d">${esc(levelDesc(k))}</div><span class="n">${esc(t('cnt')(cnt(k)))}</span></button>`).join('')}</div>`;
@@ -1012,8 +1043,8 @@
     const tp = name && data.topics.find(x => x.name === name);
     if (tp) {
       const L = topicLabel(tp);
-      const cards = [qrCard('', L.big, t('topicQr'), fullUrl(topicHref(name)))]
-        .concat(LEVEL_KEYS.map(k => qrCard('k-' + k, `${L.big} · ${k}`, levelDesc(k), fullUrl(topicHref(name, k))))).join('');
+      const cards = [qrCard('', L.big, t('topicQr'), fullUrl(qHref(tp)))]
+        .concat(LEVEL_KEYS.map(k => qrCard('k-' + k, `${L.big} · ${k}`, levelDesc(k), fullUrl(qHref(tp, k))))).join('');
       const mats = data.materials.filter(m => m.topic === name);
       const rows = LEVEL_KEYS.map(k => mats.filter(m => m.level === k).map(m =>
         `<a class="trow" href="#/mq/${encodeURIComponent(m.id)}"><span class="em" style="background:${(TYPE_ICON[m.type] || TYPE_ICON['기타'])[1]}">${(TYPE_ICON[m.type] || TYPE_ICON['기타'])[0]}</span><b>${esc(k + ' · ' + m.title)}</b>${ICON.qr}</a>`).join('')).join('');
@@ -1077,7 +1108,7 @@
     // 줄마다 하나만 고르고, 고른 칩을 다시 누르거나 '전체'를 누르면 풀린다. 고를 것이 하나뿐인 줄은 감춘다.
     const fo = (k, v, lab, on, cls) => `<button type="button" class="fo${cls || ''}${on ? ' on' : ''}" data-fk="${k}" data-fv="${esc(v)}" aria-pressed="${on}">${esc(lab)}</button>`;
     const row = k => (ch[k].length > 1 || favF[k].length) ? `<div class="frow"><span class="fl">${esc(favLab(k))}</span><div class="fopts">${fo(k, '', t('all'), !favF[k].length)}`
-      + ch[k].map(v => fo(k, v, v, favF[k].includes(v), k === 'level' ? ' k-' + v + (all.some(m => m.level === v) ? '' : ' zero') : '')).join('') + `</div></div>` : '';
+      + ch[k].map(v => fo(k, v, k === 'group' ? gName(v) : v, favF[k].includes(v), k === 'level' ? ' k-' + v + (all.some(m => m.level === v) ? '' : ' zero') : '')).join('') + `</div></div>` : '';
     const srt = ['added', 'title', 'topic'].map(s => `<button type="button" class="fo srt${favSort === s ? ' on' : ''}" data-fsort="${s}" aria-pressed="${favSort === s}">${esc(t({ added: 'sortAdded', title: 'sortTitle', topic: 'sortTopic' }[s]))}</button>`).join('');
     const tools = all.length ? `<div class="fpanel">${FAV_KEYS.map(row).join('')}${all.length > 1 ? `<div class="frow"><span class="fl">${esc(t('sortK'))}</span><div class="fopts">${srt}</div></div>` : ''}</div>`
         + `<div class="rhead"><b id="favFound">${esc(t('favFound')(shown.length))}</b>${nF ? `<button type="button" data-freset>${esc(t('reset'))}</button>` : ''}</div>` : '';
@@ -1101,7 +1132,7 @@
     if (!m) return barSub('', '#/') + `<div class="pad"><div class="emptycard"><div class="e">🔍</div>${esc(t('noMat'))}</div></div>`;
     const tp = data.topics.find(x => x.name === m.topic), big = tp ? topicLabel(tp).big : m.topic;
     const printBtn = `<button type="button" class="pbtn" data-print>${esc(t('print'))}</button>`;
-    return barSub(big, topicHref(m.topic, m.level), printBtn) + `<div class="pad mqr"><div class="qrlist">${qrCard('k-' + m.level, m.title, `${big} · ${m.level} · ${levelDesc(m.level)}`, m.url)}</div>
+    return barSub(big, topicHref(m.topic, m.level), printBtn) + `<div class="pad mqr"><div class="qrlist">${qrCard('k-' + m.level, m.title, `${big} · ${m.level} · ${levelDesc(m.level)}`, goUrl(m))}</div>
       <a class="openlink noprint" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(t('openMat'))}</a></div>`;
   }
   function drawQrs() {
@@ -1118,6 +1149,7 @@
       <input class="codein" name="code" autocapitalize="off" spellcheck="false" autocomplete="off" placeholder="${esc(t('codePh'))}" aria-label="${esc(t('codePh'))}">
       <p class="err" id="loginErr"></p><button class="btn" type="submit">${esc(t('login'))}</button>
       <p class="joinrow">${esc(t('joinAsk'))} <a href="#/join">${esc(t('joinLink'))}</a></p>
+      <p class="forgot">${esc(t('loginForgot'))}</p>
       ${MOCK ? `<p class="mockcodes">${esc(t('mockCodes'))}</p>` : ''}</form><p class="tip">${esc(t('loginWhy'))}</p></div>`;
   }
   // 가입: 가입 코드를 아는 교사가 이름·학교를 넣으면 서버가 로그인 코드 8자리를 만들어 준다(휴먼쌤 2026-10-24 "B로 해 줘")
@@ -1141,19 +1173,21 @@
   let mineGroup = '';
   function viewMine() {
     if (!teacher) return viewLogin(true);
-    const mine = data.materials.filter(m => m.by === teacher.name);
+    // 내 자료: 서버가 로그인 때 준 내 자료 번호로 가린다(2026-10-31 — 공개 자료의 올린이 이름은 숨길 수 있어서). 번호가 없으면(시험 모드) 이름으로
+    const ids = Array.isArray(teacher.mine) ? new Set(teacher.mine) : null;
+    const mine = data.materials.filter(m => ids ? ids.has(m.id) : m.by === teacher.name);
     const tpOf = new Map(data.topics.map(tp => [tp.name, tp]));
     const gOf = m => (tpOf.get(m.topic) || {}).group || m.group || '기타';
     const groups = data.groups.map(g => ({ name: g.name, n: mine.filter(m => gOf(m) === g.name).length })).filter(g => g.n);
     if (!groups.some(g => g.name === mineGroup)) mineGroup = '';
     const chips = groups.length > 1 ? `<div class="chips mchips">${[{ name: '', n: mine.length }].concat(groups).map(g =>
-      `<button type="button" class="chip${g.name === mineGroup ? ' on' : ''}" data-mg="${esc(g.name)}">${esc(g.name || t('all'))} <small>${g.n}</small></button>`).join('')}</div>` : '';
+      `<button type="button" class="chip${g.name === mineGroup ? ' on' : ''}" data-mg="${esc(g.name)}">${esc(g.name ? gName(g.name) : t('all'))} <small>${g.n}</small></button>`).join('')}</div>` : '';
     const lvI = l => { const i = LEVEL_KEYS.indexOf(l); return i < 0 ? 9 : i; };
     const secs = data.topics.map(tp => {
       const list = mine.filter(m => m.topic === tp.name && (!mineGroup || gOf(m) === mineGroup))
         .sort((a, b) => lvI(a.level) - lvI(b.level) || String(b.date).localeCompare(String(a.date)));
       if (!list.length) return '';
-      return `<div class="mgh"><b>${esc(topicLabel(tp).big)}</b><span>${esc(tp.group)} · ${esc(t('nItems')(list.length))}</span></div>`
+      return `<div class="mgh"><b>${esc(topicLabel(tp).big)}</b><span>${esc(gName(tp.group))} · ${esc(t('nItems')(list.length))}</span></div>`
         + list.map(m => `<div class="item mine"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m, 'mine')}</a><button type="button" class="hidebtn" data-del="${esc(m.id)}">${esc(t('del'))}</button></div>`).join('');
     }).join('');
     const items = mine.length ? chips + secs : `<div class="emptycard"><div class="e">📭</div>${esc(t('noMine'))}</div>`;
@@ -1215,7 +1249,7 @@
       v.innerHTML = barHome() + `<div class="pad"><div class="emptycard" style="margin-top:18px"><div class="e">😢</div>${esc(t('loadErr'))}<button type="button" class="btn" id="retry">${esc(t('retry'))}</button></div></div>`;
       $('#retry').onclick = boot; renderTabs(page, parts); return;
     }
-    const fromQr = firstRender && page === 't';
+    const fromQr = firstRender && (page === 't' || page === 'q');
     firstRender = false;
     if (page !== 'join') joined = null;  // 가입 결과 화면도 떠나면 잊는다(코드는 로그인 상태에 남아 있다)
     if (page === 'admin' && admPage !== 'admin') { adm = null; admErr = ''; admOpen = ''; admNew = null; }   // 관리자 화면은 들어올 때마다 새로 받는다
@@ -1224,6 +1258,10 @@
     let title = appTitle();
     switch (page) {
       case 't': v.innerHTML = viewTopic(parts[1] || '', normLevel(parts[2]), fromQr); title = (parts[1] || '') + ' · ' + title; break;
+      case 'q': {   // 짧은 QR 주소 #/q/<qid>/<1|2|3>
+        const tq = topicByQid(parts[1]), lq = LEVEL_KEYS[(Number(parts[2]) || 0) - 1] || '';
+        v.innerHTML = viewTopic(tq ? tq.name : '', lq, fromQr); title = (tq ? tq.name : '') + ' · ' + title; break;
+      }
       case 'qr': v.innerHTML = viewQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'mq': v.innerHTML = viewMatQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'fav': v.innerHTML = viewFav(); title = t('tabFav') + ' · ' + title; break;
@@ -1253,7 +1291,7 @@
       try {
         const r = await api.post({ action: 'login', code });
         if (r.ok) {
-          teacher = { code, name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : [], admin: !!r.admin }; saveTeacher(teacher); toast(t('loggedIn'));
+          teacher = { code, name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : [], admin: !!r.admin, mine: Array.isArray(r.mine) ? r.mine : undefined }; saveTeacher(teacher); toast(t('loggedIn'));
           const go = afterLogin || '#/mine'; afterLogin = '';
           if (location.hash === go) render(); else location.hash = go;
         } else err.textContent = r.error === 'too_many' ? t('tooMany') : t('badCode');
@@ -1280,7 +1318,7 @@
       try {
         const r = await api.post({ action: 'join', joinCode, name, school, agree: true });
         if (r.ok) {
-          teacher = { code: r.code, name: r.teacher.name, school: r.teacher.school }; saveTeacher(teacher);
+          teacher = { code: r.code, name: r.teacher.name, school: r.teacher.school, mine: MOCK ? undefined : [] }; saveTeacher(teacher);
           joined = { code: r.code, name: r.teacher.name, school: r.teacher.school }; render(); return;
         }
         err.textContent = { bad_join: t('badJoin'), join_closed: t('joinClosed'), dup_name: t('dupName'), too_many: t('tooMany'), missing: t('needName'), need_agree: t('needAgree') }[r.error] || t('netErr');
@@ -1404,6 +1442,7 @@
         const r = await api.post({ action: 'upload', code: teacher.code, material, file });
         if (r.ok) {
           if (material.school !== teacher.school) { teacher.school = material.school; saveTeacher(teacher); }   // 다음에 올릴 때 이 학교가 먼저 골라져 있다
+          if (Array.isArray(teacher.mine) && r.id) { teacher.mine = [r.id].concat(teacher.mine); saveTeacher(teacher); }
           await reload(); toast(t('uploaded')); location.hash = topicHref(material.topic, material.level);
         }
         else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); location.hash = '#/login'; }
@@ -1419,7 +1458,10 @@
     b.disabled = true;
     try {
       const r = await api.post({ action: 'delete', code: teacher.code, id: b.dataset.del });
-      if (r.ok || r.error === 'not_found') { await reload(); toast(t('deleted')); render(true); }
+      if (r.ok || r.error === 'not_found') {
+        if (Array.isArray(teacher.mine)) { teacher.mine = teacher.mine.filter(x => x !== b.dataset.del); saveTeacher(teacher); }
+        await reload(); toast(t('deleted')); render(true);
+      }
       else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); location.hash = '#/login'; }
       else toast(r.error === 'not_owner' ? t('notOwner') : t('netErr'));
     } catch (ex) { toast(t('netErr')); }
@@ -1447,7 +1489,7 @@
     renameWarn: '이름을 바꾸면 이미 인쇄해 둔 이 소주제 QR은 열리지 않아요. 자료별 QR은 그대로예요.',
     renameAsk: (a, b) => `소주제 ‘${a}’를 ‘${b}’로 바꿀까요?\n이미 인쇄해 둔 ‘${a}’ 소주제 QR은 열리지 않게 돼요.`,
     topicDelAsk: s => `소주제 ‘${s}’를 지울까요? 자료가 없는 소주제만 지울 수 있어요.`, topicDeleted: '소주제를 지웠어요',
-    gName: '대주제 이름', mergeAsk: (a, b) => `‘${b}’ 대주제가 이미 있어요. ‘${a}’의 소주제를 모두 ‘${b}’로 합칠까요?`,
+    gName: '대주제 이름', gFr: '프랑스어 이름', gFrHint: '프랑스어 화면에서 이 이름으로 보여요.', mergeAsk: (a, b) => `‘${b}’ 대주제가 이미 있어요. ‘${a}’의 소주제를 모두 ‘${b}’로 합칠까요?`,
     up: '위로', down: '아래로',
     tcHint: '끈 선생님은 로그인·올리기가 안 되고, 올린 자료는 그대로 보여요. 코드를 잊은 선생님에게는 새 로그인 코드를 주세요(옛 코드는 볼 수 없어요).',
     tcCount: (n, off) => `선생님 ${n}명` + (off ? ` · 꺼짐 ${off}명` : ''), joinedOn: d => `가입 ${d}`,
@@ -1581,7 +1623,7 @@
 
   // 분류: 첫 화면과 같은 차례(순서 칸 → 대주제는 처음 나온 차례). 표에 없는 소주제(자료에만 있음)는 대주제 끝에
   function admTree() {
-    const list = adm.topics.map((x, i) => ({ name: x.topic, fr: x.fr, group: x.group || '기타', icon: x.icon, k: Number(x.order) || (1000 + i), reg: true })).sort((a, b) => a.k - b.k);
+    const list = adm.topics.map((x, i) => ({ name: x.topic, fr: x.fr, group: x.group || '기타', icon: x.icon, qid: Number(x.qid) || 0, k: Number(x.order) || (1000 + i), reg: true })).sort((a, b) => a.k - b.k);
     const live = adm.materials.filter(m => !m.deleted);
     live.forEach(m => { if (m.topic && !list.some(x => x.name === m.topic)) list.push({ name: m.topic, fr: '', group: m.group || '기타', icon: '', k: 1e9, reg: false }); });
     const groups = [];
@@ -1594,6 +1636,7 @@
     return groups;
   }
   const groupItems = () => admTree().map(g => ({ v: g.name, label: g.name, sub: AT.nTopics(g.topics.length) }));
+  function admGroupFr() { try { return JSON.parse(adm.settings.group_fr || '{}') || {}; } catch (e) { return {}; } }
   function admCat() {
     const groups = admTree(), regGroups = groups.filter(g => g.topics.some(x => x.reg));
     const add = admOpen === 't:+' ? `<div class="arow open" data-row="t:+">${admTopicForm(null)}</div>` : `<button type="button" class="mgnew" data-aopen="t:+">${ICON.plus}<span>${esc(AT.newTopic)}</span></button>`;
@@ -1601,9 +1644,11 @@
       const gi = regGroups.indexOf(g), gkey = 'g:' + g.name, gOpen = admOpen === gkey;
       const mv = gi < 0 ? '' : `<button type="button" class="mv" data-amv="group" data-name="${esc(g.name)}" data-dir="-1" aria-label="${esc(g.name + ' ' + AT.up)}"${gi === 0 ? ' disabled' : ''}>${ICON.up}</button>`
         + `<button type="button" class="mv" data-amv="group" data-name="${esc(g.name)}" data-dir="1" aria-label="${esc(g.name + ' ' + AT.down)}"${gi === regGroups.length - 1 ? ' disabled' : ''}>${ICON.down}</button>`;
-      const head = `<div class="ghd"><b>${esc(g.name)}</b><span class="gn">${esc(AT.nTopics(g.topics.length))}</span>${mv}<button type="button" class="mv txt" data-aopen="${esc(gkey)}" aria-expanded="${gOpen}">${esc(AT.rename)}</button></div>`;
-      const gform = gOpen ? `<div class="arow open" data-row="${esc(gkey)}"><form class="aform" id="agForm" data-from="${esc(g.name)}" novalidate autocomplete="off" style="border-top:0">
-        <div class="f"><label class="lab" for="ag-to">${esc(AT.gName)}</label><div class="inp"><input id="ag-to" name="to" maxlength="40" value="${esc(g.name)}"></div></div><p class="err" id="agErr"></p>
+      const gfr = admGroupFr()[g.name] || '';
+      const head = `<div class="ghd"><b>${esc(g.name)}${gfr ? ` <small>${esc(gfr)}</small>` : ''}</b><span class="gn">${esc(AT.nTopics(g.topics.length))}</span>${mv}<button type="button" class="mv txt" data-aopen="${esc(gkey)}" aria-expanded="${gOpen}">${esc(AT.rename)}</button></div>`;
+      const gform = gOpen ? `<div class="arow open" data-row="${esc(gkey)}"><form class="aform" id="agForm" data-from="${esc(g.name)}" data-fr="${esc(gfr)}" novalidate autocomplete="off" style="border-top:0">
+        <div class="f"><label class="lab" for="ag-to">${esc(AT.gName)}</label><div class="inp"><input id="ag-to" name="to" maxlength="40" value="${esc(g.name)}"></div></div>
+        <div class="f"><label class="lab" for="ag-fr">${esc(AT.gFr)} <small>${esc(tk('optional'))}</small></label><div class="inp"><input id="ag-fr" name="fr" maxlength="40" value="${esc(gfr)}" placeholder="Rencontres"></div><p class="lhint">${esc(AT.gFrHint)}</p></div><p class="err" id="agErr"></p>
         <div class="abtns"><button type="submit" class="pri">${esc(AT.save)}</button><button type="button" data-aopen="${esc(gkey)}">${esc(AT.close)}</button></div></form></div>` : '';
       const nReg = g.topics.filter(x => x.reg).length;
       return head + gform + g.topics.map((tp, i) => admTopicRow(tp, i, nReg)).join('');
@@ -1614,7 +1659,7 @@
     const mv = tp.reg ? `<button type="button" class="mv" data-amv="topic" data-name="${esc(tp.name)}" data-dir="-1" aria-label="${esc(tp.name + ' ' + AT.up)}"${i === 0 ? ' disabled' : ''}>${ICON.up}</button>`
       + `<button type="button" class="mv" data-amv="topic" data-name="${esc(tp.name)}" data-dir="1" aria-label="${esc(tp.name + ' ' + AT.down)}"${i >= nReg - 1 ? ' disabled' : ''}>${ICON.down}</button>` : '';
     return `<div class="arow${open ? ' open' : ''}" data-row="${esc(key)}"><div class="tline"><button type="button" class="ah" data-aopen="${esc(key)}" aria-expanded="${open}">`
-      + `<span class="em sm${ic.txt ? ' txt' : ''}" style="background:${pt ? pt.color : '#F6EEE4'}">${esc(ic.v)}</span><span class="tx"><b>${esc(tp.name)}</b><small>${esc([tp.fr, AT.nMats(tp.n)].filter(Boolean).join(' · '))}</small></span>`
+      + `<span class="em sm${ic.txt ? ' txt' : ''}" style="background:${pt ? pt.color : '#F6EEE4'}">${esc(ic.v)}</span><span class="tx"><b>${esc(tp.name)}</b><small>${esc([tp.fr, AT.nMats(tp.n), tp.qid ? 'QR ' + tp.qid : ''].filter(Boolean).join(' · '))}</small></span>`
       + `${tp.reg ? '' : `<span class="badge hid">${esc(AT.missing)}</span>`}</button>${mv}</div>${open ? admTopicForm(tp) : ''}</div>`;
   }
   // 소주제 고치기(표에 있는 것) 또는 만들기(새 소주제 · 표에 없는 소주제 등록)
@@ -1679,11 +1724,11 @@
     const gf = $('#agForm'); if (gf && !gf.dataset.bound) {
       gf.dataset.bound = '1';
       gf.onsubmit = async e => {
-        e.preventDefault(); const from = gf.dataset.from, to = gf.elements.to.value.replace(/\s+/g, ' ').trim();
+        e.preventDefault(); const from = gf.dataset.from, to = gf.elements.to.value.replace(/\s+/g, ' ').trim(), fr = gf.elements.fr.value.replace(/\s+/g, ' ').trim();
         if (!to) { $('#agErr').textContent = AT.err.missing; return; }
-        if (to === from) { admOpen = ''; render(true); return; }
-        if (admTree().some(g => g.name === to) && !confirm(AT.mergeAsk(from, to))) return;
-        await admDo('group_rename', { from, to }, AT.saved, gf.querySelector('.pri'), () => { admOpen = ''; });
+        if (to === from && fr === gf.dataset.fr) { admOpen = ''; render(true); return; }
+        if (to !== from && admTree().some(g => g.name === to) && !confirm(AT.mergeAsk(from, to))) return;
+        await admDo('group_rename', { from, to, fr }, AT.saved, gf.querySelector('.pri'), () => { admOpen = ''; });
       };
     }
     const jf = $('#asJoin'); if (jf) jf.onsubmit = async e => {
@@ -1783,7 +1828,7 @@
   document.addEventListener('click', e => {
     const L = e.target.closest('[data-lang]'); if (L) { lang = L.dataset.lang; render(true); return; }
     const G = e.target.closest('[data-group]'); if (G) { groupFilter = G.dataset.group; render(true); return; }
-    const V = e.target.closest('[data-level]'); if (V) { const p = route(); history.replaceState(null, '', topicHref(p[1] || '', V.dataset.level)); render(true); return; }
+    const V = e.target.closest('[data-level]'); if (V) { const p = route(), tq = p[0] === 'q' ? topicByQid(p[1]) : null; history.replaceState(null, '', topicHref(tq ? tq.name : (p[1] || ''), V.dataset.level)); render(true); return; }
     if (e.target.closest('[data-print]')) { window.print(); return; }
     if (e.target.closest('[data-install]')) { const ev = installEvt; if (ev) { ev.prompt(); Promise.resolve(ev.userChoice).catch(() => {}).then(() => { installEvt = null; render(true); }); } return; }
     if (e.target.closest('[data-install-x]')) { installHide = true; render(true); return; }
@@ -1826,9 +1871,10 @@
       const r = await api.post({ action: 'login', code: teacher.code });
       if (!teacher) return;
       if (r.ok) {
-        teacher = Object.assign({}, teacher, { name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : (teacher.favs || []), admin: !!r.admin });
+        teacher = Object.assign({}, teacher, { name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : (teacher.favs || []), admin: !!r.admin,
+          mine: Array.isArray(r.mine) ? r.mine : teacher.mine });
         saveTeacher(teacher);
-        if (['t', 'fav', 'mine', 'admin'].includes(route()[0] || '')) render(true);
+        if (['t', 'q', 'fav', 'mine', 'admin'].includes(route()[0] || '')) render(true);
       } else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); render(true); }
     } catch (e) {}
   }

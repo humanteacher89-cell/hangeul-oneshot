@@ -74,10 +74,14 @@ def main():
     for k, v in settings.items():
         out.append(f'INSERT INTO settings (key, value) VALUES ({q(k)}, {q(s(v))});')
 
+    # qid(소주제 고정 번호, 2026-10-31): 시트 차례대로 1, 2, 3 … — 이미 QR을 인쇄한 뒤 다시 옮기면 번호가 달라질 수 있으니 그때는 D1의 번호를 먼저 확인
+    qid = 0
     for t in pub.get('topics') or []:
         if s(t.get('topic')):
-            out.append('INSERT INTO topics (topic, fr, grp, ord, icon) VALUES ({}, {}, {}, {}, {});'.format(
-                q(s(t['topic'])), q(s(t.get('fr'))), q(s(t.get('group'))), q(num(t.get('order'))), q(s(t.get('icon')))))
+            qid += 1
+            out.append('INSERT INTO topics (topic, fr, grp, ord, icon, qid) VALUES ({}, {}, {}, {}, {}, {});'.format(
+                q(s(t['topic'])), q(s(t.get('fr'))), q(s(t.get('group'))), q(num(t.get('order'))), q(s(t.get('icon'))), qid))
+    out.append(f"INSERT OR REPLACE INTO settings (key, value) VALUES ('qid_seq', '{qid}');")
 
     names, keys, fav_n = {}, set(), 0
     for i, r in enumerate(priv.get('teachers') or []):

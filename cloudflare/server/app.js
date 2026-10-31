@@ -5,6 +5,7 @@
 //  POST /api 파일 올리기: 본문 = 파일 바이트, 머리글 X-Oneshot = encodeURIComponent(JSON {action:'upload', code, material, file:{name,type}})
 //       (base64 JSON을 풀면 CPU 한도 10ms를 넘으므로 바이트를 그대로 KV에 흘려 넣는다)
 //  GET  /f/<키>            → 올린 파일. 지운 자료의 파일은 404(KV에는 남겨 두어 되살릴 수 있다)
+//  GET  /go/<자료 id>      → 자료별 QR이 담는 주소. 지금 링크로 302(2026-10-31)
 //  POST /api {action:'admin', code, op, ...} → 관리자 화면(2차, 2026-10-31). 요청마다 코드로 is_admin = 1인지 본다(틀린 코드 401, 관리자 아님 403). 아래 ADMIN 표
 // 로그인 코드는 HMAC-SHA256(비밀 CODE_PEPPER) 해시만 저장한다. 틀린 코드·가입 코드는 기기별 10분 30번, 전체 300번이면 10분 막는다.
 
@@ -76,23 +77,61 @@ export async function handleFile(request, env, key) {
 }
 
 // 읽기: 시트 doGet과 같은 꼴. 올린 파일 주소('/f/…')는 지금 주소를 앞에 붙여 내보낸다(시험 주소 → 옮긴 주소에서도 그대로 맞게)
+// 소주제마다 고정 번호 qid(짧은 QR 주소 #/q/<qid>/<1|2|3>, 2026-10-31). 학교 칸이 '휴먼쌤'인 자료는 올린이 이름을 싣지 않는다(카드에도 안 보임).
+const HIDDEN_SETTINGS = ['join_code', 'qid_seq'];
 async function readAll(env, origin) {
   const db = env.DB;
   const [st, tp, mt] = await db.batch([
-    db.prepare("SELECT key, value FROM settings WHERE key <> 'join_code' ORDER BY rowid"),
-    db.prepare('SELECT topic, fr, grp, ord, icon FROM topics ORDER BY rowid'),
+    db.prepare("SELECT key, value FROM settings WHERE key NOT IN ('join_code', 'qid_seq') ORDER BY rowid"),
+    db.prepare('SELECT topic, fr, grp, ord, icon, qid FROM topics ORDER BY rowid'),
     db.prepare('SELECT id, grp, topic, level, title, type, url, descr, minutes, school, by_name, date FROM materials WHERE deleted IS NULL AND pub = 1 ORDER BY rowid')
   ]);
   const settings = {};
-  st.results.forEach(r => { if (r.key) settings[r.key] = String(r.value == null ? '' : r.value); });
+  st.results.forEach(r => { if (r.key && !HIDDEN_SETTINGS.includes(r.key)) settings[r.key] = String(r.value == null ? '' : r.value); });
   return {
     ok: true, settings,
-    topics: tp.results.map(r => ({ topic: r.topic, fr: r.fr, group: r.grp, order: r.ord == null ? '' : r.ord, icon: r.icon })),
+    topics: tp.results.map(r => ({ topic: r.topic, fr: r.fr, group: r.grp, order: r.ord == null ? '' : r.ord, icon: r.icon, qid: r.qid == null ? '' : r.qid })),
     materials: mt.results.map(r => ({ id: r.id, group: r.grp, topic: r.topic, level: r.level, title: r.title, type: r.type,
       url: r.url.startsWith('/') ? origin + r.url : r.url, desc: r.descr, minutes: r.minutes == null ? '' : r.minutes,
-      school: r.school, by: r.by_name, date: r.date, pub: '' })),
+      school: r.school, by: String(r.school).trim() === '휴먼쌤' ? '' : r.by_name, date: r.date, pub: '' })),
     updatedAt: new Date().toISOString()
   };
+}
+
+// 자료 QR 넘기기(/go/<자료 id>, 2026-10-31): 인쇄한 자료 QR은 이 주소를 담고, 서버가 지금 링크로 302 넘긴다(관리자가 링크를 고쳐도 QR은 그대로).
+// 숨기거나 지운 자료면 그 소주제·레벨 화면으로, 모르는 id면 첫 화면으로.
+export async function handleGo(request, env, id) {
+  const u = new URL(request.url), home = u.origin + '/';
+  const to = loc => new Response(null, { status: 302, headers: { Location: loc, 'Cache-Control': 'no-store' } });
+  try {
+    const m = await env.DB.prepare('SELECT m.url, m.pub, m.deleted, m.topic, m.level, t.qid FROM materials m LEFT JOIN topics t ON t.topic = m.topic WHERE m.id = ?1')
+      .bind(String(id || '').slice(0, 40)).first();
+    if (!m) return to(home);
+    if (m.pub === 1 && !m.deleted && /^(https?:\/\/|\/f\/)/i.test(m.url)) return to(m.url.startsWith('/') ? u.origin + m.url : m.url);
+    const lv = LEVEL_KEYS.indexOf(m.level) + 1;
+    return to(home + (m.qid != null ? `#/q/${m.qid}${lv ? '/' + lv : ''}` : `#/t/${encodeURIComponent(m.topic)}${m.level ? '/' + encodeURIComponent(m.level) : ''}`));
+  } catch (e) {
+    console.error('go', e && e.stack || e);
+    return to(home);
+  }
+}
+
+// 소주제 고정 번호: 한 번 쓴 번호는 다시 주지 않는다(지운 소주제의 인쇄 QR이 다른 소주제를 열지 않게). 마지막 번호는 설정 qid_seq(공개 안 함)
+async function nextQid(db) {
+  await db.prepare("INSERT OR IGNORE INTO settings (key, value) VALUES ('qid_seq', (SELECT COALESCE(MAX(qid), 0) FROM topics))").run();
+  const r = await db.prepare("UPDATE settings SET value = CAST(MAX(CAST(value AS INTEGER), (SELECT COALESCE(MAX(qid), 0) FROM topics)) + 1 AS TEXT) WHERE key = 'qid_seq' RETURNING value").first();
+  return Number(r.value);
+}
+// 번호가 비어 있는 소주제(옛 서버가 만든 것)에 번호를 채운다. 관리자 자료 받기·소주제 만들 때
+async function fillQids(db) {
+  const rows = (await db.prepare('SELECT topic FROM topics WHERE qid IS NULL ORDER BY rowid').all()).results;
+  for (const r of rows) await db.prepare('UPDATE topics SET qid = ?2 WHERE topic = ?1 AND qid IS NULL').bind(r.topic, await nextQid(db)).run();
+}
+// 내가 올린 자료 번호들(로그인 응답 — '내 자료'를 이름 대신 번호로 가린다)
+async function mineList(env, tc) {
+  const r = await env.DB.prepare('SELECT id FROM materials WHERE deleted IS NULL AND (teacher_id = ?1 OR (teacher_id IS NULL AND by_name = ?2)) ORDER BY rowid DESC')
+    .bind(tc.id, tc.name).all();
+  return r.results.map(x => x.id);
 }
 
 async function post(request, env, origin) {
@@ -107,7 +146,7 @@ async function post(request, env, origin) {
   const tc = await findTeacher(env, b.code);
   if (!tc) { await addFail(env, who); return isAdmin ? json({ ok: false, error: 'bad_code' }, 401) : no('bad_code'); }
   if (b.action === 'login') {
-    const r = { ok: true, teacher: { name: tc.name, school: tc.school }, favs: await favList(env, tc.id) };
+    const r = { ok: true, teacher: { name: tc.name, school: tc.school }, favs: await favList(env, tc.id), mine: await mineList(env, tc) };
     if (tc.is_admin) r.admin = true;   // 화면이 관리자 입구를 보여 줄 뿐, 관리자 동작은 요청마다 다시 확인한다
     return json(r);
   }
@@ -173,7 +212,8 @@ async function ensureTopic(env, topic, group) {
   const have = await env.DB.prepare('SELECT grp FROM topics WHERE topic = ?1').bind(topic).first();
   if (have) return have.grp;
   const g = str(group, 40) || '기타';
-  await env.DB.prepare("INSERT OR IGNORE INTO topics (topic, fr, grp, ord, icon) VALUES (?1, '', ?2, (SELECT COALESCE(MAX(ord), 0) + 10 FROM topics), '')").bind(topic, g).run();
+  await env.DB.prepare("INSERT OR IGNORE INTO topics (topic, fr, grp, ord, icon, qid) VALUES (?1, '', ?2, (SELECT COALESCE(MAX(ord), 0) + 10 FROM topics), '', ?3)")
+    .bind(topic, g, await nextQid(env.DB)).run();
   return g;
 }
 
@@ -198,7 +238,7 @@ async function fav(env, b, tc) {
 async function upload(env, request, b, tc, isFile) {
   const m = b.material || {};
   const topic = str(m.topic, 60), level = str(m.level, 10), title = str(m.title, 60);
-  if (!title || !topic || !level) return no('missing');
+  if (!title || !topic || !LEVEL_KEYS.includes(level)) return no('missing');   // 레벨은 하·중·상만(2026-10-31)
   let url = str(m.url, 2000), fileKey = null;
   if (isFile) {
     const f = b.file || {};
@@ -279,9 +319,10 @@ const ADMIN = {
   // 관리자 화면 한 번에 받기: 설정(가입 코드 포함) · 소주제 · 자료 전부(숨김·지운 것 포함) · 교사(올린 자료 수, 코드·해시는 빼고)
   async overview(env, b, me, origin) {
     const db = env.DB;
+    await fillQids(db);
     const [st, tp, mt, tc] = await db.batch([
       db.prepare('SELECT key, value FROM settings ORDER BY rowid'),
-      db.prepare('SELECT topic, fr, grp, ord, icon FROM topics ORDER BY rowid'),
+      db.prepare('SELECT topic, fr, grp, ord, icon, qid FROM topics ORDER BY rowid'),
       db.prepare('SELECT id, grp, topic, level, title, type, url, file_key, descr, school, by_name, teacher_id, date, pub, deleted FROM materials ORDER BY rowid'),
       db.prepare('SELECT t.id, t.name, t.school, t.joined, t.active, t.is_admin, (SELECT COUNT(*) FROM materials m WHERE m.deleted IS NULL AND ' +
         '(m.teacher_id = t.id OR (m.teacher_id IS NULL AND m.by_name = t.name))) AS n FROM teachers t ORDER BY t.id')
@@ -290,7 +331,7 @@ const ADMIN = {
     st.results.forEach(r => { if (r.key) settings[r.key] = String(r.value == null ? '' : r.value); });
     return json({
       ok: true, me: me.id, settings,
-      topics: tp.results.map(r => ({ topic: r.topic, fr: r.fr, group: r.grp, order: r.ord == null ? '' : r.ord, icon: r.icon })),
+      topics: tp.results.map(r => ({ topic: r.topic, fr: r.fr, group: r.grp, order: r.ord == null ? '' : r.ord, icon: r.icon, qid: r.qid == null ? '' : r.qid })),
       materials: mt.results.map(r => ({ id: r.id, group: r.grp, topic: r.topic, level: r.level, title: r.title, type: r.type,
         url: r.url.startsWith('/') ? origin + r.url : r.url, file: !!r.file_key, desc: r.descr, school: r.school, by: r.by_name,
         teacherId: r.teacher_id, date: r.date, pub: r.pub === 1, deleted: r.deleted || '' })),
@@ -342,7 +383,8 @@ const ADMIN = {
       ]);
     } else {
       if (await has(name)) return no('dup_topic');
-      await db.prepare('INSERT INTO topics (topic, fr, grp, ord, icon) VALUES (?1, ?2, ?3, (SELECT COALESCE(MAX(ord), 0) + 10 FROM topics), ?4)').bind(name, fr, group, icon).run();
+      await db.prepare('INSERT INTO topics (topic, fr, grp, ord, icon, qid) VALUES (?1, ?2, ?3, (SELECT COALESCE(MAX(ord), 0) + 10 FROM topics), ?4, ?5)')
+        .bind(name, fr, group, icon, await nextQid(db)).run();
     }
     return ok();
   },
@@ -361,15 +403,21 @@ const ADMIN = {
     if (swap(g.topics, g.topics.indexOf(name), b.dir < 0 ? -1 : 1)) await saveOrder(env.DB, groups);
     return ok();
   },
-  // 대주제 이름 바꾸기(그 대주제의 소주제·자료 모두). 이미 있는 대주제 이름을 주면 합쳐진다
+  // 대주제 이름 바꾸기(그 대주제의 소주제·자료 모두) + 프랑스어 이름(설정 group_fr, JSON {대주제: 프랑스어}).
+  // 이미 있는 대주제 이름을 주면 합쳐진다. fr을 주지 않으면 프랑스어 이름은 새 이름으로 옮겨 간다
   async group_rename(env, b) {
     const db = env.DB, from = str(b.from, 40), to = str(b.to, 40);
     if (!from || !to) return no('missing');
     if (!(await db.prepare('SELECT 1 AS x FROM topics WHERE grp = ?1').bind(from).first())) return no('not_found');
-    await db.batch([
-      db.prepare('UPDATE topics SET grp = ?2 WHERE grp = ?1').bind(from, to),
-      db.prepare('UPDATE materials SET grp = ?2 WHERE grp = ?1').bind(from, to)
-    ]);
+    const row = await db.prepare("SELECT value FROM settings WHERE key = 'group_fr'").first();
+    let map = {};
+    try { map = JSON.parse(row && row.value || '{}') || {}; } catch (e) { map = {}; }
+    const fr = b.fr === undefined ? (map[from] || '') : str(b.fr, 40);
+    delete map[from];
+    if (fr) map[to] = fr; else delete map[to];
+    const stmts = [db.prepare("INSERT INTO settings (key, value) VALUES ('group_fr', ?1) ON CONFLICT (key) DO UPDATE SET value = excluded.value").bind(JSON.stringify(map))];
+    if (to !== from) stmts.push(db.prepare('UPDATE topics SET grp = ?2 WHERE grp = ?1').bind(from, to), db.prepare('UPDATE materials SET grp = ?2 WHERE grp = ?1').bind(from, to));
+    await db.batch(stmts);
     return ok();
   },
   // 대주제 한 칸 위·아래(첫 화면에 묶음이 보이는 차례)

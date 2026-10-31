@@ -1,0 +1,14 @@
+# 한글원샷 공개판(2026-10-31부터) — https://humanssaem-hangeul-oneshot.pages.dev/ (human-teacher.com/hangeuloneshot 이 이리로 넘김)
+# deploy.py deploy --prod 가 임시 폴더에 이 파일을 wrangler.toml로 두고 올린다. 실제 교사·자료가 든 D1·KV — 서버 시험은 여기 대지 않는다.
+name = "humanssaem-hangeul-oneshot"
+pages_build_output_dir = "./public"
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hangeul-oneshot"
+database_id = "182b75bc-c800-42fb-b3e1-f884528f59ab"
+
+[[kv_namespaces]]
+binding = "FILES"
+id = "3baf4486f767489b80558e183bf03d57"
