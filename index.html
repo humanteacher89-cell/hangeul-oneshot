@@ -295,20 +295,20 @@
   .cbempty { padding: 12px 10px; font-size: 13.5px; font-weight: 700; color: var(--sub); }
 
   /* 관리자 화면(#/admin, 2026-10-31 카드 69 2차): 휴먼쌤만. 자료 · 분류 · 교사 · 설정 네 칸 */
-  .admbtn { display: flex; align-items: center; gap: 12px; margin-top: 12px; background: #fff; border: 2px solid var(--line); border-radius: 19px; padding: 12px 14px; box-shadow: var(--press); }
-  .admbtn > svg:first-child { flex: none; width: 40px; height: 40px; padding: 9px; border-radius: 13px; background: var(--pu-l); color: var(--pu-d); }
-  .admbtn > svg:last-child { flex: none; width: 18px; height: 18px; color: var(--sub); }
-  .admbtn .tx { flex: 1; min-width: 0; }
-  .admbtn b { display: block; font-size: 16px; font-weight: 900; }
-  .admbtn small { display: block; margin-top: 1px; font-size: 12.5px; font-weight: 700; color: var(--sub); }
-  .adwrap { max-width: 720px; margin: 0 auto; }
-  .adseg { position: sticky; top: calc(62px + env(safe-area-inset-top)); z-index: 15; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 2px 0 4px;
+  .mgentry { display: flex; align-items: center; gap: 12px; margin-top: 12px; background: #fff; border: 2px solid var(--line); border-radius: 19px; padding: 12px 14px; box-shadow: var(--press); }
+  .mgentry > svg:first-child { flex: none; width: 40px; height: 40px; padding: 9px; border-radius: 13px; background: var(--pu-l); color: var(--pu-d); }
+  .mgentry > svg:last-child { flex: none; width: 18px; height: 18px; color: var(--sub); }
+  .mgentry .tx { flex: 1; min-width: 0; }
+  .mgentry b { display: block; font-size: 16px; font-weight: 900; }
+  .mgentry small { display: block; margin-top: 1px; font-size: 12.5px; font-weight: 700; color: var(--sub); }
+  .mgwrap { max-width: 720px; margin: 0 auto; }
+  .mgseg { position: sticky; top: calc(62px + env(safe-area-inset-top)); z-index: 15; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 2px 0 4px;
            background: #F4EEE6; border-radius: 16px; padding: 4px; box-shadow: 0 6px 12px -8px rgba(80,55,30,.25); }
-  .adseg a { min-width: 0; text-align: center; border-radius: 12px; padding: 9px 2px; font-size: 14.5px; font-weight: 900; color: var(--sub); white-space: nowrap; }
-  .adseg a.on { background: #fff; color: var(--ink); box-shadow: 0 2px 0 #E6D7C3; }
+  .mgseg a { min-width: 0; text-align: center; border-radius: 12px; padding: 9px 2px; font-size: 14.5px; font-weight: 900; color: var(--sub); white-space: nowrap; }
+  .mgseg a.on { background: #fff; color: var(--ink); box-shadow: 0 2px 0 #E6D7C3; }
   .acount { margin: 12px 4px 8px; font-size: 13px; font-weight: 800; color: var(--sub); }
-  .adwrap .srch { margin-top: 12px; }
-  .adwrap .chips { margin-top: 10px; }
+  .mgwrap .srch { margin-top: 12px; }
+  .mgwrap .chips { margin-top: 10px; }
   .arow { margin-bottom: 10px; background: #fff; border: 2px solid var(--line); border-radius: 18px; min-width: 0; }
   .arow.open { border-color: #E9CDB4; box-shadow: 0 6px 18px rgba(80,55,30,.10); }
   .arow.dim .ah b { color: var(--sub); }
@@ -323,7 +323,7 @@
   .av.sm { background: #FFE6D3; }
   .badge { flex: none; font-size: 11.5px; font-weight: 900; padding: 3px 8px; border-radius: 8px; white-space: nowrap; background: #F4EEE6; color: #8A7B6C; }
   .badge.hid { background: #FFF1D6; color: #8A5A00; } .badge.del { background: #FFE4E0; color: #D93A1E; }
-  .badge.off { background: #EDE7E0; color: #8A7B6C; } .badge.adm { background: var(--pu-l); color: var(--pu-d); }
+  .badge.off { background: #EDE7E0; color: #8A7B6C; } .badge.mgr { background: var(--pu-l); color: var(--pu-d); }
   .aform { padding: 2px 12px 14px; border-top: 1px dashed var(--line); }
   .aform .f { margin-top: 12px; }
   .aform .seg3 span { height: 50px; font-size: 17px; }
@@ -340,9 +340,9 @@
   .mv svg { width: 16px; height: 16px; }
   .mv:disabled { opacity: .3; }
   .mv.txt { width: auto; padding: 0 10px; font-size: 13px; font-weight: 900; }
-  .addbtn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 50px; margin-top: 12px; border: 2px dashed #E1CFB8; border-radius: 16px;
+  .mgnew { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 50px; margin-top: 12px; border: 2px dashed #E1CFB8; border-radius: 16px;
             background: #FFFCF7; font-size: 15px; font-weight: 900; color: var(--coral-d); }
-  .addbtn svg { width: 18px; height: 18px; }
+  .mgnew svg { width: 18px; height: 18px; }
   .apanel { margin-top: 14px; background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 16px 14px; }
   .apanel h3 { margin: 0; font-size: 17px; font-weight: 900; }
   .apanel .lhint { margin-left: 0; }
@@ -515,8 +515,8 @@
     .sheet .cta { position: static; padding: 0; background: none; margin: 20px 0 0; max-width: none; }
     .toast { bottom: 32px; }
     /* 관리자 화면: 가운데 한 줄기, 위 칸 고르기는 제목 줄 아래에 붙는다 */
-    .adseg { top: 70px; }
-    .admbtn { margin-top: 14px; }
+    .mgseg { top: 70px; }
+    .mgentry { margin-top: 14px; }
   }
 
   @media print {
@@ -1160,7 +1160,7 @@
     return barSub(t('tabTeacher'), '', langToggle(true)) + `<div class="pad"><div class="minewrap">
       <div class="me"><span class="av">👩‍🏫</span><div class="nm"><b>${esc(t('teacherName')(teacher.name))}</b><span>${esc(teacher.school)}</span></div><button type="button" class="ghostbtn" data-logout>${esc(t('logout'))}</button></div>
       <a class="btn" href="#/upload">${ICON.plus}<span>${esc(t('upload'))}</span></a>
-      ${teacher.admin ? `<a class="admbtn" href="#/admin">${ICON.gear}<span class="tx"><b>${esc(AT.entry)}</b><small>${esc(AT.entrySub)}</small></span>${ICON.right}</a>` : ''}
+      ${teacher.admin ? `<a class="mgentry" href="#/admin">${ICON.gear}<span class="tx"><b>${esc(AT.entry)}</b><small>${esc(AT.entrySub)}</small></span>${ICON.right}</a>` : ''}
       <div class="sec"><h2>${esc(t('myMats'))}</h2><span>${esc(t('nItems')(mine.length))}</span></div>${items}${mine.length ? `<p class="tip">${esc(t('mineTip'))}</p>` : ''}</div></div>`;
   }
   function viewUpload(preTopic, preLevel) {
@@ -1519,18 +1519,18 @@
     if (!teacher) { afterLogin = location.hash; return viewLogin(); }
     if (!teacher.admin) return barSub(AT.title, '#/mine', ghost) + `<div class="pad"><div class="emptycard" style="margin-top:18px"><div class="e">🔒</div>${esc(AT.notAdmin)}<a class="btn" href="#/mine">${esc(AT.toMine)}</a></div></div>`;
     admTab = ADM_TABS.includes(tab) ? tab : 'mat';
-    const seg = `<nav class="adseg" aria-label="${esc(AT.title)}">${ADM_TABS.map(k => `<a href="#/admin/${k}" class="${k === admTab ? 'on' : ''}"${k === admTab ? ' aria-current="page"' : ''}>${esc(AT.tabs[k])}</a>`).join('')}</nav>`;
+    const seg = `<nav class="mgseg" aria-label="${esc(AT.title)}">${ADM_TABS.map(k => `<a href="#/admin/${k}" class="${k === admTab ? 'on' : ''}"${k === admTab ? ' aria-current="page"' : ''}>${esc(AT.tabs[k])}</a>`).join('')}</nav>`;
     const body = !adm
       ? (admErr ? `<div class="emptycard" style="margin-top:14px"><div class="e">😢</div>${esc(admErr)}<button type="button" class="btn" data-aretry>${esc(tk('retry'))}</button></div>`
                 : `<div class="loading" style="padding:80px 0"><span class="e">🐯</span>${esc(tk('loading'))}</div>`)
       : { mat: admMat, cat: admCat, tc: admTc, set: admSet }[admTab]();
-    return barSub(AT.title, '#/mine', ghost) + `<div class="pad"><div class="adwrap">${seg}${body}</div></div>`;
+    return barSub(AT.title, '#/mine', ghost) + `<div class="pad"><div class="mgwrap">${seg}${body}</div></div>`;
   }
-  const admSearch = (k, ph) => `<label class="srch">${ICON.search}<input id="admQ" data-k="${k}" type="search" enterkeyhint="search" placeholder="${esc(ph)}" value="${esc(admQ[k])}" aria-label="${esc(ph)}">`
+  const admSearch = (k, ph) => `<label class="srch">${ICON.search}<input id="mgQ" data-k="${k}" type="search" enterkeyhint="search" placeholder="${esc(ph)}" value="${esc(admQ[k])}" aria-label="${esc(ph)}">`
     + `<button type="button" class="sx" data-aqx="${k}" aria-label="${esc(tk('clearQ'))}"${admQ[k] ? '' : ' hidden'}>✕</button></label>`;
   // 찾는 글자를 칠 때는 목록만 다시 그린다(칸이 포커스를 잃지 않게)
   function drawAdmList() {
-    const B = $('#admList'); if (!B || !adm) return;
+    const B = $('#mgList'); if (!B || !adm) return;
     B.innerHTML = admTab === 'tc' ? admTcList() : admMatList();
     const X = $('[data-aqx]'); if (X) X.hidden = !admQ[admTab === 'tc' ? 'tc' : 'mat'];
     bindAdmin();
@@ -1540,7 +1540,7 @@
   function admMat() {
     const n = k => k === 'all' ? adm.materials.length : adm.materials.filter(m => admSt(m) === k).length;
     const chips = `<div class="chips mchips">${['all', 'pub', 'hid', 'del'].map(k => `<button type="button" class="chip${admF === k ? ' on' : ''}" data-af="${k}" aria-pressed="${admF === k}">${esc(AT[k])} <small>${n(k)}</small></button>`).join('')}</div>`;
-    return admSearch('mat', AT.matSearch) + chips + `<div id="admList">${admMatList()}</div>`;
+    return admSearch('mat', AT.matSearch) + chips + `<div id="mgList">${admMatList()}</div>`;
   }
   function admMatList() {
     const q = admQ.mat.replace(/\s+/g, '').toLowerCase();
@@ -1596,7 +1596,7 @@
   const groupItems = () => admTree().map(g => ({ v: g.name, label: g.name, sub: AT.nTopics(g.topics.length) }));
   function admCat() {
     const groups = admTree(), regGroups = groups.filter(g => g.topics.some(x => x.reg));
-    const add = admOpen === 't:+' ? `<div class="arow open" data-row="t:+">${admTopicForm(null)}</div>` : `<button type="button" class="addbtn" data-aopen="t:+">${ICON.plus}<span>${esc(AT.newTopic)}</span></button>`;
+    const add = admOpen === 't:+' ? `<div class="arow open" data-row="t:+">${admTopicForm(null)}</div>` : `<button type="button" class="mgnew" data-aopen="t:+">${ICON.plus}<span>${esc(AT.newTopic)}</span></button>`;
     return `<p class="lhint"><span class="m">i</span><span>${esc(AT.catHint)}</span></p>` + add + groups.map(g => {
       const gi = regGroups.indexOf(g), gkey = 'g:' + g.name, gOpen = admOpen === gkey;
       const mv = gi < 0 ? '' : `<button type="button" class="mv" data-amv="group" data-name="${esc(g.name)}" data-dir="-1" aria-label="${esc(g.name + ' ' + AT.up)}"${gi === 0 ? ' disabled' : ''}>${ICON.up}</button>`
@@ -1637,7 +1637,7 @@
   function admTc() {
     const off = adm.teachers.filter(x => !x.active).length;
     return `<p class="lhint"><span class="m">i</span><span>${esc(AT.tcHint)}</span></p>` + admSearch('tc', AT.tcSearch)
-      + `<div class="acount">${esc(AT.tcCount(adm.teachers.length, off))}</div><div id="admList">${admTcList()}</div>`;
+      + `<div class="acount">${esc(AT.tcCount(adm.teachers.length, off))}</div><div id="mgList">${admTcList()}</div>`;
   }
   function admTcList() {
     const q = admQ.tc.replace(/\s+/g, '').toLowerCase();
@@ -1646,7 +1646,7 @@
   }
   function admTcRow(x) {
     const key = 'c:' + x.id, open = admOpen === key, me = x.id === adm.me;
-    const badges = (x.admin ? `<span class="badge adm">${esc(AT.admin)}</span>` : '') + (x.active ? '' : `<span class="badge off">${esc(AT.off)}</span>`);
+    const badges = (x.admin ? `<span class="badge mgr">${esc(AT.admin)}</span>` : '') + (x.active ? '' : `<span class="badge off">${esc(AT.off)}</span>`);
     const meta = [String(x.school || '').replace(/\s*한글학교$/, ''), x.joined && AT.joinedOn(x.joined), AT.nMats(x.n)].filter(Boolean).join(' · ');
     const code = admNew && admNew.id === x.id ? `<div class="codebox"><p class="lab2">${esc(AT.codeFor(x.name))}</p><div class="newcode" id="newCode">${esc(admNew.code)}</div>`
       + `<button type="button" class="ghostbtn" data-acopy>${esc(tk('copyCode'))}</button><p class="keep">${esc(AT.codeKeep)}</p></div>` : '';
@@ -1748,7 +1748,7 @@
       return true;
     }
     const F = e.target.closest('[data-af]'); if (F) { admF = F.dataset.af; admOpen = ''; render(true); return true; }
-    const X = e.target.closest('[data-aqx]'); if (X) { admQ[X.dataset.aqx] = ''; const i = $('#admQ'); if (i) { i.value = ''; i.focus(); } drawAdmList(); return true; }
+    const X = e.target.closest('[data-aqx]'); if (X) { admQ[X.dataset.aqx] = ''; const i = $('#mgQ'); if (i) { i.value = ''; i.focus(); } drawAdmList(); return true; }
     if (e.target.closest('[data-acopy]')) {
       const code = admNew && admNew.code; if (!code) return true;
       navigator.clipboard.writeText(code).then(() => toast(tk('codeCopied')), () => { const r = document.createRange(), s = getSelection(); r.selectNodeContents($('#newCode')); s.removeAllRanges(); s.addRange(r); toast(tk('copySel')); });
@@ -1806,7 +1806,7 @@
   });
   document.addEventListener('input', e => {
     if (e.target && e.target.id === 'libQ') { libQ = e.target.value; drawLib(); }
-    if (e.target && e.target.id === 'admQ') { admQ[e.target.dataset.k] = e.target.value; drawAdmList(); }
+    if (e.target && e.target.id === 'mgQ') { admQ[e.target.dataset.k] = e.target.value; drawAdmList(); }
   });
 
   let toastTimer;
