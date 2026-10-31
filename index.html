@@ -294,6 +294,74 @@
   .cbo.new .em { background: #FFEDE6; color: var(--coral); font-size: 20px; font-weight: 900; }
   .cbempty { padding: 12px 10px; font-size: 13.5px; font-weight: 700; color: var(--sub); }
 
+  /* 관리자 화면(#/admin, 2026-10-31 카드 69 2차): 휴먼쌤만. 자료 · 분류 · 교사 · 설정 네 칸 */
+  .admbtn { display: flex; align-items: center; gap: 12px; margin-top: 12px; background: #fff; border: 2px solid var(--line); border-radius: 19px; padding: 12px 14px; box-shadow: var(--press); }
+  .admbtn > svg:first-child { flex: none; width: 40px; height: 40px; padding: 9px; border-radius: 13px; background: var(--pu-l); color: var(--pu-d); }
+  .admbtn > svg:last-child { flex: none; width: 18px; height: 18px; color: var(--sub); }
+  .admbtn .tx { flex: 1; min-width: 0; }
+  .admbtn b { display: block; font-size: 16px; font-weight: 900; }
+  .admbtn small { display: block; margin-top: 1px; font-size: 12.5px; font-weight: 700; color: var(--sub); }
+  .adwrap { max-width: 720px; margin: 0 auto; }
+  .adseg { position: sticky; top: calc(62px + env(safe-area-inset-top)); z-index: 15; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 2px 0 4px;
+           background: #F4EEE6; border-radius: 16px; padding: 4px; box-shadow: 0 6px 12px -8px rgba(80,55,30,.25); }
+  .adseg a { min-width: 0; text-align: center; border-radius: 12px; padding: 9px 2px; font-size: 14.5px; font-weight: 900; color: var(--sub); white-space: nowrap; }
+  .adseg a.on { background: #fff; color: var(--ink); box-shadow: 0 2px 0 #E6D7C3; }
+  .acount { margin: 12px 4px 8px; font-size: 13px; font-weight: 800; color: var(--sub); }
+  .adwrap .srch { margin-top: 12px; }
+  .adwrap .chips { margin-top: 10px; }
+  .arow { margin-bottom: 10px; background: #fff; border: 2px solid var(--line); border-radius: 18px; min-width: 0; }
+  .arow.open { border-color: #E9CDB4; box-shadow: 0 6px 18px rgba(80,55,30,.10); }
+  .arow.dim .ah b { color: var(--sub); }
+  .arow .ah { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; border: 0; background: none; padding: 10px 12px; text-align: left; border-radius: 16px; }
+  .arow .ah .tx { flex: 1; min-width: 0; }
+  .arow .ah b { display: block; font-size: 15.5px; font-weight: 900; letter-spacing: -.02em; line-height: 1.3; word-break: keep-all; overflow-wrap: anywhere; }
+  .arow .ah small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 700; color: var(--sub); overflow-wrap: anywhere; }
+  .arow .tline { display: flex; align-items: center; gap: 4px; padding-right: 8px; }
+  .arow .tline .ah { flex: 1; }
+  .ti.sm, .em.sm, .av.sm { flex: none; width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; font-size: 21px; line-height: 1; }
+  .em.sm.txt { font-size: 15px; }
+  .av.sm { background: #FFE6D3; }
+  .badge { flex: none; font-size: 11.5px; font-weight: 900; padding: 3px 8px; border-radius: 8px; white-space: nowrap; background: #F4EEE6; color: #8A7B6C; }
+  .badge.hid { background: #FFF1D6; color: #8A5A00; } .badge.del { background: #FFE4E0; color: #D93A1E; }
+  .badge.off { background: #EDE7E0; color: #8A7B6C; } .badge.adm { background: var(--pu-l); color: var(--pu-d); }
+  .aform { padding: 2px 12px 14px; border-top: 1px dashed var(--line); }
+  .aform .f { margin-top: 12px; }
+  .aform .seg3 span { height: 50px; font-size: 17px; }
+  .abtns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .abtns > button, .abtns > a { flex: 1 1 auto; min-width: 84px; height: 46px; border-radius: 14px; border: 2px solid var(--line); background: #fff; padding: 0 12px;
+                                 font-size: 14.5px; font-weight: 900; color: #6E5E50; display: grid; place-items: center; white-space: nowrap; }
+  .abtns > .pri { background: var(--coral); border-color: var(--coral); color: #fff; box-shadow: 0 3px 0 var(--coral-d); }
+  .abtns > .warn { border-color: #F6CFC4; background: #FFF5F2; color: #D93A1E; }
+  .abtns > button:disabled { opacity: .55; }
+  .ghd { display: flex; align-items: center; gap: 6px; margin: 20px 2px 8px; min-width: 0; }
+  .ghd b { flex: 1; min-width: 0; font-size: 17px; font-weight: 900; overflow-wrap: anywhere; }
+  .ghd .gn { flex: none; font-size: 12.5px; font-weight: 800; color: var(--sub); }
+  .mv { flex: none; width: 34px; height: 34px; border-radius: 11px; border: 2px solid var(--line); background: #fff; color: #6E5E50; display: grid; place-items: center; padding: 0; }
+  .mv svg { width: 16px; height: 16px; }
+  .mv:disabled { opacity: .3; }
+  .mv.txt { width: auto; padding: 0 10px; font-size: 13px; font-weight: 900; }
+  .addbtn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 50px; margin-top: 12px; border: 2px dashed #E1CFB8; border-radius: 16px;
+            background: #FFFCF7; font-size: 15px; font-weight: 900; color: var(--coral-d); }
+  .addbtn svg { width: 18px; height: 18px; }
+  .apanel { margin-top: 14px; background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 16px 14px; }
+  .apanel h3 { margin: 0; font-size: 17px; font-weight: 900; }
+  .apanel .lhint { margin-left: 0; }
+  .jcnow { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: #FFF6EA; }
+  .jcnow span { font-size: 13px; font-weight: 800; color: var(--sub); }
+  .jcnow b { font-size: 22px; font-weight: 900; letter-spacing: .06em; overflow-wrap: anywhere; user-select: all; }
+  .jcnow b.off { font-size: 16px; letter-spacing: 0; color: #D93A1E; }
+  .ta { display: block; width: 100%; min-height: 92px; margin-top: 12px; border: 2px solid var(--line); border-radius: 16px; background: #fff; padding: 12px 14px;
+        font-size: 15.5px; font-weight: 700; line-height: 1.5; resize: vertical; outline: none; }
+  .ta:focus { border-color: var(--coral); box-shadow: 0 0 0 4px #FFE0D5; }
+  .astat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+  .astat div { border-radius: 14px; background: #FFF8EF; padding: 10px 6px; text-align: center; }
+  .astat b { display: block; font-size: 20px; font-weight: 900; }
+  .astat span { display: block; font-size: 12px; font-weight: 800; color: var(--sub); }
+  .codebox { margin-top: 12px; padding: 14px 12px; border-radius: 16px; background: #FFF6EA; text-align: center; }
+  .codebox .lab2 { margin: 0; }
+  .codebox .newcode { margin: 6px 0 10px; font-size: 32px; }
+  .codebox .keep { margin-top: 10px; }
+
   /* 즐겨찾기(☆ 단추·#/fav 화면·필터 창·로그인 안내창) */
   .hbtns { display: flex; align-items: center; gap: 8px; }
   .star { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line); background: #fff; color: #C9B9A6; display: grid; place-items: center; padding: 0; }
@@ -314,6 +382,7 @@
   .srch input::-webkit-search-cancel-button { display: none; }
   .srch.lib { margin: 14px 0 2px; }
   .srch .sx { flex: none; width: 28px; height: 28px; border: 0; border-radius: 50%; background: #F1E7DA; color: #8A7B6C; font-size: 13px; font-weight: 900; display: grid; place-items: center; padding: 0; }
+  .srch .sx[hidden] { display: none; }   /* 찾는 글자가 없을 때 지우기 단추 감추기(위 display가 hidden을 덮지 않게) */
   /* 즐겨찾기 필터: 팝업 없이 화면 안에서 바로 누른다(2026-10-25 휴먼쌤). 줄마다 이름 + 칩(폰은 옆으로 밀기, PC는 줄바꿈) */
   .fpanel { margin-top: 8px; background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 4px 0; }
   .frow { display: flex; align-items: center; gap: 8px; padding: 6px 0 6px 14px; }
@@ -445,6 +514,9 @@
     .sheet .pvf { grid-column: 2; grid-row: 1 / span 20; position: sticky; top: 24px; margin-top: 0; }
     .sheet .cta { position: static; padding: 0; background: none; margin: 20px 0 0; max-width: none; }
     .toast { bottom: 32px; }
+    /* 관리자 화면: 가운데 한 줄기, 위 칸 고르기는 제목 줄 아래에 붙는다 */
+    .adseg { top: 70px; }
+    .admbtn { margin-top: 14px; }
   }
 
   @media print {
@@ -511,6 +583,8 @@
     right: S('<path d="M9 5l7 7-7 7"/>', 2.2),
     plus: S('<path d="M12 5v14M5 12h14"/>', 2.8),
     down: S('<path d="M6 9l6 6 6-6"/>', 2.4),
+    up: S('<path d="M6 15l6-6 6 6"/>', 2.4),
+    gear: S('<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/><circle cx="12" cy="12" r="6.4"/>', 2),
     star: S('<path d="M12 3.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>'),
     shelf: S('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2h6.5A1.5 1.5 0 0 1 20 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/>'),
     search: S('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
@@ -573,6 +647,7 @@
       lkFolder: '드라이브 폴더예요 · 파일 하나의 링크가 학습자에게 더 쉬워요', lkDocs: '구글 문서·슬라이드 · 공유를 ‘링크가 있는 모든 사용자(뷰어)’로 해 주세요',
       lkForm: '구글 설문지 · 학습자가 바로 답할 수 있어요', lkCopy: '사본 만들기 링크 · 학습자에게 구글 계정이 있어야 해요', lkYoutube: '유튜브 영상',
       lkSite: '웹사이트 · 직접 만든 사이트도 공개 주소면 돼요', lkHttp: 'http 주소는 휴대폰에서 막힐 수 있어요 · https 주소를 권해요',
+      dupLink: (s, w) => `같은 링크가 이미 있어요: ‘${s}’ (${w})`, dupAsk: '같은 링크가 이미 자료실에 있어요.\n그래도 올릴까요?',
       mineTip: '고치려면 삭제하고 다시 올려 주세요', total: n => `자료 ${n}개`, updated: '갱신', loading: '불러오는 중…',
       installTitle: '홈 화면에 추가하기', installSub: '주소창 없이 앱처럼 바로 열려요', installBtn: '추가',
       installIos: s => `공유 버튼 ${s} 누르고 → ‘홈 화면에 추가’`,
@@ -628,6 +703,7 @@
       lkFolder: 'Dossier Drive · un lien vers un seul fichier est plus simple pour l’élève', lkDocs: 'Google Docs/Slides · partage « Tous les utilisateurs disposant du lien » (lecteur)',
       lkForm: 'Google Forms · l’élève peut répondre directement', lkCopy: 'Lien « créer une copie » · l’élève doit avoir un compte Google', lkYoutube: 'Vidéo YouTube',
       lkSite: 'Site web · votre propre site fonctionne s’il est public', lkHttp: 'Les liens http peuvent être bloqués sur mobile · préférez https',
+      dupLink: (s, w) => `Ce lien existe déjà : « ${s} » (${w})`, dupAsk: 'Ce lien est déjà dans la bibliothèque.\nL’ajouter quand même ?',
       mineTip: 'Pour modifier : supprimez puis ajoutez à nouveau', total: n => `${n} ressources`, updated: 'mis à jour', loading: 'Chargement…',
       installTitle: 'Ajouter à l’écran d’accueil', installSub: 'S’ouvre comme une appli, sans barre d’adresse', installBtn: 'Ajouter',
       installIos: s => `Touchez Partager ${s} puis « Sur l’écran d’accueil »`,
@@ -824,6 +900,20 @@
     return r;
   }
   function linkHint(r) { return `<span class="m">${{ ok: '✓', warn: '!', bad: '×' }[r.lv] || 'i'}</span><span>${esc(r.msg)}</span>`; }
+  // 같은 링크 알아보기(2026-10-31 2차 '같은 링크 경고'). 막지는 않고 알려만 준다. www·m.·끝의 /·http(s) 차이,
+  // 유튜브(youtu.be·watch·shorts)와 구글 드라이브·문서(/d/<id>/…) 주소 꼴 차이는 같은 링크로 본다.
+  function linkKey(u) {
+    let x; try { x = new URL(String(u || '').trim()); } catch (e) { return ''; }
+    if (!/^https?:$/.test(x.protocol)) return '';
+    const h = x.hostname.toLowerCase().replace(/^(www|m)\./, ''), p = x.pathname.replace(/\/+$/, '');
+    let m;
+    if (h === 'youtu.be' && p.length > 1) return 'yt:' + p.slice(1);
+    if (/(^|\.)youtube\.com$/.test(h)) { if (x.searchParams.get('v')) return 'yt:' + x.searchParams.get('v'); if ((m = p.match(/^\/(shorts|embed|live)\/([^/]+)/))) return 'yt:' + m[2]; }
+    if ((h === 'drive.google.com' || h === 'docs.google.com') && (m = p.match(/\/d\/(?:e\/)?([^/]+)/))) return 'g:' + m[1];
+    if (h === 'drive.google.com' && x.searchParams.get('id')) return 'g:' + x.searchParams.get('id');
+    return h + p + x.search;
+  }
+  function dupOf(u, exceptId, list) { const k = linkKey(u); return k ? (list || data.materials).find(m => m.id !== exceptId && linkKey(m.url) === k) || null : null; }
 
   // 홈 화면에 추가(주소창 없이 앱처럼). 안드로이드 크롬은 '추가' 단추, 아이폰은 공유 버튼 안내. 이미 앱으로 열었거나 PC면 보이지 않는다.
   const IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -1070,6 +1160,7 @@
     return barSub(t('tabTeacher'), '', langToggle(true)) + `<div class="pad"><div class="minewrap">
       <div class="me"><span class="av">👩‍🏫</span><div class="nm"><b>${esc(t('teacherName')(teacher.name))}</b><span>${esc(teacher.school)}</span></div><button type="button" class="ghostbtn" data-logout>${esc(t('logout'))}</button></div>
       <a class="btn" href="#/upload">${ICON.plus}<span>${esc(t('upload'))}</span></a>
+      ${teacher.admin ? `<a class="admbtn" href="#/admin">${ICON.gear}<span class="tx"><b>${esc(AT.entry)}</b><small>${esc(AT.entrySub)}</small></span>${ICON.right}</a>` : ''}
       <div class="sec"><h2>${esc(t('myMats'))}</h2><span>${esc(t('nItems')(mine.length))}</span></div>${items}${mine.length ? `<p class="tip">${esc(t('mineTip'))}</p>` : ''}</div></div>`;
   }
   function viewUpload(preTopic, preLevel) {
@@ -1095,7 +1186,7 @@
           <span class="fi">${ICON.upfile}</span><span class="fn" id="fileName">${esc(t('pickFile'))}<small>${esc(t('fileWhat')(FILE_MAX_MB))}</small></span></label>
           <p class="lhint" id="fileHint" aria-live="polite"><span class="m">i</span><span>${esc(t('fileKeep'))}</span></p></div>
         <div id="srcLink"${upSrc === 'link' ? '' : ' hidden'}><div class="inp"><input id="f-url" name="url" type="url" inputmode="url" placeholder="https://" aria-label="${esc(t('fUrl'))}"><button type="button" class="paste" data-paste>${esc(t('paste'))}</button></div>
-          <p class="lhint" id="urlHint" aria-live="polite">${linkHint(linkCheck(''))}</p></div></div>
+          <p class="lhint" id="urlHint" aria-live="polite">${linkHint(linkCheck(''))}</p><p class="lhint warn" id="dupHint" aria-live="polite" hidden></p></div></div>
       <div class="f"><label class="lab" for="f-desc">${esc(t('fDesc'))} <small>${esc(t('optional'))}</small></label><div class="inp"><input id="f-desc" name="desc" maxlength="80" placeholder="${esc(t('phDesc'))}"></div></div>
       <div class="f pvf"><span class="lab">${esc(t('previewCap'))}</span><div id="upPreview"></div></div>
       <p class="err" id="upErr"></p>
@@ -1105,7 +1196,7 @@
 
   // 아래 탭: 자료실 · 즐겨찾기 · 선생님(2026-10-24 휴먼쌤 "이 QR탭을 없애고 ... '홈' 탭은 '자료실' 탭으로 ... 'QR탭'을 '즐겨찾기'로")
   function renderTabs(page) {
-    const tc = ['login', 'join', 'mine', 'upload'].includes(page);
+    const tc = ['login', 'join', 'mine', 'upload', 'admin'].includes(page);
     const on = { fav: page === 'fav', tc, lib: page !== 'fav' && !tc };
     $('#tabbar').innerHTML = `<a class="sidelogo" href="#/" aria-label="${esc(t('tabHome'))}"><img src="icons/logo-h.svg" alt="${esc(appTitle())}"></a>
       <a class="tab${on.lib ? ' on' : ''}" href="#/">${ICON.shelf}<span>${esc(t('tabHome'))}</span></a>
@@ -1127,6 +1218,9 @@
     const fromQr = firstRender && page === 't';
     firstRender = false;
     if (page !== 'join') joined = null;  // 가입 결과 화면도 떠나면 잊는다(코드는 로그인 상태에 남아 있다)
+    if (page === 'admin' && admPage !== 'admin') { adm = null; admErr = ''; admOpen = ''; admNew = null; }   // 관리자 화면은 들어올 때마다 새로 받는다
+    if (page !== 'admin') admNew = null;   // 새로 준 로그인 코드는 화면을 떠나면 잊는다
+    admPage = page;
     let title = appTitle();
     switch (page) {
       case 't': v.innerHTML = viewTopic(parts[1] || '', normLevel(parts[2]), fromQr); title = (parts[1] || '') + ' · ' + title; break;
@@ -1137,6 +1231,10 @@
       case 'join': v.innerHTML = teacher && !joined ? viewMine() : viewJoin(); bindJoin(); title = t('joinTitle') + ' · ' + title; break;
       case 'mine': v.innerHTML = viewMine(); bindLogin(); break;
       case 'upload': v.innerHTML = viewUpload(parts[1] || '', normLevel(parts[2])); bindUpload(); bindLogin(); break;
+      case 'admin':
+        v.innerHTML = viewAdmin(parts[1] || ''); bindAdmin(); bindLogin(); title = AT.title + ' · ' + title;
+        if (teacher && teacher.admin && !adm && !admBusy && !admErr) admLoad();
+        break;
       default: v.innerHTML = viewHome();
     }
     document.title = title;
@@ -1152,7 +1250,7 @@
       try {
         const r = await api.post({ action: 'login', code });
         if (r.ok) {
-          teacher = { code, name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : [] }; saveTeacher(teacher); toast(t('loggedIn'));
+          teacher = { code, name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : [], admin: !!r.admin }; saveTeacher(teacher); toast(t('loggedIn'));
           const go = afterLogin || '#/mine'; afterLogin = '';
           if (location.hash === go) render(); else location.hash = go;
         } else err.textContent = r.error === 'too_many' ? t('tooMany') : t('badCode');
@@ -1255,7 +1353,11 @@
         desc: el('desc').value, url: '#', topic: 'x', level: el('level').value || LEVEL_KEYS[0] }, 0);
       $('#upPreview').innerHTML = `<div class="item">${matInner(m)}${goBtn(m)}</div>`;
     };
-    const syncLink = () => { const r = linkCheck(el('url').value), h = $('#urlHint'); h.className = 'lhint' + (r.lv ? ' ' + r.lv : ''); h.innerHTML = linkHint(r); };
+    const syncLink = () => {
+      const r = linkCheck(el('url').value), h = $('#urlHint'); h.className = 'lhint' + (r.lv ? ' ' + r.lv : ''); h.innerHTML = linkHint(r);
+      const d = dupOf(el('url').value), dh = $('#dupHint');
+      dh.hidden = !d; dh.innerHTML = d ? linkHint({ lv: 'warn', msg: t('dupLink')(d.title, d.topic + ' · ' + d.level) }) : '';
+    };
     const sync = () => { syncGroup(); syncLink(); el('school').classList.toggle('empty', !el('school').value); pv(); };
     // 파일 고르기: 크기·형식을 바로 알려 주고, 제목이 비어 있으면 파일 이름으로 채운다
     const fileOk = fl => !fl ? { lv: 'bad', msg: t('needFile') } : !fl.size ? { lv: 'bad', msg: t('fileReadErr') } : !FILE_EXT.includes(fileExt(fl.name)) ? { lv: 'bad', msg: t('fileBad') }
@@ -1291,6 +1393,7 @@
         : !material.title ? ['needTitle', el('title')] : upSrc === 'link' && !material.url ? ['needUrl', el('url')] : null;
       if (miss) { miss[1].scrollIntoView({ block: 'center', behavior: 'smooth' }); if (miss[1].focus && miss[1].tagName === 'INPUT') miss[1].focus({ preventScroll: true }); return fail(t(miss[0])); }
       if (upSrc === 'link') { const lk = linkCheck(material.url); if (lk.lv === 'bad') { el('url').focus(); return fail(lk.msg); } }
+      if (upSrc === 'link' && dupOf(material.url) && !confirm(t('dupAsk'))) return;
       const btn = $('#upBtn'); btn.disabled = true; btn.textContent = t('uploading');
       try {
         let file = null;
@@ -1320,6 +1423,353 @@
     b.disabled = false;
   }
 
+  // ---------- 관리자 화면(#/admin, 2026-10-31 카드 69 2차) ----------
+  // 휴먼쌤(교사 표 is_admin = 1)만. 시트에서 손으로 하던 일을 화면에서 한다: 자료 · 분류 · 교사 · 설정.
+  // 화면은 입구만 가리고, 서버(cloudflare/server/app.js ADMIN)가 요청마다 코드로 다시 확인한다. 화면 글은 한국어만(휴먼쌤이 쓰는 곳).
+  const AT = {
+    title: '관리자 화면', entry: '관리자 화면', entrySub: '자료 · 분류 · 교사 · 설정',
+    tabs: { mat: '자료', cat: '분류', tc: '교사', set: '설정' },
+    notAdmin: '관리자만 볼 수 있어요', toMine: '선생님 화면으로', loadErr: '관리자 자료를 불러오지 못했어요.',
+    all: '전체', pub: '공개', hid: '숨김', del: '지움', off: '꺼짐', admin: '관리자', file: '올린 파일', missing: '표에 없음',
+    matSearch: '찾기 (제목·소주제·올린이·링크)', tcSearch: '찾기 (이름·학교)', none: '찾는 것이 없어요', count: n => `${n}개`,
+    save: '저장', create: '만들기', close: '닫기', open: '열어 보기', view: '소주제 화면', hide: '숨기기', show: '보이기', remove: '삭제', restore: '되살리기',
+    saved: '저장했어요', created: '만들었어요', hiddenT: '숨겼어요', shownT: '보이게 했어요', removed: '삭제했어요', restored: '되살렸어요',
+    fileUrl: '올린 파일 자료라 링크는 바꿀 수 없어요',
+    delAsk: s => `‘${s}’ 자료를 삭제할까요?\n자료실·즐겨찾기에서 빠지고, 여기 ‘지움’에서 되살릴 수 있어요.`,
+    owner: (school, by, date) => [school, by, date && '올린 날 ' + date].filter(Boolean).join(' · '),
+    catHint: '첫 화면에 보이는 차례 그대로예요. 화살표로 대주제·소주제 차례를 바꿔요.',
+    newTopic: '새 소주제 만들기', rename: '이름', nTopics: n => `소주제 ${n}개`, nMats: n => `자료 ${n}개`,
+    tName: '소주제 이름', tFr: '프랑스어 이름', tIcon: '아이콘', tIconPh: '예: ☕ 또는 ㄱㅏ', tIconHint: '비워 두면 소주제 이름으로 그림을 골라요.',
+    renameWarn: '이름을 바꾸면 이미 인쇄해 둔 이 소주제 QR은 열리지 않아요. 자료별 QR은 그대로예요.',
+    renameAsk: (a, b) => `소주제 ‘${a}’를 ‘${b}’로 바꿀까요?\n이미 인쇄해 둔 ‘${a}’ 소주제 QR은 열리지 않게 돼요.`,
+    topicDelAsk: s => `소주제 ‘${s}’를 지울까요? 자료가 없는 소주제만 지울 수 있어요.`, topicDeleted: '소주제를 지웠어요',
+    gName: '대주제 이름', mergeAsk: (a, b) => `‘${b}’ 대주제가 이미 있어요. ‘${a}’의 소주제를 모두 ‘${b}’로 합칠까요?`,
+    up: '위로', down: '아래로',
+    tcHint: '끈 선생님은 로그인·올리기가 안 되고, 올린 자료는 그대로 보여요. 코드를 잊은 선생님에게는 새 로그인 코드를 주세요(옛 코드는 볼 수 없어요).',
+    tcCount: (n, off) => `선생님 ${n}명` + (off ? ` · 꺼짐 ${off}명` : ''), joinedOn: d => `가입 ${d}`,
+    turnOff: '끄기', turnOn: '다시 켜기', newCode: '새 로그인 코드', meHint: '나 자신은 끌 수 없어요.',
+    offAsk: s => `‘${s}’ 선생님을 끌까요?\n끄면 로그인·올리기가 안 되고, 올린 자료는 그대로 보여요.`, offDone: '껐어요', onDone: '다시 켰어요',
+    codeAsk: s => `‘${s}’ 선생님에게 새 로그인 코드를 줄까요?\n지금 코드는 바로 막혀요.`, codeAskMe: '내 로그인 코드를 새로 바꿀까요?\n이 기기는 새 코드로 바로 바뀌어요. 다른 기기는 새 코드로 다시 로그인해야 해요.',
+    codeFor: s => `${s} 선생님의 새 로그인 코드`, codeMade: '새 로그인 코드를 만들었어요', codeKeep: '이 코드는 지금 한 번만 보여요. 화면을 떠나면 다시 볼 수 없으니 선생님께 바로 알려 주세요.',
+    joinTitle: '가입 코드', joinHint: '가입 코드를 아는 사람은 누구나 선생님으로 가입할 수 있어요. 바꾸면 옛 코드로는 가입이 안 돼요(이미 가입한 선생님은 그대로).',
+    joinNow: '지금 가입 코드', joinClosed: '가입이 닫혀 있어요', joinNew: '새 가입 코드', joinPh: '예: HANGEUL2026', joinSave: '바꾸기', joinCloseBtn: '가입 닫기',
+    joinNeed: '새 가입 코드를 적어 주세요', joinAsk: s => `가입 코드를 ‘${s}’로 바꿀까요?\n옛 코드로는 가입이 안 돼요.`,
+    joinCloseAsk: '가입을 닫을까요?\n새 선생님이 가입할 수 없어요. 다시 열려면 새 가입 코드를 넣으세요.', joinClosedT: '가입을 닫았어요',
+    noticeTitle: '공지', noticeHint: '첫 화면 맨 위에 보여요. 비우면 보이지 않아요.', noticePh: '예: 11월 자료 모음이 올라왔어요', noticeClear: '공지 내리기', noticeCleared: '공지를 내렸어요',
+    statTitle: '한눈에', stat: { pub: '공개 자료', hid: '숨긴 자료', del: '지운 자료', topics: '소주제', groups: '대주제', tc: '선생님' },
+    err: { missing: '빠진 칸이 있어요', bad_url: 'https://로 시작하는 링크를 넣어 주세요', not_found: '찾지 못했어요. 새로 불러왔어요',
+      dup_topic: '같은 이름의 소주제가 이미 있어요', in_use: '자료가 남아 있는 소주제는 지울 수 없어요', self: '나 자신은 끌 수 없어요',
+      unknown: '모르는 동작이에요. 화면을 새로 고쳐 주세요', server: '서버 오류가 났어요. 잠시 뒤 다시 해 보세요.' }
+  };
+  const ADM_TABS = ['mat', 'cat', 'tc', 'set'];
+  const tk = k => T.ko[k];   // 올리기 화면과 같은 글(관리자 화면은 한국어만)
+  let adm = null, admBusy = false, admErr = '', admPage = '', admTab = 'mat', admOpen = '', admNew = null, admF = 'all';
+  const admQ = { mat: '', tc: '' };
+  const admSt = m => m.deleted ? 'del' : (m.pub ? 'pub' : 'hid');
+  const ghost = '<span class="circ ghost"></span>';
+
+  async function admLoad() {
+    if (admBusy || !teacher) return;
+    admBusy = true; admErr = '';
+    try {
+      const r = await api.post({ action: 'admin', op: 'overview', code: teacher.code });
+      if (r.ok) adm = r; else if (!admFail(r)) admErr = AT.loadErr;
+    } catch (e) { admErr = t('netErr'); }
+    admBusy = false;
+    if (route()[0] === 'admin') render(true);
+  }
+  // 코드가 바뀌었거나 꺼졌으면 로그아웃, 관리자가 아니면 입구를 닫는다
+  function admFail(r) {
+    if (r.error === 'bad_code') { teacher = null; adm = null; saveTeacher(null); afterLogin = '#/admin'; location.hash = '#/login'; return true; }
+    if (r.error === 'not_admin') { if (teacher) { teacher.admin = false; saveTeacher(teacher); } adm = null; render(true); return true; }
+    return false;
+  }
+  // 관리자 동작 하나: 보내고 → 관리자 자료와 자료실을 새로 받고 → 다시 그린다(then은 다시 그리기 전에)
+  async function admDo(op, body, okMsg, btn, then) {
+    if (btn) btn.disabled = true;
+    try {
+      const r = await api.post(Object.assign({ action: 'admin', op, code: teacher.code }, body));
+      if (r.ok) {
+        if (then) then(r);
+        await Promise.all([admRefresh(), reload().catch(() => {})]);
+        if (okMsg) toast(okMsg);
+        render(true);
+        return r;
+      }
+      if (!admFail(r)) {
+        toast(AT.err[r.error] || tk(r.error === 'too_many' ? 'tooMany' : 'netErr'));
+        if (r.error === 'not_found') { await admRefresh(); render(true); }
+      }
+    } catch (e) { toast(t('netErr')); }
+    if (btn && btn.isConnected) btn.disabled = false;
+    return null;
+  }
+  async function admRefresh() { try { const r = await api.post({ action: 'admin', op: 'overview', code: teacher.code }); if (r.ok) adm = r; } catch (e) {} }
+
+  function viewAdmin(tab) {
+    if (!teacher) { afterLogin = location.hash; return viewLogin(); }
+    if (!teacher.admin) return barSub(AT.title, '#/mine', ghost) + `<div class="pad"><div class="emptycard" style="margin-top:18px"><div class="e">🔒</div>${esc(AT.notAdmin)}<a class="btn" href="#/mine">${esc(AT.toMine)}</a></div></div>`;
+    admTab = ADM_TABS.includes(tab) ? tab : 'mat';
+    const seg = `<nav class="adseg" aria-label="${esc(AT.title)}">${ADM_TABS.map(k => `<a href="#/admin/${k}" class="${k === admTab ? 'on' : ''}"${k === admTab ? ' aria-current="page"' : ''}>${esc(AT.tabs[k])}</a>`).join('')}</nav>`;
+    const body = !adm
+      ? (admErr ? `<div class="emptycard" style="margin-top:14px"><div class="e">😢</div>${esc(admErr)}<button type="button" class="btn" data-aretry>${esc(tk('retry'))}</button></div>`
+                : `<div class="loading" style="padding:80px 0"><span class="e">🐯</span>${esc(tk('loading'))}</div>`)
+      : { mat: admMat, cat: admCat, tc: admTc, set: admSet }[admTab]();
+    return barSub(AT.title, '#/mine', ghost) + `<div class="pad"><div class="adwrap">${seg}${body}</div></div>`;
+  }
+  const admSearch = (k, ph) => `<label class="srch">${ICON.search}<input id="admQ" data-k="${k}" type="search" enterkeyhint="search" placeholder="${esc(ph)}" value="${esc(admQ[k])}" aria-label="${esc(ph)}">`
+    + `<button type="button" class="sx" data-aqx="${k}" aria-label="${esc(tk('clearQ'))}"${admQ[k] ? '' : ' hidden'}>✕</button></label>`;
+  // 찾는 글자를 칠 때는 목록만 다시 그린다(칸이 포커스를 잃지 않게)
+  function drawAdmList() {
+    const B = $('#admList'); if (!B || !adm) return;
+    B.innerHTML = admTab === 'tc' ? admTcList() : admMatList();
+    const X = $('[data-aqx]'); if (X) X.hidden = !admQ[admTab === 'tc' ? 'tc' : 'mat'];
+    bindAdmin();
+  }
+
+  // 자료: 전부(숨김·지운 것 포함), 최근 올린 것부터
+  function admMat() {
+    const n = k => k === 'all' ? adm.materials.length : adm.materials.filter(m => admSt(m) === k).length;
+    const chips = `<div class="chips mchips">${['all', 'pub', 'hid', 'del'].map(k => `<button type="button" class="chip${admF === k ? ' on' : ''}" data-af="${k}" aria-pressed="${admF === k}">${esc(AT[k])} <small>${n(k)}</small></button>`).join('')}</div>`;
+    return admSearch('mat', AT.matSearch) + chips + `<div id="admList">${admMatList()}</div>`;
+  }
+  function admMatList() {
+    const q = admQ.mat.replace(/\s+/g, '').toLowerCase();
+    const list = adm.materials.slice().reverse().filter(m => (admF === 'all' || admSt(m) === admF)
+      && (!q || [m.title, m.topic, m.by, m.school, m.url, m.desc, m.type, m.group].join(' ').replace(/\s+/g, '').toLowerCase().includes(q)));
+    if (!list.length) return `<div class="emptycard" style="margin-top:12px"><div class="e">🔍</div>${esc(AT.none)}</div>`;
+    return `<div class="acount">${esc(AT.count(list.length))}</div>` + list.map(admMatRow).join('');
+  }
+  function admMatRow(m) {
+    const key = 'm:' + m.id, open = admOpen === key, s = admSt(m), [emo, bg] = TYPE_ICON[m.type] || TYPE_ICON['기타'];
+    const badge = s === 'pub' ? '' : `<span class="badge ${s}">${esc(AT[s])}</span>`;
+    const meta = [`${m.topic} · ${m.level}`, m.by, s === 'del' ? AT.del + ' ' + m.deleted : m.date].filter(Boolean).join(' · ');
+    return `<div class="arow${open ? ' open' : ''}" data-row="${esc(key)}"><button type="button" class="ah" data-aopen="${esc(key)}" aria-expanded="${open}">`
+      + `<span class="ti sm" style="background:${bg}">${emo}</span><span class="tx"><b>${esc(m.title)}</b><small>${esc(meta)}</small></span>${badge}</button>${open ? admMatForm(m) : ''}</div>`;
+  }
+  function comboField(cb, id, label, value, ph, hidden) {
+    return `<div class="f cbx" data-cb="${cb}"${hidden ? ` id="${id}Field" hidden` : ''}><label class="lab" for="${id}">${label}</label><div class="inp"><input id="${id}" name="${cb}" value="${esc(value)}" placeholder="${esc(ph)}" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-l">`
+      + `<button type="button" class="tog" tabindex="-1" aria-label="${esc(tk('cbOpen'))}">${ICON.down}</button></div><div class="cblist" id="${id}-l" role="listbox" hidden></div></div>`;
+  }
+  function admMatForm(m) {
+    const s = admSt(m), types = !m.type || TYPES.includes(m.type) ? TYPES : TYPES.concat(m.type);
+    return `<form class="aform" id="amForm" data-id="${esc(m.id)}" novalidate autocomplete="off">
+      ${comboField('topic', 'am-topic', esc(tk('fTopic')), m.topic, tk('phTopic'))}
+      ${comboField('group', 'am-group', `${esc(tk('fGroup'))} <small>${esc(tk('fGroupHint'))}</small>`, '', tk('phGroup'), true)}
+      <div class="f"><span class="lab">${esc(tk('fLevel'))}</span><div class="seg3">${LEVEL_KEYS.map(k => `<label class="k-${k}"><input type="radio" name="level" value="${k}"${k === m.level ? ' checked' : ''}><span>${k}<small>${esc(levelDesc(k))}</small></span></label>`).join('')}</div></div>
+      <div class="f"><label class="lab" for="am-title">${esc(tk('fTitle'))}</label><div class="inp"><input id="am-title" name="title" maxlength="60" value="${esc(m.title)}"></div></div>
+      <div class="f"><span class="lab">${esc(tk('fType'))}</span><div class="tchips">${types.map(x => `<label><input type="radio" name="type" value="${esc(x)}"${x === m.type ? ' checked' : ''}><span>${(TYPE_ICON[x] || TYPE_ICON['기타'])[0]} ${esc(x)}</span></label>`).join('')}</div></div>
+      <div class="f"><label class="lab" for="am-url">${esc(tk('fUrl'))}${m.file ? ` <small>${esc(AT.file)}</small>` : ''}</label><div class="inp"><input id="am-url" name="url" type="url" inputmode="url" value="${esc(m.url)}"${m.file ? ' readonly' : ''}></div>
+        <p class="lhint" id="amUrlHint">${m.file ? linkHint({ lv: '', msg: AT.fileUrl }) : ''}</p><p class="lhint warn" id="amDup" hidden></p></div>
+      <div class="f"><label class="lab" for="am-desc">${esc(tk('fDesc'))} <small>${esc(tk('optional'))}</small></label><div class="inp"><input id="am-desc" name="desc" maxlength="80" value="${esc(m.desc)}"></div></div>
+      <p class="lhint"><span class="m">i</span><span>${esc(AT.owner(m.school, m.by, m.date))}</span></p>
+      <p class="err" id="amErr"></p>
+      <div class="abtns"><button type="submit" class="pri">${esc(AT.save)}</button>
+        ${s === 'del' ? `<button type="button" data-aact="mat_restore">${esc(AT.restore)}</button>`
+          : `<button type="button" data-aact="mat_pub">${esc(m.pub ? AT.hide : AT.show)}</button><button type="button" class="warn" data-aact="mat_del">${esc(AT.remove)}</button>`}
+        <a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(AT.open)}</a></div></form>`;
+  }
+
+  // 분류: 첫 화면과 같은 차례(순서 칸 → 대주제는 처음 나온 차례). 표에 없는 소주제(자료에만 있음)는 대주제 끝에
+  function admTree() {
+    const list = adm.topics.map((x, i) => ({ name: x.topic, fr: x.fr, group: x.group || '기타', icon: x.icon, k: Number(x.order) || (1000 + i), reg: true })).sort((a, b) => a.k - b.k);
+    const live = adm.materials.filter(m => !m.deleted);
+    live.forEach(m => { if (m.topic && !list.some(x => x.name === m.topic)) list.push({ name: m.topic, fr: '', group: m.group || '기타', icon: '', k: 1e9, reg: false }); });
+    const groups = [];
+    list.forEach(tp => {
+      tp.n = live.filter(m => m.topic === tp.name).length;
+      let g = groups.find(x => x.name === tp.group); if (!g) groups.push(g = { name: tp.group, topics: [] });
+      g.topics.push(tp);
+    });
+    groups.forEach(g => g.topics.sort((a, b) => (b.reg - a.reg)));   // 표에 없는 소주제는 그 대주제 맨 끝(차례 바꾸기 대상 아님)
+    return groups;
+  }
+  const groupItems = () => admTree().map(g => ({ v: g.name, label: g.name, sub: AT.nTopics(g.topics.length) }));
+  function admCat() {
+    const groups = admTree(), regGroups = groups.filter(g => g.topics.some(x => x.reg));
+    const add = admOpen === 't:+' ? `<div class="arow open" data-row="t:+">${admTopicForm(null)}</div>` : `<button type="button" class="addbtn" data-aopen="t:+">${ICON.plus}<span>${esc(AT.newTopic)}</span></button>`;
+    return `<p class="lhint"><span class="m">i</span><span>${esc(AT.catHint)}</span></p>` + add + groups.map(g => {
+      const gi = regGroups.indexOf(g), gkey = 'g:' + g.name, gOpen = admOpen === gkey;
+      const mv = gi < 0 ? '' : `<button type="button" class="mv" data-amv="group" data-name="${esc(g.name)}" data-dir="-1" aria-label="${esc(g.name + ' ' + AT.up)}"${gi === 0 ? ' disabled' : ''}>${ICON.up}</button>`
+        + `<button type="button" class="mv" data-amv="group" data-name="${esc(g.name)}" data-dir="1" aria-label="${esc(g.name + ' ' + AT.down)}"${gi === regGroups.length - 1 ? ' disabled' : ''}>${ICON.down}</button>`;
+      const head = `<div class="ghd"><b>${esc(g.name)}</b><span class="gn">${esc(AT.nTopics(g.topics.length))}</span>${mv}<button type="button" class="mv txt" data-aopen="${esc(gkey)}" aria-expanded="${gOpen}">${esc(AT.rename)}</button></div>`;
+      const gform = gOpen ? `<div class="arow open" data-row="${esc(gkey)}"><form class="aform" id="agForm" data-from="${esc(g.name)}" novalidate autocomplete="off" style="border-top:0">
+        <div class="f"><label class="lab" for="ag-to">${esc(AT.gName)}</label><div class="inp"><input id="ag-to" name="to" maxlength="40" value="${esc(g.name)}"></div></div><p class="err" id="agErr"></p>
+        <div class="abtns"><button type="submit" class="pri">${esc(AT.save)}</button><button type="button" data-aopen="${esc(gkey)}">${esc(AT.close)}</button></div></form></div>` : '';
+      const nReg = g.topics.filter(x => x.reg).length;
+      return head + gform + g.topics.map((tp, i) => admTopicRow(tp, i, nReg)).join('');
+    }).join('');
+  }
+  function admTopicRow(tp, i, nReg) {
+    const key = 't:' + tp.name, open = admOpen === key, ic = topicIcon(tp), pt = data.topics.find(x => x.name === tp.name);
+    const mv = tp.reg ? `<button type="button" class="mv" data-amv="topic" data-name="${esc(tp.name)}" data-dir="-1" aria-label="${esc(tp.name + ' ' + AT.up)}"${i === 0 ? ' disabled' : ''}>${ICON.up}</button>`
+      + `<button type="button" class="mv" data-amv="topic" data-name="${esc(tp.name)}" data-dir="1" aria-label="${esc(tp.name + ' ' + AT.down)}"${i >= nReg - 1 ? ' disabled' : ''}>${ICON.down}</button>` : '';
+    return `<div class="arow${open ? ' open' : ''}" data-row="${esc(key)}"><div class="tline"><button type="button" class="ah" data-aopen="${esc(key)}" aria-expanded="${open}">`
+      + `<span class="em sm${ic.txt ? ' txt' : ''}" style="background:${pt ? pt.color : '#F6EEE4'}">${esc(ic.v)}</span><span class="tx"><b>${esc(tp.name)}</b><small>${esc([tp.fr, AT.nMats(tp.n)].filter(Boolean).join(' · '))}</small></span>`
+      + `${tp.reg ? '' : `<span class="badge hid">${esc(AT.missing)}</span>`}</button>${mv}</div>${open ? admTopicForm(tp) : ''}</div>`;
+  }
+  // 소주제 고치기(표에 있는 것) 또는 만들기(새 소주제 · 표에 없는 소주제 등록)
+  function admTopicForm(tp) {
+    const v = tp || { name: '', fr: '', group: '', icon: '', reg: false, n: 0 }, from = tp && tp.reg ? tp.name : '';
+    return `<form class="aform" id="atForm" data-from="${esc(from)}" novalidate autocomplete="off"${tp ? '' : ' style="border-top:0"'}>
+      <div class="f"><label class="lab" for="at-name">${esc(AT.tName)}</label><div class="inp"><input id="at-name" name="topic" maxlength="60" value="${esc(v.name)}" placeholder="${esc(tk('phTopic'))}"></div>
+        <p class="lhint warn" id="atRen" hidden>${linkHint({ lv: 'warn', msg: AT.renameWarn })}</p></div>
+      <div class="f"><label class="lab" for="at-fr">${esc(AT.tFr)} <small>${esc(tk('optional'))}</small></label><div class="inp"><input id="at-fr" name="fr" maxlength="60" value="${esc(v.fr)}" placeholder="Café"></div></div>
+      ${comboField('group', 'at-group', esc(tk('fGroup')), v.group, tk('phGroup'))}
+      <div class="f"><label class="lab" for="at-icon">${esc(AT.tIcon)} <small>${esc(tk('optional'))}</small></label><div class="inp"><input id="at-icon" name="icon" maxlength="16" value="${esc(v.icon)}" placeholder="${esc(AT.tIconPh)}"></div>
+        <p class="lhint">${esc(AT.tIconHint)}</p></div>
+      <p class="err" id="atErr"></p>
+      <div class="abtns"><button type="submit" class="pri">${esc(from ? AT.save : AT.create)}</button>
+        ${from && !v.n ? `<button type="button" class="warn" data-aact="topic_del" data-name="${esc(from)}">${esc(AT.remove)}</button>` : ''}
+        ${tp ? `<a href="${topicHref(tp.name)}">${esc(AT.view)}</a>` : `<button type="button" data-aopen="t:+">${esc(AT.close)}</button>`}</div></form>`;
+  }
+
+  // 교사: 가입한 차례대로. 끄기·켜기, 새 로그인 코드(한 번만 보여 줌)
+  function admTc() {
+    const off = adm.teachers.filter(x => !x.active).length;
+    return `<p class="lhint"><span class="m">i</span><span>${esc(AT.tcHint)}</span></p>` + admSearch('tc', AT.tcSearch)
+      + `<div class="acount">${esc(AT.tcCount(adm.teachers.length, off))}</div><div id="admList">${admTcList()}</div>`;
+  }
+  function admTcList() {
+    const q = admQ.tc.replace(/\s+/g, '').toLowerCase();
+    const list = adm.teachers.filter(x => !q || (x.name + x.school).replace(/\s+/g, '').toLowerCase().includes(q));
+    return list.length ? list.map(admTcRow).join('') : `<div class="emptycard" style="margin-top:12px"><div class="e">🔍</div>${esc(AT.none)}</div>`;
+  }
+  function admTcRow(x) {
+    const key = 'c:' + x.id, open = admOpen === key, me = x.id === adm.me;
+    const badges = (x.admin ? `<span class="badge adm">${esc(AT.admin)}</span>` : '') + (x.active ? '' : `<span class="badge off">${esc(AT.off)}</span>`);
+    const meta = [String(x.school || '').replace(/\s*한글학교$/, ''), x.joined && AT.joinedOn(x.joined), AT.nMats(x.n)].filter(Boolean).join(' · ');
+    const code = admNew && admNew.id === x.id ? `<div class="codebox"><p class="lab2">${esc(AT.codeFor(x.name))}</p><div class="newcode" id="newCode">${esc(admNew.code)}</div>`
+      + `<button type="button" class="ghostbtn" data-acopy>${esc(tk('copyCode'))}</button><p class="keep">${esc(AT.codeKeep)}</p></div>` : '';
+    const body = open ? `<div class="aform">${code}<div class="abtns">${me ? '' : `<button type="button" class="${x.active ? 'warn' : 'pri'}" data-aact="teacher_active" data-id="${x.id}">${esc(x.active ? AT.turnOff : AT.turnOn)}</button>`}`
+      + `<button type="button" data-aact="teacher_code" data-id="${x.id}">${esc(AT.newCode)}</button></div>${me ? `<p class="lhint">${esc(AT.meHint)}</p>` : ''}</div>` : '';
+    return `<div class="arow${open ? ' open' : ''}${x.active ? '' : ' dim'}" data-row="${esc(key)}"><button type="button" class="ah" data-aopen="${esc(key)}" aria-expanded="${open}">`
+      + `<span class="av sm">👩‍🏫</span><span class="tx"><b>${esc(x.name)}</b><small>${esc(meta)}</small></span>${badges}</button>${body}</div>`;
+  }
+
+  // 설정: 가입 코드(보기·바꾸기·닫기) · 공지 · 한눈에
+  function admSet() {
+    const s = adm.settings, jc = s.join_code || '', ms = adm.materials, groups = admTree();
+    const cnt = k => ms.filter(m => admSt(m) === k).length;
+    const stats = [[cnt('pub'), AT.stat.pub], [cnt('hid'), AT.stat.hid], [cnt('del'), AT.stat.del], [groups.reduce((a, g) => a + g.topics.length, 0), AT.stat.topics],
+      [groups.length, AT.stat.groups], [adm.teachers.length, AT.stat.tc]].map(([n, l]) => `<div><b>${n}</b><span>${esc(l)}</span></div>`).join('');
+    return `<div class="apanel"><h3>${esc(AT.joinTitle)}</h3><p class="lhint">${esc(AT.joinHint)}</p>
+        <div class="jcnow">${jc ? `<span>${esc(AT.joinNow)}</span><b>${esc(jc)}</b>` : `<b class="off">${esc(AT.joinClosed)}</b>`}</div>
+        <form id="asJoin" novalidate autocomplete="off"><div class="f"><label class="lab" for="as-join">${esc(AT.joinNew)}</label><div class="inp"><input id="as-join" name="join" maxlength="40" autocapitalize="characters" spellcheck="false" placeholder="${esc(AT.joinPh)}"></div></div>
+        <p class="err" id="asJoinErr"></p><div class="abtns"><button type="submit" class="pri">${esc(AT.joinSave)}</button>${jc ? `<button type="button" class="warn" data-aact="join_close">${esc(AT.joinCloseBtn)}</button>` : ''}</div></form></div>
+      <div class="apanel"><h3>${esc(AT.noticeTitle)}</h3><p class="lhint">${esc(AT.noticeHint)}</p>
+        <form id="asNotice" novalidate autocomplete="off"><textarea class="ta" name="notice" maxlength="300" placeholder="${esc(AT.noticePh)}" aria-label="${esc(AT.noticeTitle)}">${esc(s.notice || '')}</textarea>
+        <div class="abtns"><button type="submit" class="pri">${esc(AT.save)}</button>${s.notice ? `<button type="button" data-aact="notice_clear">${esc(AT.noticeClear)}</button>` : ''}</div></form></div>
+      <div class="apanel"><h3>${esc(AT.statTitle)}</h3><div class="astat">${stats}</div></div>`;
+  }
+
+  function bindAdmin() {
+    if (!adm) return;
+    const mf = $('#amForm'); if (mf && !mf.dataset.bound) bindAmForm(mf);
+    const tf = $('#atForm'); if (tf && !tf.dataset.bound) bindAtForm(tf);
+    const gf = $('#agForm'); if (gf && !gf.dataset.bound) {
+      gf.dataset.bound = '1';
+      gf.onsubmit = async e => {
+        e.preventDefault(); const from = gf.dataset.from, to = gf.elements.to.value.replace(/\s+/g, ' ').trim();
+        if (!to) { $('#agErr').textContent = AT.err.missing; return; }
+        if (to === from) { admOpen = ''; render(true); return; }
+        if (admTree().some(g => g.name === to) && !confirm(AT.mergeAsk(from, to))) return;
+        await admDo('group_rename', { from, to }, AT.saved, gf.querySelector('.pri'), () => { admOpen = ''; });
+      };
+    }
+    const jf = $('#asJoin'); if (jf) jf.onsubmit = async e => {
+      e.preventDefault(); const v = jf.elements.join.value.replace(/\s+/g, '').trim();
+      if (!v) { $('#asJoinErr').textContent = AT.joinNeed; jf.elements.join.focus(); return; }
+      if (!confirm(AT.joinAsk(v))) return;
+      await admDo('settings_save', { settings: { join_code: v } }, AT.saved, jf.querySelector('.pri'));
+    };
+    const nf = $('#asNotice'); if (nf) nf.onsubmit = async e => {
+      e.preventDefault(); const v = nf.elements.notice.value.trim();
+      await admDo('settings_save', { settings: { notice: v } }, v ? AT.saved : AT.noticeCleared, nf.querySelector('.pri'));
+    };
+  }
+  function bindAmForm(f) {
+    f.dataset.bound = '1';
+    const m = adm.materials.find(x => x.id === f.dataset.id); if (!m) return;
+    const el = n => f.elements[n];
+    f.querySelectorAll('.cbx').forEach(box => box.dataset.cb === 'topic'
+      ? bindCombo(box, topicItems(), s => tk('cbNewTopic')(s))
+      : bindCombo(box, groupItems(), s => tk('cbNewGroup')(s)));
+    const sync = () => {
+      const v = el('topic').value.trim();
+      $('#am-groupField').hidden =!v || data.topics.some(x => x.name === v) || adm.topics.some(x => x.topic === v);
+      if (!m.file) { const r = linkCheck(el('url').value), h = $('#amUrlHint'); h.className = 'lhint' + (r.lv ? ' ' + r.lv : ''); h.innerHTML = linkHint(r); }
+      const d = dupOf(el('url').value, m.id, adm.materials), dh = $('#amDup');
+      dh.hidden = !d; dh.innerHTML = d ? linkHint({ lv: 'warn', msg: tk('dupLink')(d.title, [d.topic + ' · ' + d.level, admSt(d) === 'pub' ? '' : AT[admSt(d)]].filter(Boolean).join(' · ')) }) : '';
+    };
+    f.addEventListener('input', sync); f.addEventListener('change', sync); sync();
+    f.onsubmit = async e => {
+      e.preventDefault(); const err = $('#amErr'); err.textContent = '';
+      const topic = el('topic').value.trim(), kt = adm.topics.find(x => x.topic === topic);
+      const material = { topic, group: kt ? kt.group : (el('group').value.trim() || '기타'), level: el('level').value, title: el('title').value.trim(),
+        type: el('type').value, url: el('url').value.trim(), desc: el('desc').value.trim() };
+      const miss = !topic ? 'needTopic' : !material.level ? 'needLevel' : !material.title ? 'needTitle' : !m.file && !material.url ? 'needUrl' : '';
+      if (miss) { err.textContent = tk(miss); return; }
+      if (!m.file) { const lk = linkCheck(material.url); if (lk.lv === 'bad') { err.textContent = lk.msg; return; } }
+      await admDo('mat_save', { id: m.id, material }, AT.saved, f.querySelector('.pri'));
+    };
+  }
+  function bindAtForm(f) {
+    f.dataset.bound = '1';
+    const from = f.dataset.from, el = n => f.elements[n];
+    bindCombo(f.querySelector('.cbx'), groupItems(), s => tk('cbNewGroup')(s));
+    const sync = () => { $('#atRen').hidden = !from || el('topic').value.trim() === from; };
+    f.addEventListener('input', sync); sync();
+    f.onsubmit = async e => {
+      e.preventDefault(); const err = $('#atErr'); err.textContent = '';
+      const body = { from, topic: el('topic').value.replace(/\s+/g, ' ').trim(), fr: el('fr').value.trim(), group: el('group').value.replace(/\s+/g, ' ').trim() || '기타', icon: el('icon').value.trim() };
+      if (!body.topic) { err.textContent = tk('needTopic'); el('topic').focus(); return; }
+      if (from && body.topic !== from && !confirm(AT.renameAsk(from, body.topic))) return;
+      await admDo('topic_save', body, from ? AT.saved : AT.created, f.querySelector('.pri'), () => { admOpen = 't:' + body.topic; });
+    };
+  }
+  // 관리자 화면 누르기(열고 닫기·걸러 보기·동작·차례 바꾸기·코드 복사). 받았으면 true
+  function admClick(e) {
+    if (e.target.closest('[data-aretry]')) { admErr = ''; admLoad(); render(true); return true; }
+    const O = e.target.closest('[data-aopen]');
+    if (O) {
+      const k = O.dataset.aopen; admOpen = admOpen === k ? '' : k; admNew = null; render(true);
+      const row = admOpen && [...document.querySelectorAll('[data-row]')].find(x => x.dataset.row === admOpen);
+      if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      return true;
+    }
+    const F = e.target.closest('[data-af]'); if (F) { admF = F.dataset.af; admOpen = ''; render(true); return true; }
+    const X = e.target.closest('[data-aqx]'); if (X) { admQ[X.dataset.aqx] = ''; const i = $('#admQ'); if (i) { i.value = ''; i.focus(); } drawAdmList(); return true; }
+    if (e.target.closest('[data-acopy]')) {
+      const code = admNew && admNew.code; if (!code) return true;
+      navigator.clipboard.writeText(code).then(() => toast(tk('codeCopied')), () => { const r = document.createRange(), s = getSelection(); r.selectNodeContents($('#newCode')); s.removeAllRanges(); s.addRange(r); toast(tk('copySel')); });
+      return true;
+    }
+    const MV = e.target.closest('[data-amv]');
+    if (MV) { admDo(MV.dataset.amv === 'group' ? 'group_move' : 'topic_move', { [MV.dataset.amv]: MV.dataset.name, dir: Number(MV.dataset.dir) }, '', MV); return true; }
+    const A = e.target.closest('[data-aact]'); if (A) { e.preventDefault(); admAct(A); return true; }
+    return false;
+  }
+  async function admAct(b) {
+    const op = b.dataset.aact, f = b.closest('form'), m = f && f.id === 'amForm' ? adm.materials.find(x => x.id === f.dataset.id) : null;
+    if (op === 'mat_pub' && m) return admDo('mat_pub', { id: m.id, on: !m.pub }, m.pub ? AT.hiddenT : AT.shownT, b);
+    if (op === 'mat_del' && m) { if (confirm(AT.delAsk(m.title))) admDo('mat_del', { id: m.id }, AT.removed, b); return; }
+    if (op === 'mat_restore' && m) return admDo('mat_restore', { id: m.id }, AT.restored, b);
+    if (op === 'topic_del') { if (confirm(AT.topicDelAsk(b.dataset.name))) admDo('topic_del', { topic: b.dataset.name }, AT.topicDeleted, b, () => { admOpen = ''; }); return; }
+    const x = b.dataset.id ? adm.teachers.find(y => y.id === Number(b.dataset.id)) : null;
+    if (op === 'teacher_active' && x) { if (!x.active || confirm(AT.offAsk(x.name))) admDo('teacher_active', { id: x.id, on: !x.active }, x.active ? AT.offDone : AT.onDone, b); return; }
+    if (op === 'teacher_code' && x) {
+      const me = x.id === adm.me;
+      if (!confirm(me ? AT.codeAskMe : AT.codeAsk(x.name))) return;
+      return admDo('teacher_code', { id: x.id }, AT.codeMade, b, r => {
+        admNew = { id: x.id, code: r.code };
+        if (me) { teacher.code = r.code; saveTeacher(teacher); }   // 이 기기는 새 코드로 바로(다음 요청부터 새 코드)
+      });
+    }
+    if (op === 'join_close') { if (confirm(AT.joinCloseAsk)) admDo('settings_save', { settings: { join_code: '' } }, AT.joinClosedT, b); return; }
+    if (op === 'notice_clear') return admDo('settings_save', { settings: { notice: '' } }, AT.noticeCleared, b);
+  }
+
   // 누르기는 한곳에서 받는다
   document.addEventListener('click', e => {
     const L = e.target.closest('[data-lang]'); if (L) { lang = L.dataset.lang; render(true); return; }
@@ -1328,7 +1778,8 @@
     if (e.target.closest('[data-print]')) { window.print(); return; }
     if (e.target.closest('[data-install]')) { const ev = installEvt; if (ev) { ev.prompt(); Promise.resolve(ev.userChoice).catch(() => {}).then(() => { installEvt = null; render(true); }); } return; }
     if (e.target.closest('[data-install-x]')) { installHide = true; render(true); return; }
-    if (e.target.closest('[data-logout]')) { teacher = null; saveTeacher(null); toast(t('logout')); if (location.hash === '#/') render(); else location.hash = '#/'; return; }
+    if (e.target.closest('[data-logout]')) { teacher = null; adm = null; saveTeacher(null); toast(t('logout')); if (location.hash === '#/') render(); else location.hash = '#/'; return; }
+    if (admClick(e)) return;
     const D = e.target.closest('[data-del]'); if (D) { e.preventDefault(); delMat(D); return; }
     const MG = e.target.closest('[data-mg]'); if (MG) { mineGroup = MG.dataset.mg; render(true); return; }
     // 즐겨찾기: ☆ 담기·빼기, 필터(줄마다 하나, 다시 누르거나 '전체'면 풀림)·정렬 고르기, 초기화 / 자료실 찾는 글자 지우기 / 로그인 안내 → 로그인 뒤 즐겨찾기로
@@ -1344,7 +1795,10 @@
     if (e.target.closest('[data-libqx]')) { libQ = ''; const i = $('#libQ'); if (i) { i.value = ''; i.focus(); } drawLib(); return; }
     if (e.target.closest('[data-tofav]')) afterLogin = '#/fav';
   });
-  document.addEventListener('input', e => { if (e.target && e.target.id === 'libQ') { libQ = e.target.value; drawLib(); } });
+  document.addEventListener('input', e => {
+    if (e.target && e.target.id === 'libQ') { libQ = e.target.value; drawLib(); }
+    if (e.target && e.target.id === 'admQ') { admQ[e.target.dataset.k] = e.target.value; drawAdmList(); }
+  });
 
   let toastTimer;
   function toast(msg) { const el = $('#toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('on'), 1900); }
@@ -1363,9 +1817,9 @@
       const r = await api.post({ action: 'login', code: teacher.code });
       if (!teacher) return;
       if (r.ok) {
-        teacher = Object.assign({}, teacher, { name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : (teacher.favs || []) });
+        teacher = Object.assign({}, teacher, { name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : (teacher.favs || []), admin: !!r.admin });
         saveTeacher(teacher);
-        if (['t', 'fav', 'mine'].includes(route()[0] || '')) render(true);
+        if (['t', 'fav', 'mine', 'admin'].includes(route()[0] || '')) render(true);
       } else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); render(true); }
     } catch (e) {}
   }

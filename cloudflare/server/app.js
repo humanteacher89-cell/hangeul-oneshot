@@ -5,6 +5,7 @@
 //  POST /api 파일 올리기: 본문 = 파일 바이트, 머리글 X-Oneshot = encodeURIComponent(JSON {action:'upload', code, material, file:{name,type}})
 //       (base64 JSON을 풀면 CPU 한도 10ms를 넘으므로 바이트를 그대로 KV에 흘려 넣는다)
 //  GET  /f/<키>            → 올린 파일. 지운 자료의 파일은 404(KV에는 남겨 두어 되살릴 수 있다)
+//  POST /api {action:'admin', code, op, ...} → 관리자 화면(2차, 2026-10-31). 요청마다 코드로 is_admin = 1인지 본다(틀린 코드 401, 관리자 아님 403). 아래 ADMIN 표
 // 로그인 코드는 HMAC-SHA256(비밀 CODE_PEPPER) 해시만 저장한다. 틀린 코드·가입 코드는 기기별 10분 30번, 전체 300번이면 10분 막는다.
 
 const FILE_MAX_MB = 10;   // index.html의 FILE_MAX_MB·FILE_EXT와 같게
@@ -12,6 +13,8 @@ const FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'];
 const FILE_MIME = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', heic: 'image/heic' };
 const FAIL_LIMIT = 30, FAIL_ALL = 300, FAIL_WINDOW_MS = 600000;
 const FAV_MAX = 500;
+const LEVEL_KEYS = ['하', '중', '상'];   // config.js LEVELS와 같게
+const SETTING_KEYS = { join_code: 40, notice: 300 };   // 관리자 화면에서 고치는 설정과 글자 수 한도
 
 const json = (obj, status) => new Response(JSON.stringify(obj), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
 const no = error => json({ ok: false, error });
@@ -42,7 +45,7 @@ export async function handleApi(request, env) {
       if ((u.searchParams.get('action') || 'data') !== 'data') return no('unknown');
       return json(await readAll(env, u.origin));
     }
-    if (request.method === 'POST') return await post(request, env);
+    if (request.method === 'POST') return await post(request, env, new URL(request.url).origin);
     return json({ ok: false, error: 'unknown' }, 405);
   } catch (e) {
     console.error('api', e && e.stack || e);
@@ -92,7 +95,7 @@ async function readAll(env, origin) {
   };
 }
 
-async function post(request, env) {
+async function post(request, env, origin) {
   const meta = request.headers.get('X-Oneshot');
   let b;
   try { b = JSON.parse(meta ? decodeURIComponent(meta) : await request.text()); } catch (e) { return no('bad_json'); }
@@ -100,9 +103,15 @@ async function post(request, env) {
   const who = await device(env, request);
   if (await tooMany(env, who)) return no('too_many');
   if (b.action === 'join') return join(env, b, who);
+  const isAdmin = b.action === 'admin';
   const tc = await findTeacher(env, b.code);
-  if (!tc) { await addFail(env, who); return no('bad_code'); }
-  if (b.action === 'login') return json({ ok: true, teacher: { name: tc.name, school: tc.school }, favs: await favList(env, tc.id) });
+  if (!tc) { await addFail(env, who); return isAdmin ? json({ ok: false, error: 'bad_code' }, 401) : no('bad_code'); }
+  if (b.action === 'login') {
+    const r = { ok: true, teacher: { name: tc.name, school: tc.school }, favs: await favList(env, tc.id) };
+    if (tc.is_admin) r.admin = true;   // 화면이 관리자 입구를 보여 줄 뿐, 관리자 동작은 요청마다 다시 확인한다
+    return json(r);
+  }
+  if (isAdmin) return tc.is_admin ? admin(env, b, tc, origin) : json({ ok: false, error: 'not_admin' }, 403);
   if (b.action === 'fav') return fav(env, b, tc);
   if (b.action === 'upload') return upload(env, request, b, tc, !!meta);
   if (b.action === 'delete' || b.action === 'hide') return remove(env, b, tc, b.action);
@@ -123,7 +132,7 @@ async function addFail(env, who) {
 
 async function findTeacher(env, code) {
   code = str(code, 100); if (!code) return null;
-  return env.DB.prepare('SELECT id, name, school FROM teachers WHERE code_hash = ?1 AND active = 1').bind(await codeHash(env, code)).first();
+  return env.DB.prepare('SELECT id, name, school, is_admin FROM teachers WHERE code_hash = ?1 AND active = 1').bind(await codeHash(env, code)).first();
 }
 async function favList(env, tid) {
   const r = await env.DB.prepare('SELECT material_id FROM favs WHERE teacher_id = ?1 ORDER BY added DESC LIMIT ?2').bind(tid, FAV_MAX).all();
@@ -143,7 +152,7 @@ async function join(env, b, who) {
   const key = name.replace(/\s+/g, '').toLowerCase();
   if (await env.DB.prepare('SELECT 1 AS x FROM teachers WHERE name_key = ?1').bind(key).first()) return no('dup_name');
   for (let i = 0; i < 5; i++) {
-    const code = String(10000000 + rand(90000000));
+    const code = newCode();
     try {
       await env.DB.prepare('INSERT INTO teachers (name, name_key, school, code_hash, joined) VALUES (?1, ?2, ?3, ?4, ?5)')
         .bind(name, key, school, await codeHash(env, code), today()).run();
@@ -155,6 +164,17 @@ async function join(env, b, who) {
     }
   }
   return no('server');
+}
+const newCode = () => String(10000000 + rand(90000000));   // 로그인 코드 8자리
+
+// 소주제가 표에 없으면 만든다(올리기·자료 고치기·되살리기에서, 2차 '새 소주제 자동 등록'). 그 소주제의 대주제를 돌려준다.
+// 새 소주제는 맨 뒤 순서(같은 대주제 안에서도 맨 뒤)로 들어간다.
+async function ensureTopic(env, topic, group) {
+  const have = await env.DB.prepare('SELECT grp FROM topics WHERE topic = ?1').bind(topic).first();
+  if (have) return have.grp;
+  const g = str(group, 40) || '기타';
+  await env.DB.prepare("INSERT OR IGNORE INTO topics (topic, fr, grp, ord, icon) VALUES (?1, '', ?2, (SELECT COALESCE(MAX(ord), 0) + 10 FROM topics), '')").bind(topic, g).run();
+  return g;
 }
 
 // 즐겨찾기 담기·빼기. 다시 담으면 맨 앞으로, 500개를 넘으면 오래된 것부터 뺀다
@@ -201,12 +221,14 @@ async function upload(env, request, b, tc, isFile) {
     url = '/f/' + fileKey;
   } else if (!/^https?:\/\//i.test(url)) return no('missing');
 
-  let id = 'm' + Date.now().toString(36);
+  let id = 'm' + Date.now().toString(36), grp;
+  try { grp = await ensureTopic(env, topic, m.group); }
+  catch (e) { if (fileKey) await env.FILES.delete(fileKey).catch(() => {}); throw e; }
   for (let i = 0; i < 4; i++) {
     try {
       await env.DB.prepare('INSERT INTO materials (id, grp, topic, level, title, type, url, file_key, descr, minutes, school, by_name, teacher_id, date, pub) ' +
         'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, 1)')
-        .bind(id, str(m.group, 40), topic, level, title, str(m.type, 20), url, fileKey, str(m.desc, 80), Number(m.minutes) || null,
+        .bind(id, grp, topic, level, title, str(m.type, 20), url, fileKey, str(m.desc, 80), Number(m.minutes) || null,
           str(m.school, 60) || tc.school || '', tc.name, tc.id, today()).run();
       return json({ ok: true, id });
     } catch (e) {
@@ -226,3 +248,167 @@ async function remove(env, b, tc, action) {
   else await env.DB.prepare('UPDATE materials SET deleted = ?2 WHERE id = ?1').bind(row.id, today()).run();
   return json({ ok: true });
 }
+
+// ---------- 관리자 화면(2차, 2026-10-31) ----------
+// 시트에서 휴먼쌤이 손으로 하던 일을 화면에서: 자료(전부 찾기·고치기·숨김·삭제·되살리기) · 분류(대주제·소주제) · 교사(끄기·새 코드) · 설정(가입 코드·공지).
+// post()가 코드로 is_admin = 1을 확인한 뒤에만 여기로 온다. op 이름이 ADMIN 표에 없으면 unknown.
+async function admin(env, b, me, origin) {
+  const op = String(b.op || '');
+  return Object.prototype.hasOwnProperty.call(ADMIN, op) ? ADMIN[op](env, b, me, origin) : no('unknown');
+}
+const ok = () => json({ ok: true });
+const changed = r => !!(r && r.meta && r.meta.changes);
+
+// 소주제 순서: 화면(index.html prepare)과 같게 순서 칸 값(없거나 0이면 1000 + 넣은 차례)으로 늘어놓고, 대주제는 처음 나온 차례로 묶는다
+async function topicTree(db) {
+  const rows = (await db.prepare('SELECT topic, grp, ord FROM topics ORDER BY rowid').all()).results;
+  const list = rows.map((r, i) => ({ topic: r.topic, grp: r.grp || '기타', k: Number(r.ord) || (1000 + i) })).sort((a, b) => a.k - b.k);
+  const groups = [];
+  list.forEach(x => { let g = groups.find(y => y.name === x.grp); if (!g) groups.push(g = { name: x.grp, topics: [] }); g.topics.push(x.topic); });
+  return groups;
+}
+// 바꾼 차례대로 순서 칸을 10, 20, 30 …으로 다시 매긴다(보이는 차례 = 대주제 차례 → 그 안의 소주제 차례)
+async function saveOrder(db, groups) {
+  const stmts = []; let n = 0;
+  groups.forEach(g => g.topics.forEach(tp => stmts.push(db.prepare('UPDATE topics SET ord = ?2 WHERE topic = ?1').bind(tp, (++n) * 10))));
+  if (stmts.length) await db.batch(stmts);
+}
+const swap = (a, i, d) => { const j = i + d; if (i < 0 || j < 0 || j >= a.length) return false; [a[i], a[j]] = [a[j], a[i]]; return true; };
+
+const ADMIN = {
+  // 관리자 화면 한 번에 받기: 설정(가입 코드 포함) · 소주제 · 자료 전부(숨김·지운 것 포함) · 교사(올린 자료 수, 코드·해시는 빼고)
+  async overview(env, b, me, origin) {
+    const db = env.DB;
+    const [st, tp, mt, tc] = await db.batch([
+      db.prepare('SELECT key, value FROM settings ORDER BY rowid'),
+      db.prepare('SELECT topic, fr, grp, ord, icon FROM topics ORDER BY rowid'),
+      db.prepare('SELECT id, grp, topic, level, title, type, url, file_key, descr, school, by_name, teacher_id, date, pub, deleted FROM materials ORDER BY rowid'),
+      db.prepare('SELECT t.id, t.name, t.school, t.joined, t.active, t.is_admin, (SELECT COUNT(*) FROM materials m WHERE m.deleted IS NULL AND ' +
+        '(m.teacher_id = t.id OR (m.teacher_id IS NULL AND m.by_name = t.name))) AS n FROM teachers t ORDER BY t.id')
+    ]);
+    const settings = {};
+    st.results.forEach(r => { if (r.key) settings[r.key] = String(r.value == null ? '' : r.value); });
+    return json({
+      ok: true, me: me.id, settings,
+      topics: tp.results.map(r => ({ topic: r.topic, fr: r.fr, group: r.grp, order: r.ord == null ? '' : r.ord, icon: r.icon })),
+      materials: mt.results.map(r => ({ id: r.id, group: r.grp, topic: r.topic, level: r.level, title: r.title, type: r.type,
+        url: r.url.startsWith('/') ? origin + r.url : r.url, file: !!r.file_key, desc: r.descr, school: r.school, by: r.by_name,
+        teacherId: r.teacher_id, date: r.date, pub: r.pub === 1, deleted: r.deleted || '' })),
+      teachers: tc.results.map(r => ({ id: r.id, name: r.name, school: r.school, joined: r.joined, active: r.active === 1, admin: r.is_admin === 1, n: r.n }))
+    });
+  },
+
+  // 자료 고치기: 소주제·레벨·제목·유형·링크·설명. 올린 파일 자료는 링크를 바꾸지 않는다. 새 소주제면 표에 만든다
+  async mat_save(env, b) {
+    const db = env.DB, m = b.material || {};
+    const row = await db.prepare('SELECT id, url, file_key FROM materials WHERE id = ?1').bind(str(b.id, 40)).first();
+    if (!row) return no('not_found');
+    const topic = str(m.topic, 60), level = str(m.level, 10), title = str(m.title, 60);
+    if (!topic || !title || !LEVEL_KEYS.includes(level)) return no('missing');
+    let url = row.url;
+    if (!row.file_key) { url = str(m.url, 2000); if (!/^https?:\/\//i.test(url)) return no('bad_url'); }
+    const grp = await ensureTopic(env, topic, m.group);
+    await db.prepare('UPDATE materials SET grp = ?2, topic = ?3, level = ?4, title = ?5, type = ?6, url = ?7, descr = ?8 WHERE id = ?1')
+      .bind(row.id, grp, topic, level, title, str(m.type, 20), url, str(m.desc, 80)).run();
+    return ok();
+  },
+  // 숨김/보이기(공개 칸). 지운 자료도 칸은 바뀌지만 되살리기 전에는 보이지 않는다
+  async mat_pub(env, b) {
+    return changed(await env.DB.prepare('UPDATE materials SET pub = ?2 WHERE id = ?1').bind(str(b.id, 40), b.on ? 1 : 0).run()) ? ok() : no('not_found');
+  },
+  async mat_del(env, b) {
+    return changed(await env.DB.prepare('UPDATE materials SET deleted = ?2 WHERE id = ?1 AND deleted IS NULL').bind(str(b.id, 40), today()).run()) ? ok() : no('not_found');
+  },
+  // 되살리기: 지운 날짜를 비운다(올린 파일 링크도 다시 열린다). 그사이 소주제가 없어졌으면 다시 만든다
+  async mat_restore(env, b) {
+    const db = env.DB, row = await db.prepare('SELECT id, topic, grp FROM materials WHERE id = ?1 AND deleted IS NOT NULL').bind(str(b.id, 40)).first();
+    if (!row) return no('not_found');
+    await ensureTopic(env, row.topic, row.grp);
+    await db.prepare('UPDATE materials SET deleted = NULL WHERE id = ?1').bind(row.id).run();
+    return ok();
+  },
+
+  // 소주제 고치기(from = 지금 이름) 또는 새로 만들기(from 없음): 이름·프랑스어·대주제·아이콘. 이름을 바꾸면 그 소주제 자료도 따라간다
+  async topic_save(env, b) {
+    const db = env.DB, from = str(b.from, 60), name = str(b.topic, 60), group = str(b.group, 40) || '기타', fr = str(b.fr, 60), icon = str(b.icon, 16);
+    if (!name) return no('missing');
+    const has = n => db.prepare('SELECT 1 AS x FROM topics WHERE topic = ?1').bind(n).first();
+    if (from) {
+      if (!(await has(from))) return no('not_found');
+      if (name !== from && await has(name)) return no('dup_topic');
+      await db.batch([
+        db.prepare('UPDATE topics SET topic = ?2, fr = ?3, grp = ?4, icon = ?5 WHERE topic = ?1').bind(from, name, fr, group, icon),
+        db.prepare('UPDATE materials SET topic = ?2, grp = ?3 WHERE topic = ?1').bind(from, name, group)
+      ]);
+    } else {
+      if (await has(name)) return no('dup_topic');
+      await db.prepare('INSERT INTO topics (topic, fr, grp, ord, icon) VALUES (?1, ?2, ?3, (SELECT COALESCE(MAX(ord), 0) + 10 FROM topics), ?4)').bind(name, fr, group, icon).run();
+    }
+    return ok();
+  },
+  // 소주제 지우기: 남은 자료(숨김 포함, 지운 자료 빼고)가 없을 때만
+  async topic_del(env, b) {
+    const db = env.DB, name = str(b.topic, 60);
+    const used = await db.prepare('SELECT COUNT(*) AS n FROM materials WHERE topic = ?1 AND deleted IS NULL').bind(name).first();
+    if (used.n) return no('in_use');
+    return changed(await db.prepare('DELETE FROM topics WHERE topic = ?1').bind(name).run()) ? ok() : no('not_found');
+  },
+  // 소주제 한 칸 위(dir -1)·아래(dir 1), 같은 대주제 안에서
+  async topic_move(env, b) {
+    const groups = await topicTree(env.DB), name = str(b.topic, 60);
+    const g = groups.find(x => x.topics.includes(name));
+    if (!g) return no('not_found');
+    if (swap(g.topics, g.topics.indexOf(name), b.dir < 0 ? -1 : 1)) await saveOrder(env.DB, groups);
+    return ok();
+  },
+  // 대주제 이름 바꾸기(그 대주제의 소주제·자료 모두). 이미 있는 대주제 이름을 주면 합쳐진다
+  async group_rename(env, b) {
+    const db = env.DB, from = str(b.from, 40), to = str(b.to, 40);
+    if (!from || !to) return no('missing');
+    if (!(await db.prepare('SELECT 1 AS x FROM topics WHERE grp = ?1').bind(from).first())) return no('not_found');
+    await db.batch([
+      db.prepare('UPDATE topics SET grp = ?2 WHERE grp = ?1').bind(from, to),
+      db.prepare('UPDATE materials SET grp = ?2 WHERE grp = ?1').bind(from, to)
+    ]);
+    return ok();
+  },
+  // 대주제 한 칸 위·아래(첫 화면에 묶음이 보이는 차례)
+  async group_move(env, b) {
+    const groups = await topicTree(env.DB), i = groups.findIndex(g => g.name === str(b.group, 40));
+    if (i < 0) return no('not_found');
+    if (swap(groups, i, b.dir < 0 ? -1 : 1)) await saveOrder(env.DB, groups);
+    return ok();
+  },
+
+  // 교사 끄기·켜기. 끈 교사는 로그인·올리기가 안 되고(코드가 틀린 것과 같음) 올린 자료는 그대로 보인다. 나 자신은 끌 수 없다
+  async teacher_active(env, b, me) {
+    const id = Number(b.id);
+    if (!Number.isInteger(id)) return no('missing');
+    if (id === me.id && !b.on) return no('self');
+    return changed(await env.DB.prepare('UPDATE teachers SET active = ?2 WHERE id = ?1').bind(id, b.on ? 1 : 0).run()) ? ok() : no('not_found');
+  },
+  // 새 로그인 코드: 코드를 잊은 교사에게. 옛 코드는 해시라 볼 수 없고 바로 막힌다. 새 코드는 이 응답에 한 번만 나간다
+  async teacher_code(env, b) {
+    const db = env.DB, row = await db.prepare('SELECT id, name FROM teachers WHERE id = ?1').bind(Number(b.id)).first();
+    if (!row) return no('not_found');
+    for (let i = 0; i < 5; i++) {
+      const code = newCode();
+      try {
+        await db.prepare('UPDATE teachers SET code_hash = ?2 WHERE id = ?1').bind(row.id, await codeHash(env, code)).run();
+        return json({ ok: true, name: row.name, code });
+      } catch (e) { if (!/UNIQUE/i.test(String(e && e.message))) throw e; }
+    }
+    return no('server');
+  },
+
+  // 설정: 가입 코드(비우면 가입 닫힘)·공지(첫 화면 위). 준 것만 바꾼다
+  async settings_save(env, b) {
+    const db = env.DB, s = b.settings || {}, stmts = [];
+    Object.keys(SETTING_KEYS).forEach(k => {
+      if (Object.prototype.hasOwnProperty.call(s, k)) stmts.push(db.prepare('INSERT INTO settings (key, value) VALUES (?1, ?2) ON CONFLICT (key) DO UPDATE SET value = excluded.value').bind(k, str(s[k], SETTING_KEYS[k])));
+    });
+    if (!stmts.length) return no('missing');
+    await db.batch(stmts);
+    return ok();
+  }
+};
