@@ -1,5 +1,7 @@
 # 한글원샷 — 프랑스 한글학교 레벨별 자료 저장소
 
+> **2026-10-31부터 이 `main` 가지는 넘김 페이지만 둔다.** 공개판은 가지 **`v2`**(Cloudflare 새 판: https://humanssaem-hangeul-oneshot.pages.dev/ , human-teacher.com/hangeuloneshot 이 넘김)이고, 일은 `v2`에서 한다 — 최신 안내는 `v2`의 `CLAUDE.md`. GitHub Pages(`main`) 주소 https://humanteacher89-cell.github.io/hangeul-oneshot/ 는 `index.html`이 새 주소로 넘기고(`#/…` 그대로), `sw.js`는 예전 기기의 저장본을 지우고 물러난다(휴먼쌤 10-31 "바꾸기로 해주고"). 옛 시트 판 화면은 이 가지의 바로 전 커밋 6ab4e84에 있다. 아래는 옛 판 기록이다.
+
 QR 한 번에 내 레벨 자료가 열리는 **한 장짜리 페이지**(서비스가 아니다). 교사들이 주제 → 상/중/하로 나눈 자료를 페이지에서 로그인해 올리면, 페이지가 타일·띠·버튼으로 보여 준다. 구글시트는 뒤에서 자료를 담는 곳일 뿐이다. 학습자 쪽은 아무것도 저장하지 않는다.
 사용자는 **휴먼쌤**이라고 부른다. 답은 한국어로, 휴대폰에서 읽기 쉽게 결과부터 짧게. 이모지는 쓰지 않는다.
 이 저장소 `hangeul-oneshot`이 한글원샷 전부다(2026-10-16 `apps` 저장소의 `hangeul-oneshot/` 폴더에서 기록째 옮겨 왔다). 공개 주소 https://humanteacher89-cell.github.io/hangeul-oneshot/
