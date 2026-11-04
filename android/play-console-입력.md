@@ -178,9 +178,9 @@ Open the Teacher tab (the third tab, 선생님). Enter the password above as the
 참여 순서 (크롬에서 열어 주세요. 카카오톡 안에서 열면 안 될 수 있어요)
 1. 그룹 가입: 휴대폰 Play 스토어에 쓰는 구글 계정으로 아래 링크를 열고 '그룹 가입'을 눌러 주세요. 다음 화면에서도 '그룹 가입'을 한 번 더 누르면 돼요. 로그인 뒤 '어떤 그룹에도 가입되어 있지 않습니다'가 나오면 링크를 다시 열어 주세요.
 https://groups.google.com/g/hangeul-oneshot-testers/about
-2. 테스트 참여: 아래 링크에서 테스트에 참여해 주세요.
+2. 테스트 참여: 아래 링크에서 'Become a tester'(테스터 되기)를 눌러 주세요. 오른쪽 위 프로필이 그룹에 가입한 계정인지 확인해 주세요.
 https://play.google.com/apps/testing/com.humanteacher.hangeuloneshot
-3. 설치: 같은 화면의 안내를 따라 Play 스토어에서 앱을 설치해 주세요.
+3. 설치: 다음 화면의 Google Play 링크를 눌러 앱을 설치해 주세요. '항목을 찾을 수 없습니다'가 나오면 Play 스토어 오른쪽 위 프로필을 눌러 같은 계정으로 바꾼 뒤 다시 해 주세요.
 4. 14일 동안 참여를 취소하지 말고, 틈틈이 앱을 써 봐 주세요.
    - 모두: 자료 열기, QR 찍기, 신고 화면 보기
    - 선생님: 로그인, 즐겨찾기, 실제 수업 자료 올리기
