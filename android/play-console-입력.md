@@ -171,7 +171,8 @@ Open the Teacher tab (the third tab, 선생님). Enter the password above as the
 - 안드로이드 휴대폰과 구글 계정 (아이폰은 참여할 수 없어요)
 
 지금 해 주실 일
-- 아래 링크를 열고 구글 계정으로 로그인한 뒤 그룹에 가입해 주세요. 메일 주소는 관리자인 휴먼쌤에게만 보입니다.
+- 아래 링크를 열고 구글 계정으로 로그인한 뒤 '그룹 가입'을 눌러 주세요. 다음 화면에서도 '그룹 가입'을 한 번 더 누르면 끝나요. 메일 주소는 관리자인 휴먼쌤에게만 보입니다.
+- 어른 계정으로 가입해 주세요. 만 13세 미만 자녀용 계정은 가입되지 않아요.
 https://groups.google.com/g/hangeul-oneshot-testers/about
 
 그다음 순서
