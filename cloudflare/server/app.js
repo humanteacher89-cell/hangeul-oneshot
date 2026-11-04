@@ -8,6 +8,8 @@
 //  GET  /go/<자료 id>      → 자료별 QR이 담는 주소. 지금 링크로 302(2026-10-31)
 //  POST /api {action:'admin', code, op, ...} → 관리자 화면(2차, 2026-10-31). 요청마다 코드로 is_admin = 1인지 본다(틀린 코드 401, 관리자 아님 403). 아래 ADMIN 표
 // 로그인 코드는 HMAC-SHA256(비밀 CODE_PEPPER) 해시만 저장한다. 틀린 코드·가입 코드는 기기별 10분 30번, 전체 300번이면 10분 막는다.
+// Google Play 정책(2026-11-04): POST /api {action:'report', id, reason, text} 자료 신고(로그인 없이) · {action:'leave', code, confirm:true} 계정 삭제 ·
+//   올리기는 이용 규칙에 동의한 교사만(teachers.terms_at, 아직이면 agree:true를 함께 보내 동의를 적는다).
 
 const FILE_MAX_MB = 10;   // index.html의 FILE_MAX_MB·FILE_EXT와 같게
 const FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'];
@@ -16,6 +18,8 @@ const FAIL_LIMIT = 30, FAIL_ALL = 300, FAIL_WINDOW_MS = 600000;
 const FAV_MAX = 500;
 const LEVEL_KEYS = ['하', '중', '상'];   // config.js LEVELS와 같게
 const SETTING_KEYS = { join_code: 40, notice: 300 };   // 관리자 화면에서 고치는 설정과 글자 수 한도
+const REPORT_REASONS = ['inappropriate', 'privacy', 'copyright', 'person', 'other'];   // index.html RP_REASONS와 같게
+const REPORT_LIMIT = 10, REPORT_ALL = 200;   // 신고 도배 막기: 기기별·전체, FAIL_WINDOW_MS(10분) 안에
 
 const json = (obj, status) => new Response(JSON.stringify(obj), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
 const no = error => json({ ok: false, error });
@@ -142,11 +146,12 @@ async function post(request, env, origin) {
   const who = await device(env, request);
   if (await tooMany(env, who)) return no('too_many');
   if (b.action === 'join') return join(env, b, who);
+  if (b.action === 'report') return report(env, b, who);   // 학습자도 신고할 수 있게 코드 없이
   const isAdmin = b.action === 'admin';
   const tc = await findTeacher(env, b.code);
   if (!tc) { await addFail(env, who); return isAdmin ? json({ ok: false, error: 'bad_code' }, 401) : no('bad_code'); }
   if (b.action === 'login') {
-    const r = { ok: true, teacher: { name: tc.name, school: tc.school }, favs: await favList(env, tc.id), mine: await mineList(env, tc) };
+    const r = { ok: true, teacher: { name: tc.name, school: tc.school }, favs: await favList(env, tc.id), mine: await mineList(env, tc), terms: !!tc.terms_at };
     if (tc.is_admin) r.admin = true;   // 화면이 관리자 입구를 보여 줄 뿐, 관리자 동작은 요청마다 다시 확인한다
     return json(r);
   }
@@ -154,6 +159,7 @@ async function post(request, env, origin) {
   if (b.action === 'fav') return fav(env, b, tc);
   if (b.action === 'upload') return upload(env, request, b, tc, !!meta);
   if (b.action === 'delete' || b.action === 'hide') return remove(env, b, tc, b.action);
+  if (b.action === 'leave') return leave(env, b, tc);
   return no('unknown');
 }
 
@@ -171,7 +177,7 @@ async function addFail(env, who) {
 
 async function findTeacher(env, code) {
   code = str(code, 100); if (!code) return null;
-  return env.DB.prepare('SELECT id, name, school, is_admin FROM teachers WHERE code_hash = ?1 AND active = 1').bind(await codeHash(env, code)).first();
+  return env.DB.prepare('SELECT id, name, school, is_admin, terms_at FROM teachers WHERE code_hash = ?1 AND active = 1').bind(await codeHash(env, code)).first();
 }
 async function favList(env, tid) {
   const r = await env.DB.prepare('SELECT material_id FROM favs WHERE teacher_id = ?1 ORDER BY added DESC LIMIT ?2').bind(tid, FAV_MAX).all();
@@ -193,7 +199,7 @@ async function join(env, b, who) {
   for (let i = 0; i < 5; i++) {
     const code = newCode();
     try {
-      await env.DB.prepare('INSERT INTO teachers (name, name_key, school, code_hash, joined) VALUES (?1, ?2, ?3, ?4, ?5)')
+      await env.DB.prepare('INSERT INTO teachers (name, name_key, school, code_hash, joined, terms_at) VALUES (?1, ?2, ?3, ?4, ?5, ?5)')   // 가입 화면에서 이용 규칙에도 동의한다
         .bind(name, key, school, await codeHash(env, code), today()).run();
       return json({ ok: true, teacher: { name, school }, code });
     } catch (e) {
@@ -236,6 +242,11 @@ async function fav(env, b, tc) {
 
 // 올리기: 링크 하나, 또는 파일(PDF·사진 10MB) → KV에 두고 링크는 '/f/<키>'
 async function upload(env, request, b, tc, isFile) {
+  // 이용 규칙(Play 사용자 제작 콘텐츠 정책): 가입 때 동의하지 않은 옛 교사는 첫 올리기 때 한 번 동의한다
+  if (!tc.terms_at) {
+    if (b.agree !== true) return no('need_terms');
+    await env.DB.prepare('UPDATE teachers SET terms_at = ?2 WHERE id = ?1').bind(tc.id, today()).run();
+  }
   const m = b.material || {};
   const topic = str(m.topic, 60), level = str(m.level, 10), title = str(m.title, 60);
   if (!title || !topic || !LEVEL_KEYS.includes(level)) return no('missing');   // 레벨은 하·중·상만(2026-10-31)
@@ -289,6 +300,43 @@ async function remove(env, b, tc, action) {
   return json({ ok: true });
 }
 
+// 자료 신고(로그인 없이, 이름 없이). 도배를 막으려고 기기 주소 해시를 10분만 두고, 다음 신고 때 비운다
+async function report(env, b, who) {
+  const id = str(b.id, 40), reason = str(b.reason, 20), text = str(b.text, 300);
+  if (!id || !REPORT_REASONS.includes(reason)) return no('missing');
+  if (!(await env.DB.prepare('SELECT 1 AS x FROM materials WHERE id = ?1 AND deleted IS NULL').bind(id).first())) return no('not_found');
+  const now = Date.now(), since = now - FAIL_WINDOW_MS;
+  const c = await env.DB.prepare('SELECT COUNT(*) AS n, COALESCE(SUM(who = ?1), 0) AS mine FROM reports WHERE at > ?2').bind(who, since).first();
+  if (c.mine >= REPORT_LIMIT || c.n >= REPORT_ALL) return no('too_many');
+  await env.DB.batch([
+    env.DB.prepare("UPDATE reports SET who = '' WHERE at <= ?1 AND who <> ''").bind(since),
+    env.DB.prepare('INSERT INTO reports (material_id, reason, text, date, at, who) VALUES (?1, ?2, ?3, ?4, ?5, ?6)').bind(id, reason, text, today(), now, who)
+  ]);
+  return json({ ok: true });
+}
+
+// 계정 지우기: 교사 줄·즐겨찾기·올린 자료(지운 자료 포함)·그 자료의 신고·파일까지 모두. 되돌릴 수 없다(D1 복구 지점에는 30일까지 남는다 — privacy.html)
+async function removeTeacher(env, tc) {
+  const db = env.DB, mine = '(teacher_id = ?1 OR (teacher_id IS NULL AND by_name = ?2))';
+  const mats = (await db.prepare(`SELECT file_key FROM materials WHERE ${mine}`).bind(tc.id, tc.name).all()).results;
+  await db.batch([
+    db.prepare(`DELETE FROM favs WHERE material_id IN (SELECT id FROM materials WHERE ${mine})`).bind(tc.id, tc.name),
+    db.prepare(`DELETE FROM reports WHERE material_id IN (SELECT id FROM materials WHERE ${mine})`).bind(tc.id, tc.name),
+    db.prepare(`DELETE FROM materials WHERE ${mine}`).bind(tc.id, tc.name),
+    db.prepare('DELETE FROM favs WHERE teacher_id = ?1').bind(tc.id),
+    db.prepare('DELETE FROM teachers WHERE id = ?1').bind(tc.id)
+  ]);
+  // 표에서 지워 파일 링크는 이미 닫혔다. 보관함 삭제가 실패해도 계정 삭제를 되돌리지 않고 기록만 남긴다
+  await Promise.all(mats.filter(m => m.file_key).map(m => env.FILES.delete(m.file_key).catch(e => console.error('leave_file', m.file_key, e && e.stack || e))));
+  return mats.length;
+}
+// 교사 스스로 계정 삭제. 관리자 계정은 운영에 필요해 여기서 지우지 않는다
+async function leave(env, b, tc) {
+  if (tc.is_admin) return no('admin_leave');
+  if (b.confirm !== true) return no('need_confirm');
+  return json({ ok: true, removed: await removeTeacher(env, tc) });
+}
+
 // ---------- 관리자 화면(2차, 2026-10-31) ----------
 // 시트에서 휴먼쌤이 손으로 하던 일을 화면에서: 자료(전부 찾기·고치기·숨김·삭제·되살리기) · 분류(대주제·소주제) · 교사(끄기·새 코드) · 설정(가입 코드·공지).
 // post()가 코드로 is_admin = 1을 확인한 뒤에만 여기로 온다. op 이름이 ADMIN 표에 없으면 unknown.
@@ -320,12 +368,14 @@ const ADMIN = {
   async overview(env, b, me, origin) {
     const db = env.DB;
     await fillQids(db);
-    const [st, tp, mt, tc] = await db.batch([
+    const [st, tp, mt, tc, rp] = await db.batch([
       db.prepare('SELECT key, value FROM settings ORDER BY rowid'),
       db.prepare('SELECT topic, fr, grp, ord, icon, qid FROM topics ORDER BY rowid'),
       db.prepare('SELECT id, grp, topic, level, title, type, url, file_key, descr, school, by_name, teacher_id, date, pub, deleted FROM materials ORDER BY rowid'),
       db.prepare('SELECT t.id, t.name, t.school, t.joined, t.active, t.is_admin, (SELECT COUNT(*) FROM materials m WHERE m.deleted IS NULL AND ' +
-        '(m.teacher_id = t.id OR (m.teacher_id IS NULL AND m.by_name = t.name))) AS n FROM teachers t ORDER BY t.id')
+        '(m.teacher_id = t.id OR (m.teacher_id IS NULL AND m.by_name = t.name))) AS n FROM teachers t ORDER BY t.id'),
+      db.prepare('SELECT r.id, r.material_id, r.reason, r.text, r.date, r.done, m.title, m.topic, m.level, m.url, m.by_name, m.pub, m.deleted ' +
+        'FROM reports r LEFT JOIN materials m ON m.id = r.material_id ORDER BY r.id DESC LIMIT 200')
     ]);
     const settings = {};
     st.results.forEach(r => { if (r.key) settings[r.key] = String(r.value == null ? '' : r.value); });
@@ -335,8 +385,24 @@ const ADMIN = {
       materials: mt.results.map(r => ({ id: r.id, group: r.grp, topic: r.topic, level: r.level, title: r.title, type: r.type,
         url: r.url.startsWith('/') ? origin + r.url : r.url, file: !!r.file_key, desc: r.descr, school: r.school, by: r.by_name,
         teacherId: r.teacher_id, date: r.date, pub: r.pub === 1, deleted: r.deleted || '' })),
-      teachers: tc.results.map(r => ({ id: r.id, name: r.name, school: r.school, joined: r.joined, active: r.active === 1, admin: r.is_admin === 1, n: r.n }))
+      teachers: tc.results.map(r => ({ id: r.id, name: r.name, school: r.school, joined: r.joined, active: r.active === 1, admin: r.is_admin === 1, n: r.n })),
+      reports: rp.results.map(r => ({ id: r.id, materialId: r.material_id, reason: r.reason, text: r.text, date: r.date, done: r.done || '', title: r.title || '', topic: r.topic || '', level: r.level || '',
+        url: r.url ? (r.url.startsWith('/') ? origin + r.url : r.url) : '', by: r.by_name || '', pub: r.pub === 1 && !r.deleted }))
     });
+  },
+  // 신고 처리 끝(줄은 남긴다)
+  async report_done(env, b) {
+    return changed(await env.DB.prepare('UPDATE reports SET done = ?2 WHERE id = ?1 AND done IS NULL').bind(Number(b.id), today()).run()) ? ok() : no('not_found');
+  },
+  // 교사 계정 지우기(코드를 잊은 교사의 삭제 요청을 메일로 받았을 때). 나 자신과 다른 관리자는 지우지 않는다
+  async teacher_del(env, b, me) {
+    const id = Number(b.id);
+    if (!Number.isInteger(id)) return no('missing');
+    if (id === me.id) return no('self');
+    const row = await env.DB.prepare('SELECT id, name, is_admin FROM teachers WHERE id = ?1').bind(id).first();
+    if (!row) return no('not_found');
+    if (row.is_admin) return no('admin_leave');
+    return json({ ok: true, removed: await removeTeacher(env, row) });
   },
 
   // 자료 고치기: 소주제·레벨·제목·유형·링크·설명. 올린 파일 자료는 링크를 바꾸지 않는다. 새 소주제면 표에 만든다

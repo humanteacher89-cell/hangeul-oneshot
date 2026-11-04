@@ -115,6 +115,39 @@ ok(g1.s === 302 && g1.to === base.replace(/\/$/, '') + '/#/q/' + q0 + '/1', '/go
 ok((await post({ action: 'delete', code: c1, id: u1.id })).ok, '숨긴 자료 삭제(시험 자료 치우기)');
 ok((await post({ action: 'nope', code: c1 })).error === 'unknown', '모르는 동작 → unknown');
 
+console.log('이용 규칙·신고·계정 삭제(Play 정책, 2026-11-04)');
+ok((await post({ action: 'login', code: c1 })).terms === true, '가입한 교사는 이용 규칙에 동의한 상태');
+const uR = await post({ action: 'upload', code: c1, material: Object.assign({}, mat, { title: '시험 신고 ' + tag, url: 'https://example.org/r/' + tag }) });
+ok(uR.ok, '신고할 자료 올리기');
+ok((await post({ action: 'report', id: uR.id, reason: 'nope' })).error === 'missing', '모르는 신고 이유 → missing');
+ok((await post({ action: 'report', id: 'nope' + tag, reason: 'other' })).error === 'not_found', '없는 자료 신고 → not_found');
+const rp1 = await post({ action: 'report', id: uR.id, reason: 'privacy', text: ' 시험 신고 내용 ' + tag + ' ' });
+ok(rp1.ok && !('code' in rp1), '로그인 없이 신고');
+const j3 = await post({ action: 'join', joinCode, name: '시험셋째' + tag, school: '파리 한글학교', agree: true });
+const c3 = j3.code;
+const u3a = await post({ action: 'upload', code: c3, material: Object.assign({}, mat, { title: '시험 탈퇴 링크 ' + tag, url: 'https://example.org/l/' + tag }) });
+const u3b = await postFile({ action: 'upload', code: c3, material: Object.assign({}, mat, { url: '', title: '시험 탈퇴 파일 ' + tag, type: '활동지' }), file: { name: '탈퇴.pdf', type: 'application/pdf' } }, pdf, 'application/pdf');
+ok(u3a.ok && u3b.ok, '탈퇴할 교사가 링크·파일 올리기');
+await post({ action: 'fav', code: c1, id: u3a.id, on: true });
+await post({ action: 'report', id: u3a.id, reason: 'person', text: '' });
+d = await data();
+const mLeave = d.materials.find(m => m.id === u3b.id);
+ok((await fetch(mLeave.url)).status === 200, '탈퇴 전 올린 파일이 열림');
+ok((await post({ action: 'leave', code: c3 })).error === 'need_confirm', '확인 없이 탈퇴 → need_confirm');
+ok((await post({ action: 'login', code: c3 })).ok, '확인 없는 요청은 아무것도 지우지 않음');
+ok((await post({ action: 'leave', code: 'nope', confirm: true })).error === 'bad_code', '틀린 코드로 탈퇴 → bad_code');
+const lv = await post({ action: 'leave', code: c3, confirm: true });
+ok(lv.ok && lv.removed === 2, '탈퇴 → 올린 자료 2개 함께 삭제');
+ok((await post({ action: 'login', code: c3 })).error === 'bad_code', '탈퇴한 코드는 로그인 안 됨');
+d = await data();
+ok(!d.materials.some(m => m.id === u3a.id || m.id === u3b.id), '탈퇴한 교사 자료가 자료실에서 사라짐');
+ok((await fetch(mLeave.url)).status === 404, '탈퇴한 교사의 파일 링크 404');
+ok(!(await post({ action: 'login', code: c1 })).favs.includes(u3a.id), '다른 교사 즐겨찾기에서도 빠짐');
+ok((await go(u3a.id)).to === base.replace(/\/$/, '') + '/', '탈퇴한 교사 자료 QR → 첫 화면');
+const j3b = await post({ action: 'join', joinCode, name: '시험셋째' + tag, school: '파리 한글학교', agree: true });
+ok(j3b.ok, '탈퇴한 이름으로 다시 가입할 수 있음');
+ok((await post({ action: 'delete', code: c1, id: uR.id })).ok, '신고 시험 자료 치우기');
+
 const A = String(process.env.ADMIN_CODE || '').trim();
 if (A) {
   console.log('관리자 — 들어가기');
@@ -222,6 +255,28 @@ if (A) {
   o = await adm('overview');
   d = await data();
   ok(o.settings.join_code === jc0 && (o.settings.notice || '') === nt0 && !('join_code' in d.settings), '되돌린 값 그대로 · 공개 자료에 가입 코드 없음');
+
+  console.log('관리자 — 신고·교사 지우기·이용 규칙');
+  o = await adm('overview');
+  const rpRow = o.reports.find(x => x.materialId === uR.id);
+  ok(rpRow && rpRow.reason === 'privacy' && rpRow.text === '시험 신고 내용 ' + tag && rpRow.title === '시험 신고 ' + tag && rpRow.by === '시험' + tag && !rpRow.done && !('who' in rpRow), '관리자 자료에 신고(자료 이름·올린이, 신고한 기기는 없음)');
+  ok((await adm('report_done', { id: rpRow.id })).ok, '신고 처리 끝');
+  ok((await adm('report_done', { id: rpRow.id })).error === 'not_found', '이미 처리한 신고 → not_found');
+  ok((await adm('overview')).reports.find(x => x.id === rpRow.id).done.length === 10, '처리한 날짜가 남음');
+  ok(!o.reports.some(x => x.materialId === u3a.id), '탈퇴한 교사 자료의 신고는 함께 지워짐');
+  const t3 = o.teachers.find(x => x.name === '시험셋째' + tag);
+  ok(t3 && (await adm('teacher_del', { id: o.me })).error === 'self', '나 자신 지우기 → self');
+  ok((await adm('teacher_del', { id: 99999999 })).error === 'not_found', '없는 교사 지우기 → not_found');
+  ok((await adm('teacher_del', { id: t3.id })).ok && (await post({ action: 'login', code: j3b.code })).error === 'bad_code', '관리자가 교사 계정 지우기 → 로그인 안 됨');
+  ok((await post({ action: 'leave', code: A, confirm: true })).error === 'admin_leave', '관리자 계정은 스스로 탈퇴 못 함');
+  const la2 = await post({ action: 'login', code: A });
+  if (!la2.terms) {   // 시험관리자는 가입 화면을 거치지 않아 이용 규칙 동의일이 비어 있다
+    const upA = Object.assign({}, mat, { title: '시험 동의 ' + tag, url: 'https://example.org/t/' + tag });
+    ok((await post({ action: 'upload', code: A, material: upA })).error === 'need_terms', '동의 안 한 교사의 올리기 → need_terms');
+    const upB = await post({ action: 'upload', code: A, material: upA, agree: true });
+    ok(upB.ok && (await post({ action: 'login', code: A })).terms === true, '동의하고 올리면 동의일이 남음');
+    await adm('mat_del', { id: upB.id });
+  }
 
   console.log('관리자 — 치우기');
   const qSeen = Math.max(...(await adm('overview')).topics.map(x => Number(x.qid) || 0));   // 지우기 전 가장 큰 번호(시험 소주제 것)

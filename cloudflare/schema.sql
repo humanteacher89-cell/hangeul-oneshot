@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS teachers (
   code_hash TEXT NOT NULL UNIQUE,
   active    INTEGER NOT NULL DEFAULT 1,    -- 0 = 끔(시트 활성 칸 N)
   is_admin  INTEGER NOT NULL DEFAULT 0,    -- 관리자 화면(2차)
-  joined    TEXT NOT NULL DEFAULT ''       -- 가입일 yyyy-MM-dd(파리)
+  joined    TEXT NOT NULL DEFAULT '',      -- 가입일 yyyy-MM-dd(파리)
+  terms_at  TEXT                           -- 이용 규칙 동의일(2026-11-04, 비면 첫 올리기 때 묻는다). 이미 있는 D1: migrate/20261104-terms-add.sql
 );
 
 -- 소주제('주제' 탭). grp = 대주제(시트 '묶음'), ord = 순서, qid = 고정 번호(짧은 QR 주소 #/q/<qid>, 이름을 바꿔도 그대로, 다시 쓰지 않음)
@@ -67,3 +68,17 @@ CREATE TABLE IF NOT EXISTS fails (
   at  INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS fails_at ON fails (at);
+
+-- 자료 신고(2026-11-04, Play 사용자 제작 콘텐츠 정책). 신고한 사람 이름은 받지 않는다. who = 기기 주소 해시(도배 막기, 10분 뒤 비움), done = 처리한 날짜
+CREATE TABLE IF NOT EXISTS reports (
+  id          INTEGER PRIMARY KEY,
+  material_id TEXT NOT NULL,
+  reason      TEXT NOT NULL,
+  text        TEXT NOT NULL DEFAULT '',
+  date        TEXT NOT NULL DEFAULT '',
+  at          INTEGER NOT NULL,
+  who         TEXT NOT NULL DEFAULT '',
+  done        TEXT
+);
+CREATE INDEX IF NOT EXISTS reports_at ON reports (at);
+CREATE INDEX IF NOT EXISTS reports_material ON reports (material_id);

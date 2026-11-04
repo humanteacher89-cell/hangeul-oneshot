@@ -257,6 +257,22 @@
   .item.mat > a:first-child { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
   .qrbtn { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line); background: #fff; color: var(--ink); display: grid; place-items: center; padding: 0; }
   .qrbtn svg { width: 20px; height: 20px; }
+  /* 신고·정책 링크·계정 삭제(2026-11-04, Play 정책) */
+  .matside { flex: none; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .rpbtn { width: 40px; height: 26px; border: 0; background: none; color: #B8A794; display: grid; place-items: center; padding: 0; }
+  .rpbtn svg { width: 16px; height: 16px; }
+  .rplist .agree { margin-top: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; }
+  .rplist .agree input { width: 20px; height: 20px; }
+  .rptitle { margin: 4px 0 0; font-size: 16px; font-weight: 900; line-height: 1.4; }
+  .upterms { margin: 4px 0 8px; font-size: 13.5px; line-height: 1.45; align-items: flex-start; }
+  .upterms a { color: var(--coral-d); text-decoration: underline; text-underline-offset: 3px; }
+  .policylinks { margin: 10px 0 0; font-size: 12.5px; font-weight: 700; color: var(--sub); line-height: 1.6; }
+  .policylinks a, .foot a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .leavebox { margin-top: 28px; padding-top: 16px; border-top: 2px dashed var(--line); text-align: center; }
+  .leavebox .hidebtn { margin-top: 12px; }
+  .rpitem h3 { word-break: keep-all; }
+  .rpitem.dim { opacity: .62; }
+  .rpwhy { margin: 10px 0 0; font-size: 14px; font-weight: 700; line-height: 1.5; overflow-wrap: anywhere; }
   @media screen { .mqr .qrcard .qr img, .mqr .qrcard .qr canvas { width: min(270px, 70vw) !important; height: min(270px, 70vw) !important; } }
   .mqr .openlink { display: block; margin-top: 14px; text-align: center; font-size: 14px; font-weight: 800; color: var(--sub); text-decoration: underline; }
   .mgh { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; margin: 18px 4px 8px; }
@@ -319,7 +335,7 @@
   .mgentry b { display: block; font-size: 16px; font-weight: 900; }
   .mgentry small { display: block; margin-top: 1px; font-size: 12.5px; font-weight: 700; color: var(--sub); }
   .mgwrap { max-width: 720px; margin: 0 auto; }
-  .mgseg { position: sticky; top: calc(62px + env(safe-area-inset-top)); z-index: 15; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 2px 0 4px;
+  .mgseg { position: sticky; top: calc(62px + env(safe-area-inset-top)); z-index: 15; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 2px 0 4px;
            background: #F4EEE6; border-radius: 16px; padding: 4px; box-shadow: 0 6px 12px -8px rgba(80,55,30,.25); }
   .mgseg a { min-width: 0; text-align: center; border-radius: 12px; padding: 9px 2px; font-size: 14.5px; font-weight: 900; color: var(--sub); white-space: nowrap; }
   .mgseg a.on { background: #fff; color: var(--ink); box-shadow: 0 2px 0 #E6D7C3; }
@@ -593,6 +609,7 @@
 
   const S = (p, w) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w || 2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
   const ICON = {
+    flag: S('<path d="M6 21V4M6 4.5c4-2 7 2 12 0v9c-5 2-8-2-12 0"/>', 2.2),
     home: S('<path d="M3.5 10.2 12 3.5l8.5 6.7v9.3a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5a1.5 1.5 0 0 1-1.5-1.5z"/>'),
     qr: S('<rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.5"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.5"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.5"/><path d="M14 14h2.5v2.5H14zM20.5 14v.5M14 20.5h.5M18 18h2.5v2.5"/>'),
     person: S('<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/>'),
@@ -640,12 +657,21 @@
       logout: '로그아웃', upload: '자료 올리기', myMats: '내가 올린 자료', noMine: '아직 올린 자료가 없어요', uploaded: '올렸어요!',
       del: '삭제', deleted: '삭제했어요', delAsk: s => `‘${s}’ 자료를 삭제할까요?\n삭제하면 자료실과 즐겨찾기에서도 사라져요.`, lvDate: (lv, d) => `레벨 ${lv}${d ? ' · ' + d : ''}`,
       notOwner: '내가 올린 자료만 삭제할 수 있어요',
+      // 정책 링크·이용 규칙 동의·신고·계정 삭제(2026-11-04, Play 정책)
+      privacyLink: '개인정보처리방침', termsLink: '이용 규칙', termsAgree: '자료를 올리기 전에 이용 규칙을 읽었고 동의해요.', needTerms: '이용 규칙을 읽고 동의에 표시해 주세요',
+      rpBtn: '신고', rpTitle: '자료 신고', rpWhy: '무엇이 문제인가요?',
+      rpR: { inappropriate: '부적절한 내용 (폭력·혐오·성적인 내용 등)', privacy: '개인정보 노출 (학생 이름·사진 등)', copyright: '저작권 침해', person: '올린 사람의 행동', other: '기타' },
+      rpText: '자세한 내용', rpPh: '예: 3쪽에 학생 사진이 있어요', rpHint: '이름·연락처 같은 개인정보는 적지 마세요. 신고는 이름 없이 관리자에게 전달돼요.',
+      rpSend: '신고 보내기', rpNeed: '신고 이유를 골라 주세요', rpDone: '신고를 보냈어요. 고맙습니다.',
+      leaveHint: '계정을 삭제하면 이름·학교·즐겨찾기와 내가 올린 자료가 모두 지워지고 되돌릴 수 없어요.', leaveBtn: '계정 삭제',
+      leaveAsk: n => `계정을 삭제할까요?\n이름·학교·즐겨찾기${n ? `와 내가 올린 자료 ${n}개` : ''}가 지워져요. 인쇄해 둔 그 자료의 QR은 앱 첫 화면으로 열려요.`,
+      leaveAsk2: '되돌릴 수 없어요. 정말 삭제할까요?', leaveDone: '계정을 삭제했어요', leaveAdmin: '관리자 계정은 여기서 삭제할 수 없어요',
       // 가입(#/join)
       joinAsk: '처음이세요?', joinLink: '가입하기', joinTitle: '선생님 가입', joinHint: '협의회에서 받은 가입 코드로 바로 가입해요.',
       fName: '이름', phName: '예: 김수현', nameHint: '자료에 올린이로 보여요. 같은 이름이 있으면 뒤에 도시를 붙여요(예: 김지영 보르도).',
       fJoin: '가입 코드', phJoin: '협의회에서 받은 코드',
       privacy: '이름·학교와 올린 자료는 한글원샷 서버(Cloudflare)에 보관돼요. 자료 카드에는 올린 선생님 이름과 학교가 보여요. 올린 파일은 링크를 아는 누구나 볼 수 있어요. 학생 이름·사진·성적이 든 파일은 올리지 마세요.',
-      agree: '위 안내를 읽었고 동의해요', joinBtn: '가입하기', joining: '가입하는 중…',
+      agree: '위 안내와 이용 규칙을 읽었고 동의해요', joinBtn: '가입하기', joining: '가입하는 중…',
       needName: '이름을 적어 주세요', needJoin: '가입 코드를 넣어 주세요', needAgree: '안내를 읽고 동의에 표시해 주세요',
       badJoin: '가입 코드가 맞지 않아요', joinClosed: '지금은 가입을 받지 않아요. 협의회에 물어보세요.',
       dupName: '같은 이름이 이미 있어요. 이름 뒤에 도시를 붙여 주세요(예: 김지영 보르도).', tooMany: '시도가 너무 많아요. 10분 뒤 다시 해 보세요.',
@@ -698,11 +724,19 @@
       logout: 'Déconnexion', upload: 'Ajouter une ressource', myMats: 'Mes ressources', noMine: 'Aucune ressource ajoutée', uploaded: 'Ajouté !',
       del: 'Supprimer', deleted: 'Supprimé', delAsk: s => `Supprimer « ${s} » ?\nElle disparaîtra aussi de la bibliothèque et des favoris.`, lvDate: (lv, d) => `Niveau ${lv}${d ? ' · ' + d : ''}`,
       notOwner: 'Vous ne pouvez supprimer que vos ressources',
+      privacyLink: 'Politique de confidentialité', termsLink: 'Règlement d’utilisation', termsAgree: 'J’ai lu le règlement d’utilisation et je l’accepte avant d’ajouter une ressource.', needTerms: 'Cochez la case pour accepter le règlement',
+      rpBtn: 'Signaler', rpTitle: 'Signaler une ressource', rpWhy: 'Quel est le problème ?',
+      rpR: { inappropriate: 'Contenu inapproprié (violence, haine, contenu sexuel…)', privacy: 'Données personnelles exposées (nom ou photo d’un élève…)', copyright: 'Atteinte au droit d’auteur', person: 'Comportement de l’auteur', other: 'Autre' },
+      rpText: 'Détails', rpPh: 'ex. Photo d’un élève en page 3', rpHint: 'N’indiquez aucune donnée personnelle (nom, contact). Le signalement est transmis sans nom à l’administrateur.',
+      rpSend: 'Envoyer le signalement', rpNeed: 'Choisissez un motif', rpDone: 'Signalement envoyé. Merci.',
+      leaveHint: 'Votre nom, votre école, vos favoris et toutes vos ressources seront effacés définitivement.', leaveBtn: 'Supprimer mon compte',
+      leaveAsk: n => `Supprimer votre compte ?\nVotre nom, votre école, vos favoris${n ? ` et vos ressources (${n})` : ''} seront effacés. Les QR imprimés de ces ressources ouvriront la page d’accueil.`,
+      leaveAsk2: 'Cette action est définitive. Confirmer la suppression ?', leaveDone: 'Compte supprimé', leaveAdmin: 'Le compte administrateur ne peut pas être supprimé ici',
       joinAsk: 'Première fois ?', joinLink: 'Créer un compte', joinTitle: 'Inscription enseignant', joinHint: 'Avec le code d’inscription reçu de l’association, l’inscription est immédiate.',
       fName: 'Nom', phName: 'ex. Kim Suhyeon', nameHint: 'Affiché comme auteur des ressources. Si ce nom existe déjà, ajoutez la ville (ex. Kim Jiyoung Bordeaux).',
       fJoin: 'Code d’inscription', phJoin: 'Code reçu de l’association',
       privacy: 'Votre nom, votre école et vos ressources sont conservés sur le serveur Hangeul Oneshot (Cloudflare). Votre nom et votre école apparaissent sur les fiches de vos ressources. Les fichiers envoyés sont visibles par toute personne qui a le lien. N’envoyez aucun fichier contenant le nom, la photo ou les notes d’un élève.',
-      agree: 'J’ai lu et j’accepte', joinBtn: 'S’inscrire', joining: 'Inscription…',
+      agree: 'J’ai lu ces informations et le règlement, et je les accepte', joinBtn: 'S’inscrire', joining: 'Inscription…',
       needName: 'Indiquez votre nom', needJoin: 'Entrez le code d’inscription', needAgree: 'Cochez la case pour accepter',
       badJoin: 'Code d’inscription incorrect', joinClosed: 'Les inscriptions sont fermées pour le moment. Contactez l’association.',
       dupName: 'Ce nom existe déjà. Ajoutez la ville (ex. Kim Jiyoung Bordeaux).', tooMany: 'Trop d’essais. Réessayez dans 10 minutes.',
@@ -829,6 +863,7 @@
   function mockPost(b) {
     const s = mockStore();
     const teachers = [...(SAMPLE.teachers || []), ...(s.teachers || [])];
+    if (b.action === 'report') return Promise.resolve({ ok: true });   // 시험 모드: 받은 척만
     if (b.action === 'join') {   // 시험 모드 가입: 가입 코드는 sample-data.js joinCode, 만든 교사는 이 기기에만 남는다
       if (String(b.joinCode || '').replace(/\s+/g, '').toUpperCase() !== String(SAMPLE.joinCode || '').toUpperCase()) return Promise.resolve({ ok: false, error: 'bad_join' });
       const name = String(b.name || '').replace(/\s+/g, ' ').trim(), key = x => String(x).replace(/\s+/g, '').toLowerCase();
@@ -841,6 +876,10 @@
     const favs = Object.assign({}, s.favs);   // 시험 모드 즐겨찾기: 이 기기에만(교사 코드별)
     if (b.action === 'login') return Promise.resolve(tc ? { ok: true, teacher: { name: tc.name, school: tc.school }, favs: favs[tc.code] || [] } : { ok: false, error: 'bad_code' });
     if (!tc) return Promise.resolve({ ok: false, error: 'bad_code' });
+    if (b.action === 'leave') {   // 시험 모드: 이 기기에 만든 교사와 그 교사가 올린 자료만 지운다
+      s.teachers = (s.teachers || []).filter(x => x.code !== tc.code); s.uploads = s.uploads.filter(x => x.by !== tc.name); mockSave(s);
+      return Promise.resolve({ ok: true });
+    }
     if (b.action === 'fav') {
       const list = (favs[tc.code] || []).filter(x => x !== String(b.id)); if (b.on) list.unshift(String(b.id));
       favs[tc.code] = list; s.favs = favs; mockSave(s); return Promise.resolve({ ok: true, favs: list });
@@ -886,6 +925,10 @@
   function barHome() { return `<header class="appbar"><a class="brand" href="#/"><img class="hlogo" src="icons/logo-h.svg" alt="${esc(appTitle())}"></a><span class="hbtns">${langToggle(true)}<a class="circ" href="#/qr" aria-label="${esc(t('homeQrBtn'))}">${ICON.qr}</a></span></header>`; }
   const isFav = id => !!(teacher && (teacher.favs || []).includes(id));
   const starBtn = m => { const on = isFav(m.id); return `<button type="button" class="star${on ? ' on' : ''}" data-fav="${esc(m.id)}" aria-pressed="${on}" aria-label="${esc(t(on ? 'favOff' : 'favOn'))}">${ICON.star}</button>`; };
+  // 신고 단추(자료 카드마다, 로그인 없이) · 개인정보처리방침·이용 규칙 링크(프랑스어 화면이면 그 절로)
+  const rpLink = m => `<a class="rpbtn" href="#/report/${encodeURIComponent(m.id)}" aria-label="${esc(t('rpBtn'))}" title="${esc(t('rpBtn'))}">${ICON.flag}</a>`;
+  const policyHref = p => `${p}.html${lang === 'fr' ? '#fr' : ''}`;
+  const policyLinks = () => `<a href="${policyHref('privacy')}" target="_blank" rel="noopener">${esc(t('privacyLink'))}</a> · <a href="${policyHref('terms')}" target="_blank" rel="noopener">${esc(t('termsLink'))}</a>`;
   function barSub(title, backHref, right) {
     const left = backHref ? `<a class="circ" href="${backHref}" aria-label="${esc(t('back'))}">${ICON.back}</a>` : '<span class="circ ghost"></span>';
     return `<header class="appbar">${left}<b class="atitle">${esc(title)}</b>${right || langToggle(true)}</header>`;
@@ -982,7 +1025,7 @@
     if (libQ.trim()) {
       const r = libShown();
       return `<div class="sec"><h2>${esc(t('favFound')(r.length))}</h2></div>` + (r.length
-        ? r.map(m => `<div class="item mat fav"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m, true)}</a>${teacher ? starBtn(m) : ''}<a class="qrbtn" href="#/mq/${encodeURIComponent(m.id)}" aria-label="QR">${ICON.qr}</a></div>`).join('')
+        ? r.map(m => `<div class="item mat fav"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m, true)}</a>${teacher ? starBtn(m) : ''}<div class="matside"><a class="qrbtn" href="#/mq/${encodeURIComponent(m.id)}" aria-label="QR">${ICON.qr}</a>${rpLink(m)}</div></div>`).join('')
         : `<div class="emptycard"><div class="e">🔍</div>${esc(t('favNone'))}<button type="button" class="btn" data-libqx>${esc(t('clearQ'))}</button></div>`);
     }
     return data.groups.length
@@ -1006,7 +1049,7 @@
     const upd = data.updatedAt ? new Date(data.updatedAt) : null;
     const updS = upd && !isNaN(upd) ? `${t('updated')} ${upd.getMonth() + 1}/${upd.getDate()} ${String(upd.getHours()).padStart(2, '0')}:${String(upd.getMinutes()).padStart(2, '0')}` : '';
     const sub = (lang === 'fr' && (data.settings.subtitle_fr || CFG.SUBTITLE_FR)) || data.settings.subtitle || CFG.SUBTITLE || '';
-    return `<p class="foot">${sub ? esc(sub) + '<br>' : ''}${esc(t('total')(data.materials.length))}${updS ? ' · ' + esc(updS) : ''}${MOCK ? `<br><span class="mock">${esc(t('mockNote'))}</span>` : ''}</p>`;
+    return `<p class="foot">${sub ? esc(sub) + '<br>' : ''}${esc(t('total')(data.materials.length))}${updS ? ' · ' + esc(updS) : ''}<br>${policyLinks()}${MOCK ? `<br><span class="mock">${esc(t('mockNote'))}</span>` : ''}</p>`;
   }
 
   function viewTopic(name, level, fromQr) {
@@ -1025,7 +1068,7 @@
     const sel = `<div class="lvsel">${LEVEL_KEYS.map(k => `<button type="button" class="lvbtn k-${k}${k === cur ? ' on' : ''}${cnt(k) ? '' : ' zero'}" data-level="${k}" aria-pressed="${k === cur}">
       <div class="k">${k}</div><div class="d">${esc(levelDesc(k))}</div><span class="n">${esc(t('cnt')(cnt(k)))}</span></button>`).join('')}</div>`;
     const items = list.length
-      ? list.map(m => `<div class="item mat"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m)}${goBtn(m)}</a>${teacher ? starBtn(m) : ''}<a class="qrbtn" href="#/mq/${encodeURIComponent(m.id)}" aria-label="QR">${ICON.qr}</a></div>`).join('')
+      ? list.map(m => `<div class="item mat"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m)}${goBtn(m)}</a>${teacher ? starBtn(m) : ''}<div class="matside"><a class="qrbtn" href="#/mq/${encodeURIComponent(m.id)}" aria-label="QR">${ICON.qr}</a>${rpLink(m)}</div></div>`).join('')
       : `<div class="emptycard"><div class="e">🌱</div>${esc(t('empty'))}<small>${esc(teacher ? t('emptyTeacher') : t('emptyHint'))}</small></div>`;
     const other = [levelDescOther(cur), t('mats')(list.length)].filter(Boolean).join(' · ');
     const fab = teacher ? `<a class="fab" href="#/upload/${encodeURIComponent(name)}/${encodeURIComponent(cur)}">${ICON.plus}<span>${esc(t('upload'))}</span></a>` : '';
@@ -1088,7 +1131,7 @@
   }
   function favRow(m) {
     return `<div class="item mat fav"><a href="${esc(m.url)}" target="_blank" rel="noopener">${matInner(m, true)}</a>`
-      + `<a class="qrpill" href="#/mq/${encodeURIComponent(m.id)}">${ICON.qr}<span>QR</span></a>${starBtn(m)}</div>`;
+      + `<a class="qrpill" href="#/mq/${encodeURIComponent(m.id)}">${ICON.qr}<span>QR</span></a><div class="matside">${starBtn(m)}${rpLink(m)}</div></div>`;
   }
   function favListHtml(all, shown) {
     if (!all.length) return `<div class="emptycard"><div class="e">⭐</div>${esc(t('favEmpty'))}<small>${esc(t('favEmptyHint'))}</small><a class="btn" href="#/">${esc(t('toLib'))}</a></div>`;
@@ -1165,6 +1208,7 @@
       <div class="f"><label class="lab" for="j-school">${esc(t('fSchool'))}</label><div class="inp sel"><select id="j-school" name="school" class="empty">${schoolOptions('')}</select>${ICON.down}</div></div>
       <div class="f"><label class="lab" for="j-code">${esc(t('fJoin'))}</label><div class="inp"><input id="j-code" name="joinCode" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('phJoin'))}"></div></div>
       <p class="privacy">${esc(t('privacy'))}</p>
+      <p class="policylinks">${policyLinks()}</p>
       <label class="agree"><input type="checkbox" name="agree"><span>${esc(t('agree'))}</span></label>
       <p class="err" id="joinErr"></p><button class="btn" type="submit" id="joinBtn">${esc(t('joinBtn'))}</button>
       ${MOCK ? `<p class="mockcodes">${esc(t('mockJoin'))}</p>` : ''}</form></div>`;
@@ -1195,7 +1239,35 @@
       <div class="me"><span class="av">👩‍🏫</span><div class="nm"><b>${esc(t('teacherName')(teacher.name))}</b><span>${esc(teacher.school)}</span></div><button type="button" class="ghostbtn" data-logout>${esc(t('logout'))}</button></div>
       <a class="btn" href="#/upload">${ICON.plus}<span>${esc(t('upload'))}</span></a>
       ${teacher.admin ? `<a class="mgentry" href="#/admin">${ICON.gear}<span class="tx"><b>${esc(AT.entry)}</b><small>${esc(AT.entrySub)}</small></span>${ICON.right}</a>` : ''}
-      <div class="sec"><h2>${esc(t('myMats'))}</h2><span>${esc(t('nItems')(mine.length))}</span></div>${items}${mine.length ? `<p class="tip">${esc(t('mineTip'))}</p>` : ''}</div></div>`;
+      <div class="sec"><h2>${esc(t('myMats'))}</h2><span>${esc(t('nItems')(mine.length))}</span></div>${items}${mine.length ? `<p class="tip">${esc(t('mineTip'))}</p>` : ''}
+      <div class="leavebox"><p class="policylinks">${policyLinks()}</p>${teacher.admin ? '' : `<p class="forgot">${esc(t('leaveHint'))}</p><button type="button" class="hidebtn" data-leave>${esc(t('leaveBtn'))}</button>`}</div></div></div>`;
+  }
+  // 자료 신고(#/report/<자료 id>, 2026-11-04 Play 사용자 제작 콘텐츠 정책): 로그인 없이, 이름 없이. 학습자 기기에는 아무것도 저장하지 않는다.
+  const RP_REASONS = ['inappropriate', 'privacy', 'copyright', 'person', 'other'];
+  function viewReport(id) {
+    const m = data.materials.find(x => String(x.id) === id);
+    if (!m) return barSub(t('rpTitle'), '#/') + `<div class="pad"><div class="emptycard"><div class="e">🔍</div>${esc(t('noMat'))}</div></div>`;
+    const back = topicHref(m.topic, m.level);
+    return barSub(t('rpTitle'), back) + `<div class="pad"><form class="panel joinp" id="rpForm" novalidate autocomplete="off" data-id="${esc(m.id)}" data-back="${esc(back)}">
+      <p class="rptitle">${esc(m.title)}</p><p class="hint">${esc(m.topic)} · ${esc(m.level)}</p>
+      <div class="f"><span class="lab">${esc(t('rpWhy'))}</span><div class="rplist">${RP_REASONS.map(r => `<label class="agree"><input type="radio" name="reason" value="${r}"><span>${esc(t('rpR')[r])}</span></label>`).join('')}</div></div>
+      <div class="f"><label class="lab" for="rp-text">${esc(t('rpText'))} <small>${esc(t('optional'))}</small></label><textarea class="ta" id="rp-text" name="text" maxlength="300" placeholder="${esc(t('rpPh'))}"></textarea><p class="lhint">${esc(t('rpHint'))}</p></div>
+      <p class="err" id="rpErr"></p><button class="btn" type="submit" id="rpBtn">${esc(t('rpSend'))}</button></form></div>`;
+  }
+  function bindReport() {
+    const f = $('#rpForm'); if (!f) return;
+    f.onsubmit = async e => {
+      e.preventDefault(); const err = $('#rpErr'), btn = $('#rpBtn'); err.textContent = '';
+      const reason = f.elements.reason.value;
+      if (!reason) { err.textContent = t('rpNeed'); return; }
+      btn.disabled = true;
+      try {
+        const r = await api.post({ action: 'report', id: f.dataset.id, reason, text: f.elements.text.value.trim() });
+        if (r.ok) { toast(t('rpDone')); location.hash = f.dataset.back; return; }
+        err.textContent = r.error === 'too_many' ? t('tooMany') : r.error === 'not_found' ? t('noMat') : t('netErr');
+      } catch (ex) { err.textContent = t('netErr'); }
+      btn.disabled = false;
+    };
   }
   function viewUpload(preTopic, preLevel) {
     if (!teacher) { afterLogin = location.hash; return viewLogin(); }
@@ -1223,6 +1295,7 @@
           <p class="lhint" id="urlHint" aria-live="polite">${linkHint(linkCheck(''))}</p><p class="lhint warn" id="dupHint" aria-live="polite" hidden></p></div></div>
       <div class="f"><label class="lab" for="f-desc">${esc(t('fDesc'))} <small>${esc(t('optional'))}</small></label><div class="inp"><input id="f-desc" name="desc" maxlength="80" placeholder="${esc(t('phDesc'))}"></div></div>
       <div class="f pvf"><span class="lab">${esc(t('previewCap'))}</span><div id="upPreview"></div></div>
+      ${teacher.terms ? '' : `<label class="agree upterms"><input type="checkbox" name="terms"><span>${esc(t('termsAgree'))} <a href="${policyHref('terms')}" target="_blank" rel="noopener">${esc(t('termsLink'))}</a></span></label>`}
       <p class="err" id="upErr"></p>
       <div class="cta"><button class="btn" type="submit" id="upBtn">${esc(t('submit'))}</button></div>
     </form>`;
@@ -1269,6 +1342,7 @@
       case 'join': v.innerHTML = teacher && !joined ? viewMine() : viewJoin(); bindJoin(); title = t('joinTitle') + ' · ' + title; break;
       case 'mine': v.innerHTML = viewMine(); bindLogin(); break;
       case 'upload': v.innerHTML = viewUpload(parts[1] || '', normLevel(parts[2])); bindUpload(); bindLogin(); break;
+      case 'report': v.innerHTML = viewReport(parts[1] || ''); bindReport(); title = t('rpTitle') + ' · ' + title; break;
       case 'admin':
         // 관리자 화면을 그리다 오류가 나면 빈 화면 대신 오류 글을 보여 준다(휴먼쌤 폰에서 무엇이 막혔는지 알 수 있게, 2026-10-31)
         try { v.innerHTML = viewAdmin(parts[1] || ''); bindAdmin(); }
@@ -1291,7 +1365,7 @@
       try {
         const r = await api.post({ action: 'login', code });
         if (r.ok) {
-          teacher = { code, name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : [], admin: !!r.admin, mine: Array.isArray(r.mine) ? r.mine : undefined }; saveTeacher(teacher); toast(t('loggedIn'));
+          teacher = { code, name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : [], admin: !!r.admin, mine: Array.isArray(r.mine) ? r.mine : undefined, terms: !!r.terms }; saveTeacher(teacher); toast(t('loggedIn'));
           const go = afterLogin || '#/mine'; afterLogin = '';
           if (location.hash === go) render(); else location.hash = go;
         } else err.textContent = r.error === 'too_many' ? t('tooMany') : t('badCode');
@@ -1318,7 +1392,7 @@
       try {
         const r = await api.post({ action: 'join', joinCode, name, school, agree: true });
         if (r.ok) {
-          teacher = { code: r.code, name: r.teacher.name, school: r.teacher.school, mine: MOCK ? undefined : [] }; saveTeacher(teacher);
+          teacher = { code: r.code, name: r.teacher.name, school: r.teacher.school, mine: MOCK ? undefined : [], terms: true }; saveTeacher(teacher);
           joined = { code: r.code, name: r.teacher.name, school: r.teacher.school }; render(); return;
         }
         err.textContent = { bad_join: t('badJoin'), join_closed: t('joinClosed'), dup_name: t('dupName'), too_many: t('tooMany'), missing: t('needName'), need_agree: t('needAgree') }[r.error] || t('netErr');
@@ -1435,17 +1509,21 @@
       if (miss) { miss[1].scrollIntoView({ block: 'center', behavior: 'smooth' }); if (miss[1].focus && miss[1].tagName === 'INPUT') miss[1].focus({ preventScroll: true }); return fail(t(miss[0])); }
       if (upSrc === 'link') { const lk = linkCheck(material.url); if (lk.lv === 'bad') { el('url').focus(); return fail(lk.msg); } }
       if (upSrc === 'link' && dupOf(material.url) && !confirm(t('dupAsk'))) return;
+      const terms = el('terms');
+      if (terms && !terms.checked) { terms.scrollIntoView({ block: 'center', behavior: 'smooth' }); return fail(t('needTerms')); }
       const btn = $('#upBtn'); btn.disabled = true; btn.textContent = t('uploading');
       try {
         let file = null;
         if (fl) { try { file = { name: fl.name, type: fl.type || '', size: fl.size, data: await readB64(fl) }; } catch (ex) { btn.disabled = false; btn.textContent = t('submit'); return fail(t('fileReadErr')); } }
-        const r = await api.post({ action: 'upload', code: teacher.code, material, file });
+        const r = await api.post({ action: 'upload', code: teacher.code, material, file, agree: terms ? true : undefined });
         if (r.ok) {
+          if (!teacher.terms) { teacher.terms = true; saveTeacher(teacher); }
           if (material.school !== teacher.school) { teacher.school = material.school; saveTeacher(teacher); }   // 다음에 올릴 때 이 학교가 먼저 골라져 있다
           if (Array.isArray(teacher.mine) && r.id) { teacher.mine = [r.id].concat(teacher.mine); saveTeacher(teacher); }
           await reload(); toast(t('uploaded')); location.hash = topicHref(material.topic, material.level);
         }
         else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); location.hash = '#/login'; }
+        else if (r.error === 'need_terms') { teacher.terms = false; saveTeacher(teacher); fail(t('needTerms')); }
         else fail({ file_big: t('fileBig')(FILE_MAX_MB), file_type: t('fileBad'), file_empty: t('fileReadErr'), file_save: t('netErr'), missing: t('required') }[r.error] || r.error || t('netErr'));
       } catch (ex) { fail(t('netErr')); }
       btn.disabled = false; btn.textContent = t('submit');
@@ -1468,12 +1546,34 @@
     b.disabled = false;
   }
 
+  // 계정 삭제(2026-11-04, Play 계정 삭제 요건). 이름·학교·즐겨찾기·올린 자료·파일을 모두 지우고 로그아웃한다. 관리자 계정은 단추가 없다.
+  async function leaveAccount(b) {
+    const n = Array.isArray(teacher.mine) ? teacher.mine.length : data.materials.filter(m => m.by === teacher.name).length;
+    if (!confirm(t('leaveAsk')(n)) || !confirm(t('leaveAsk2'))) return;
+    b.disabled = true;
+    try {
+      const r = await api.post({ action: 'leave', code: teacher.code, confirm: true });
+      if (r.ok || r.error === 'bad_code') {
+        teacher = null; adm = null; saveTeacher(null);
+        await reload().catch(() => {});
+        toast(t('leaveDone'));
+        if (location.hash === '#/') render(); else location.hash = '#/';
+        return;
+      }
+      toast(r.error === 'admin_leave' ? t('leaveAdmin') : r.error === 'too_many' ? t('tooMany') : t('netErr'));
+    } catch (ex) { toast(t('netErr')); }
+    b.disabled = false;
+  }
+
   // ---------- 관리자 화면(#/admin, 2026-10-31 카드 69 2차) ----------
   // 휴먼쌤(교사 표 is_admin = 1)만. 시트에서 손으로 하던 일을 화면에서 한다: 자료 · 분류 · 교사 · 설정.
   // 화면은 입구만 가리고, 서버(cloudflare/server/app.js ADMIN)가 요청마다 코드로 다시 확인한다. 화면 글은 한국어만(휴먼쌤이 쓰는 곳).
   const AT = {
-    title: '관리자 화면', entry: '관리자 화면', entrySub: '자료 · 분류 · 교사 · 설정',
-    tabs: { mat: '자료', cat: '분류', tc: '교사', set: '설정' },
+    title: '관리자 화면', entry: '관리자 화면', entrySub: '자료 · 신고 · 분류 · 교사 · 설정',
+    tabs: { mat: '자료', rp: '신고', cat: '분류', tc: '교사', set: '설정' },
+    rpHint: '이용자가 보낸 자료 신고예요. 내용을 확인하고 문제가 있으면 숨긴 뒤, 필요하면 자료 탭에서 지우거나 교사 탭에서 그 선생님을 끄세요.',
+    rpNone: '받은 신고가 없어요', rpGone: '지워진 자료', rpHide: '자료 숨기기', rpDoneBtn: '처리 끝', rpDoneT: '처리했어요', rpDoneOn: d => `처리 ${d}`, rpOpen: '자료 열기',
+    tcDel: '계정 삭제', tcDelAsk: (s, n) => `‘${s}’ 선생님 계정을 삭제할까요?\n이름·학교·즐겨찾기와 올린 자료 ${n}개가 모두 지워지고 되돌릴 수 없어요.`, tcDelDone: '계정을 삭제했어요',
     notAdmin: '관리자만 볼 수 있어요', toMine: '선생님 화면으로', loadErr: '관리자 자료를 불러오지 못했어요.',
     viewErr: '관리자 화면을 그리지 못했어요. 아래 글을 그대로 알려 주세요.',
     all: '전체', pub: '공개', hid: '숨김', del: '지움', off: '꺼짐', admin: '관리자', file: '올린 파일', missing: '표에 없음',
@@ -1504,10 +1604,10 @@
     noticeTitle: '공지', noticeHint: '첫 화면 맨 위에 보여요. 비우면 보이지 않아요.', noticePh: '예: 11월 자료 모음이 올라왔어요', noticeClear: '공지 내리기', noticeCleared: '공지를 내렸어요',
     statTitle: '한눈에', stat: { pub: '공개 자료', hid: '숨긴 자료', del: '지운 자료', topics: '소주제', groups: '대주제', tc: '선생님' },
     err: { missing: '빠진 칸이 있어요', bad_url: 'https://로 시작하는 링크를 넣어 주세요', not_found: '찾지 못했어요. 새로 불러왔어요',
-      dup_topic: '같은 이름의 소주제가 이미 있어요', in_use: '자료가 남아 있는 소주제는 지울 수 없어요', self: '나 자신은 끌 수 없어요',
+      dup_topic: '같은 이름의 소주제가 이미 있어요', in_use: '자료가 남아 있는 소주제는 지울 수 없어요', self: '나 자신은 끄거나 지울 수 없어요', admin_leave: '관리자 계정은 지울 수 없어요',
       unknown: '모르는 동작이에요. 화면을 새로 고쳐 주세요', server: '서버 오류가 났어요. 잠시 뒤 다시 해 보세요.' }
   };
-  const ADM_TABS = ['mat', 'cat', 'tc', 'set'];
+  const ADM_TABS = ['mat', 'rp', 'cat', 'tc', 'set'];
   const tk = k => T.ko[k];   // 올리기 화면과 같은 글(관리자 화면은 한국어만)
   let adm = null, admBusy = false, admErr = '', admPage = '', admTab = 'mat', admOpen = '', admNew = null, admF = 'all';
   const admQ = { mat: '', tc: '' };
@@ -1561,11 +1661,12 @@
     if (!teacher) { afterLogin = location.hash; return viewLogin(); }
     if (!teacher.admin) return barSub(AT.title, '#/mine', ghost) + `<div class="pad"><div class="emptycard" style="margin-top:18px"><div class="e">🔒</div>${esc(AT.notAdmin)}<a class="btn" href="#/mine">${esc(AT.toMine)}</a></div></div>`;
     admTab = ADM_TABS.includes(tab) ? tab : 'mat';
-    const seg = `<nav class="mgseg" aria-label="${esc(AT.title)}">${ADM_TABS.map(k => `<a href="#/admin/${k}" class="${k === admTab ? 'on' : ''}"${k === admTab ? ' aria-current="page"' : ''}>${esc(AT.tabs[k])}</a>`).join('')}</nav>`;
+    const rpOpen = adm ? (adm.reports || []).filter(x => !x.done).length : 0;
+    const seg = `<nav class="mgseg" aria-label="${esc(AT.title)}">${ADM_TABS.map(k => `<a href="#/admin/${k}" class="${k === admTab ? 'on' : ''}"${k === admTab ? ' aria-current="page"' : ''}>${esc(AT.tabs[k])}${k === 'rp' && rpOpen ? ' ' + rpOpen : ''}</a>`).join('')}</nav>`;
     const body = !adm
       ? (admErr ? `<div class="emptycard" style="margin-top:14px"><div class="e">😢</div>${esc(admErr)}<button type="button" class="btn" data-aretry>${esc(tk('retry'))}</button></div>`
                 : `<div class="loading" style="padding:80px 0"><span class="e">🐯</span>${esc(tk('loading'))}</div>`)
-      : { mat: admMat, cat: admCat, tc: admTc, set: admSet }[admTab]();
+      : { mat: admMat, rp: admRp, cat: admCat, tc: admTc, set: admSet }[admTab]();
     return barSub(AT.title, '#/mine', ghost) + `<div class="pad"><div class="mgwrap">${seg}${body}</div></div>`;
   }
   const admSearch = (k, ph) => `<label class="srch">${ICON.search}<input id="mgQ" data-k="${k}" type="search" enterkeyhint="search" placeholder="${esc(ph)}" value="${esc(admQ[k])}" aria-label="${esc(ph)}">`
@@ -1576,6 +1677,20 @@
     B.innerHTML = admTab === 'tc' ? admTcList() : admMatList();
     const X = $('[data-aqx]'); if (X) X.hidden = !admQ[admTab === 'tc' ? 'tc' : 'mat'];
     bindAdmin();
+  }
+
+  // 신고: 최근 것부터. 처리한 신고는 흐리게 남는다
+  function admRp() {
+    const list = adm.reports || [];
+    const rows = list.map(x => {
+      const meta = [x.date, [x.topic, x.level, x.by].filter(Boolean).join(' · '), x.done && AT.rpDoneOn(x.done)].filter(Boolean).join(' · ');
+      const btns = [x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(AT.rpOpen)}</a>` : '',
+        x.pub ? `<button type="button" class="warn" data-aact="rp_hide" data-mid="${esc(x.materialId)}">${esc(AT.rpHide)}</button>` : '',
+        x.done ? '' : `<button type="button" class="pri" data-aact="rp_done" data-rid="${x.id}">${esc(AT.rpDoneBtn)}</button>`].join('');
+      return `<div class="apanel rpitem${x.done ? ' dim' : ''}"><h3>${esc(x.title || AT.rpGone)}</h3><p class="lhint">${esc(meta)}</p>`
+        + `<p class="rpwhy"><b>${esc(T.ko.rpR[x.reason] || x.reason)}</b>${x.text ? '<br>' + esc(x.text) : ''}</p>${btns ? `<div class="abtns">${btns}</div>` : ''}</div>`;
+    }).join('');
+    return `<p class="lhint"><span class="m">i</span><span>${esc(AT.rpHint)}</span></p>` + (rows || `<div class="emptycard" style="margin-top:12px"><div class="e">📭</div>${esc(AT.rpNone)}</div>`);
   }
 
   // 자료: 전부(숨김·지운 것 포함), 최근 올린 것부터
@@ -1696,7 +1811,7 @@
     const code = admNew && admNew.id === x.id ? `<div class="codebox"><p class="lab2">${esc(AT.codeFor(x.name))}</p><div class="newcode" id="newCode">${esc(admNew.code)}</div>`
       + `<button type="button" class="ghostbtn" data-acopy>${esc(tk('copyCode'))}</button><p class="keep">${esc(AT.codeKeep)}</p></div>` : '';
     const body = open ? `<div class="aform">${code}<div class="abtns">${me ? '' : `<button type="button" class="${x.active ? 'warn' : 'pri'}" data-aact="teacher_active" data-id="${x.id}">${esc(x.active ? AT.turnOff : AT.turnOn)}</button>`}`
-      + `<button type="button" data-aact="teacher_code" data-id="${x.id}">${esc(AT.newCode)}</button></div>${me ? `<p class="lhint">${esc(AT.meHint)}</p>` : ''}</div>` : '';
+      + `<button type="button" data-aact="teacher_code" data-id="${x.id}">${esc(AT.newCode)}</button>${me || x.admin ? '' : `<button type="button" class="warn" data-aact="teacher_del" data-id="${x.id}">${esc(AT.tcDel)}</button>`}</div>${me ? `<p class="lhint">${esc(AT.meHint)}</p>` : ''}</div>` : '';
     return `<div class="arow${open ? ' open' : ''}${x.active ? '' : ' dim'}" data-row="${esc(key)}"><button type="button" class="ah" data-aopen="${esc(key)}" aria-expanded="${open}">`
       + `<span class="av sm">👩‍🏫</span><span class="tx"><b>${esc(x.name)}</b><small>${esc(meta)}</small></span>${badges}</button>${body}</div>`;
   }
@@ -1810,7 +1925,10 @@
     if (op === 'mat_del' && m) { if (confirm(AT.delAsk(m.title))) admDo('mat_del', { id: m.id }, AT.removed, b); return; }
     if (op === 'mat_restore' && m) return admDo('mat_restore', { id: m.id }, AT.restored, b);
     if (op === 'topic_del') { if (confirm(AT.topicDelAsk(b.dataset.name))) admDo('topic_del', { topic: b.dataset.name }, AT.topicDeleted, b, () => { admOpen = ''; }); return; }
+    if (op === 'rp_hide') return admDo('mat_pub', { id: b.dataset.mid, on: false }, AT.hiddenT, b);
+    if (op === 'rp_done') return admDo('report_done', { id: Number(b.dataset.rid) }, AT.rpDoneT, b);
     const x = b.dataset.id ? adm.teachers.find(y => y.id === Number(b.dataset.id)) : null;
+    if (op === 'teacher_del' && x) { if (confirm(AT.tcDelAsk(x.name, x.n))) admDo('teacher_del', { id: x.id }, AT.tcDelDone, b, () => { admOpen = ''; }); return; }
     if (op === 'teacher_active' && x) { if (!x.active || confirm(AT.offAsk(x.name))) admDo('teacher_active', { id: x.id, on: !x.active }, x.active ? AT.offDone : AT.onDone, b); return; }
     if (op === 'teacher_code' && x) {
       const me = x.id === adm.me;
@@ -1833,6 +1951,7 @@
     if (e.target.closest('[data-install]')) { const ev = installEvt; if (ev) { ev.prompt(); Promise.resolve(ev.userChoice).catch(() => {}).then(() => { installEvt = null; render(true); }); } return; }
     if (e.target.closest('[data-install-x]')) { installHide = true; render(true); return; }
     if (e.target.closest('[data-logout]')) { teacher = null; adm = null; saveTeacher(null); toast(t('logout')); if (location.hash === '#/') render(); else location.hash = '#/'; return; }
+    const LV = e.target.closest('[data-leave]'); if (LV) { leaveAccount(LV); return; }
     if (admClick(e)) return;
     const D = e.target.closest('[data-del]'); if (D) { e.preventDefault(); delMat(D); return; }
     const MG = e.target.closest('[data-mg]'); if (MG) { mineGroup = MG.dataset.mg; render(true); return; }
@@ -1872,7 +1991,7 @@
       if (!teacher) return;
       if (r.ok) {
         teacher = Object.assign({}, teacher, { name: r.teacher.name, school: r.teacher.school, favs: Array.isArray(r.favs) ? r.favs : (teacher.favs || []), admin: !!r.admin,
-          mine: Array.isArray(r.mine) ? r.mine : teacher.mine });
+          mine: Array.isArray(r.mine) ? r.mine : teacher.mine, terms: !!r.terms });
         saveTeacher(teacher);
         if (['t', 'q', 'fav', 'mine', 'admin'].includes(route()[0] || '')) render(true);
       } else if (r.error === 'bad_code') { teacher = null; saveTeacher(null); render(true); }

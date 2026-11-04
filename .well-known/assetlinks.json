@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.humanteacher.hangeuloneshot",
+      "sha256_cert_fingerprints": [
+        "C4:CC:4F:E0:2A:B2:FD:BC:B5:D6:3D:75:9D:D7:67:8F:54:FE:47:D0:BF:E6:90:3D:79:40:F5:90:C1:0D:0F:77"
+      ]
+    }
+  }
+]
