@@ -153,7 +153,7 @@ Open the Teacher tab (the third tab, 선생님). Enter the password above as the
 |---|---|
 | 그룹 이름 | 한글원샷 앱 테스터 |
 | 그룹 주소 | hangeul-oneshot-testers@googlegroups.com |
-| 가입 링크 | https://groups.google.com/g/hangeul-oneshot-testers |
+| 가입 링크 | https://groups.google.com/g/hangeul-oneshot-testers/about (끝의 `/about`이 없으면 회원이 아닌 사람에게 '권한이 없습니다'가 뜸) |
 | 검색 | 웹의 모든 사용자에게 공개 |
 | 가입 | 누구나 가입할 수 있음 |
 | 대화 보기 | 그룹 멤버 |
@@ -171,8 +171,8 @@ Open the Teacher tab (the third tab, 선생님). Enter the password above as the
 - 안드로이드 휴대폰과 구글 계정 (아이폰은 참여할 수 없어요)
 
 지금 해 주실 일
-- 아래 링크에서 그룹에 가입해 주세요. 메일 주소는 관리자인 휴먼쌤에게만 보입니다.
-https://groups.google.com/g/hangeul-oneshot-testers
+- 아래 링크를 열고 구글 계정으로 로그인한 뒤 그룹에 가입해 주세요. 메일 주소는 관리자인 휴먼쌤에게만 보입니다.
+https://groups.google.com/g/hangeul-oneshot-testers/about
 
 그다음 순서
 1. 구글 검토가 끝나면 참여 링크를 보내 드려요. 검토에 며칠 걸릴 수 있어요.
