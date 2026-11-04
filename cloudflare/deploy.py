@@ -1,7 +1,7 @@
 # 한글원샷 새 판 올리기·미리 보기(2026-10-30, 10-31 시험/공개 나눔). 저장소 화면 파일을 cloudflare/public/에 모으고 wrangler를 부른다.
 #   python -X utf8 cloudflare/deploy.py build                  public/만 채움
 #   python -X utf8 cloudflare/deploy.py dev [--port 8788]      내 컴퓨터에서 미리 보기(가짜 D1·KV, 가입 코드 TEST)
-#   python -X utf8 cloudflare/deploy.py deploy                 시험 주소(wrangler.toml — 시험 전용 D1 hangeul-oneshot-test·KV)
+#   python -X utf8 cloudflare/deploy.py deploy                 시험 주소(wrangler.toml — 시험 전용 D1 hangeul-oneshot-test·KV). 검색 수집 막음(_headers)
 #   python -X utf8 cloudflare/deploy.py deploy --prod          공개판(wrangler.prod.toml — 실제 D1 hangeul-oneshot·KV). 휴먼쌤 "올려" 뒤에만
 #   python -X utf8 cloudflare/deploy.py migrate [--prod]       D1 표 고치기(migrate/2026…sql 차례대로, 이미 된 'add'는 넘어감). 공개판은 서버를 올리기 전에
 # 공개판은 임시 폴더에 wrangler.prod.toml을 wrangler.toml로 두고 functions·server·public과 함께 올린다(--project humanssaem-hangeul-oneshot도 같은 뜻).
@@ -14,6 +14,7 @@ ROOT = os.path.dirname(HERE)
 PUB = os.path.join(HERE, 'public')
 SITE = ['index.html', 'config.js', 'sample-data.js', 'manifest.json', 'sw.js', 'icons', 'vendor', 'privacy.html', 'terms.html', '.well-known']
 PROD_PROJECT = 'humanssaem-hangeul-oneshot'
+TEST_HEADERS = '/*\n  X-Robots-Tag: noindex\n'
 
 
 def portable():
@@ -109,6 +110,10 @@ def main():
         args = ['pages', 'deploy', 'public', '--branch', 'main', '--commit-dirty=true']
         if opt('--project') and opt('--project') not in (PROD_PROJECT, 'humanssaem-hangeul-oneshot-v2'):
             sys.exit('모르는 프로젝트: ' + opt('--project'))
+        if not prod:
+            # 시험 주소만 검색 수집을 막는다. build()가 public/을 비우므로 공개판에는 섞이지 않는다. _headers는 Functions(/api·/f/·/go/) 응답에는 붙지 않는다
+            with open(os.path.join(PUB, '_headers'), 'w', encoding='utf-8', newline='\n') as f:
+                f.write(TEST_HEADERS)
         sys.exit(deploy_prod(args) if prod else wrangler(*args))
     elif what == 'migrate':
         sys.exit(migrate(prod, local='--local' in sys.argv))
