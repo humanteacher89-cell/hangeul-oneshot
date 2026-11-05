@@ -14,8 +14,11 @@
 import { aiAction, wsSave, WS_CSP } from './ai.js';
 
 const FILE_MAX_MB = 10;   // index.html의 FILE_MAX_MB·FILE_EXT와 같게
-const FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'];
-const FILE_MIME = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', heic: 'image/heic' };
+const FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'html', 'htm'];   // HTML은 2026-11-05 휴먼쌤 "넣어줘"
+const FILE_MIME = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', heic: 'image/heic', html: 'text/html; charset=utf-8', htm: 'text/html; charset=utf-8' };
+// 교사가 올린 HTML을 여는 방법. 이 주소는 교사 로그인 코드(localStorage)가 있는 화면과 같은 곳이라, sandbox로 다른 곳처럼 격리해 코드를 읽지 못하게 한다.
+// allow-same-origin은 절대 넣지 않는다(넣으면 격리가 풀린다). 스크립트·양식·알림창·새 창은 된다. 저장소는 막히므로 화면이 올릴 때 새로 열면 사라지는 임시 저장소를 넣어 준다(index.html HTML_SHIM).
+const HTML_CSP = 'sandbox allow-scripts allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-downloads allow-pointer-lock';
 const FAIL_LIMIT = 30, FAIL_ALL = 300, FAIL_WINDOW_MS = 600000;
 const FAV_MAX = 500;
 export const LEVEL_KEYS = ['하', '중', '상'];   // config.js LEVELS와 같게
@@ -76,8 +79,8 @@ export async function handleFile(request, env, key) {
       'Cache-Control': 'private, no-cache',   // 지우면 바로 닫히게 늘 서버에 다시 묻는다
       'X-Content-Type-Options': 'nosniff'
     };
-    // HTML은 서버가 만든 활동지 보기뿐이다(교사가 올리는 파일은 FILE_EXT로 막힘). 이 주소는 교사 로그인 코드가 있는 화면과 같은 곳이라 스크립트를 인쇄 단추 하나로 묶어 둔다
-    if (String(md.type || '').startsWith('text/html')) headers['Content-Security-Policy'] = WS_CSP;
+    // HTML은 격리해서 연다. 서버가 만든 활동지(kind 'ws')는 더 좁게, 인쇄 단추 스크립트 하나만
+    if (String(md.type || '').startsWith('text/html')) headers['Content-Security-Policy'] = md.kind === 'ws' ? WS_CSP : HTML_CSP;
     return new Response(got.value, { headers });
   } catch (e) {
     console.error('file', e && e.stack || e);

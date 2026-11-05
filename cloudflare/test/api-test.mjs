@@ -87,6 +87,22 @@ const fb = new Uint8Array(await fr.arrayBuffer());
 ok(fr.status === 200 && fr.headers.get('content-type') === 'application/pdf' && fb.length === pdf.length && fb.every((x, i) => x === pdf[i]), '파일을 받으면 같은 바이트·PDF 형식');
 ok(/filename\*=UTF-8''/.test(fr.headers.get('content-disposition') || ''), '파일 이름(한글)이 머리글에');
 
+console.log('HTML 파일(2026-11-05)');
+const htmlBody = new TextEncoder().encode('<!doctype html><html><head><title>시험 앱</title></head><body><script>document.title = String(self.origin)</script>시험 ' + tag + '</body></html>');
+const uH2 = await postFile(Object.assign(fmeta('시험 앱.HTML'), { material: Object.assign({}, mat, { url: '', title: '시험 HTML ' + tag, type: '앱' }) }), htmlBody, 'text/html');
+ok(uH2.ok, 'HTML 파일 올리기(확장자 대문자도)');
+d = await data();
+const mH2 = d.materials.find(m => m.id === uH2.id);
+ok(mH2 && /\/f\/[a-z0-9]+\.html$/.test(mH2.url), 'HTML 고유 주소 /f/<키>.html');
+const hr = await fetch(mH2.url), hb = new Uint8Array(await hr.arrayBuffer()), hcsp = hr.headers.get('content-security-policy') || '';
+ok(hr.status === 200 && /^text\/html; charset=utf-8/i.test(hr.headers.get('content-type')) && hb.length === htmlBody.length && hb.every((x, i) => x === htmlBody[i]), 'HTML이 그대로 · text/html · UTF-8로 나옴');
+ok(/\bsandbox\b/.test(hcsp) && /allow-scripts/.test(hcsp) && !/allow-same-origin/.test(hcsp), 'HTML은 격리(sandbox) · 스크립트는 됨 · allow-same-origin 없음');
+ok((await go(uH2.id)).to === mH2.url, '자료 QR이 HTML 주소로 넘어감');
+ok((await postFile(fmeta('큰.html'), new Uint8Array(10 * 1048576 + 1), 'text/html')).error === 'file_big', '10MB 넘는 HTML → file_big');
+ok((await postFile(fmeta('스크립트.js'), htmlBody, 'text/javascript')).error === 'file_type', 'js 파일 → file_type');
+ok((await postFile(fmeta('벡터.svg'), htmlBody, 'image/svg+xml')).error === 'file_type', 'svg 파일 → file_type');
+ok((await post({ action: 'delete', code: c1, id: uH2.id })).ok && (await fetch(mH2.url)).status === 404, 'HTML 자료를 지우면 주소도 닫힘');
+
 console.log('즐겨찾기');
 let f = await post({ action: 'fav', code: c1, id: u1.id, on: true });
 ok(f.ok && f.favs.join() === u1.id, '담기');
@@ -183,6 +199,11 @@ if (FAKE) {
   lm = await lastMsg();
   ok(fl.ok && fl.fill.title && /Example Domain/.test(JSON.stringify(lm.body.messages)), '공개 링크의 제목·글을 읽어 보냄(example.org)');
 
+  ok((await post({ action: 'ai_fill', code: cA, page: { name: 'a.html' } })).error === 'ai_unread', 'HTML: 뽑은 글도 제목도 없으면 AI를 부르지 않음');
+  fl = await post({ action: 'ai_fill', code: cA, page: { name: '편의점.html', title: '편의점 퀴즈', desc: '', text: '물 빵 우유 시험글' } });
+  lm = await lastMsg();
+  ok(fl.ok && fl.fill.title && /편의점 퀴즈/.test(lm.body.messages[0].content) && /물 빵 우유 시험글/.test(lm.body.messages[0].content), 'HTML: 화면이 뽑아 보낸 글로 채움');
+
   await clearLog();
   const fA = (name, extra) => Object.assign({ action: 'ai_fill', code: cA, file: { name, type: '' }, lang: 'fr' }, extra);
   ok((await postFile(fA('문서.docx'), pdf, 'application/octet-stream')).error === 'file_type', 'AI 파일: docx → file_type');
@@ -228,7 +249,7 @@ if (FAKE) {
   ok(sv.ok && mW && mW.type === '퀴즈' && mW.school === '릴 한글학교' && mW.desc_fr && /\/f\/[a-z0-9]+\.html$/.test(mW.url), '활동지가 자료로 등록되고 고유 주소 /f/<키>.html');
   ok(d.topics.some(x => x.topic === '새 시험 소주제' + tag && x.group === 'AI시험' + tag), '활동지의 새 소주제도 표에 생김');
   const wr = await fetch(mW.url), wh = await wr.text(), csp = wr.headers.get('content-security-policy') || '';
-  ok(wr.status === 200 && /^text\/html/.test(wr.headers.get('content-type')) && /script-src 'sha256-/.test(csp) && /default-src 'none'/.test(csp), '활동지 주소가 HTML + 스크립트 제한(CSP)');
+  ok(wr.status === 200 && /^text\/html/.test(wr.headers.get('content-type')) && /script-src 'sha256-/.test(csp) && /default-src 'none'/.test(csp) && /sandbox allow-scripts allow-modals/.test(csp) && !/allow-same-origin/.test(csp), '활동지 주소가 HTML + 격리 + 스크립트 제한(CSP)');
   ok(!wh.includes('<script>alert') && !wh.includes('<img src=x') && !wh.includes('<b>x</b>') && !wh.includes('<i>y</i>') && wh.includes('&lt;script&gt;alert(1)'), '교사·AI 글은 모두 글자로만 나옴(스크립트 안 됨)');
   const scr = wh.match(/<script>([\s\S]*?)<\/script>/);
   const sha = Buffer.from(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(scr ? scr[1] : ''))).toString('base64');

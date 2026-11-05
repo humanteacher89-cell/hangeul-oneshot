@@ -3,6 +3,7 @@
 //   POST /api {action:'ai_rec', code, ask, lang}                         자료 추천: 공개 자료 목록에서 고른다
 //   POST /api {action:'ai_fill', code, url, title, lang}                 올리기 자동 채우기(링크)
 //   POST /api 본문 = 파일 바이트, X-Oneshot = {action:'ai_fill', code, file:{name,type}, title, lang}   (PDF·사진, 5MB까지)
+//   POST /api {action:'ai_fill', code, page:{name,title,desc,text}, title, lang}   HTML 파일: 화면이 글을 뽑아 보낸다(서버 CPU 한도 때문)
 //   POST /api {action:'ai_ws', code, topic, level, kind, n, who, expr, words, lang}   활동지 초안(저장하지 않음)
 //   POST /api {action:'ws_save', code, ws, material, agree}              교사가 고친 초안을 보관함에 HTML로 저장하고 자료로 등록(AI를 부르지 않음)
 // 비밀 ANTHROPIC_API_KEY(Pages secret)가 없으면 ai_off이고 화면에 AI 입구가 보이지 않는다(login 응답 ai).
@@ -230,6 +231,10 @@ async function fill(c, env, request, b, tc, isFile) {
     const up = await c.files.upload({ file: new File([buf], name, { type }) });
     fileId = up.id;
     content = [{ type: ext === 'pdf' ? 'document' : 'image', source: { type: 'file', file_id: fileId } }, { type: 'text', text: `자료 파일 이름: ${name}\n\n${head}` }];
+  } else if (b.page && typeof b.page === 'object') {   // HTML 파일: 화면이 뽑아 보낸 글
+    const p = { name: str(b.page.name, 100), title: str(b.page.title, 200), desc: str(b.page.desc, 300), text: str(b.page.text, 8000) };
+    if (!p.title && !p.desc && !p.text && !typed) throw new AiStop('ai_unread');
+    content = [`HTML 자료 파일 이름: ${p.name}`, `페이지 제목: ${p.title}`, `페이지 설명: ${p.desc}`, p.text ? `페이지 글과 스크립트 안의 내용:\n<page>\n${p.text}\n</page>` : ''].filter(Boolean).join('\n') + `\n\n${head}`;
   } else {
     const url = str(b.url, 2000);
     if (!/^https?:\/\//i.test(url)) throw new AiStop('missing');
@@ -283,14 +288,14 @@ export async function wsSave(env, b, tc) {
   if (!ws.title || !topic || !LEVEL_KEYS.includes(level) || !(ws.items.length || ws.passage)) return no('missing');
   const fileKey = rid() + '.html', school = str(m.school, 60) || tc.school || '';
   try {
-    await env.FILES.put(fileKey, renderWs(ws, { topic, level, school }), { metadata: { name: ws.title.replace(/[\\/:*?"<>|]/g, '_') + '.html', type: 'text/html; charset=utf-8', teacher: tc.id, day: today(), topic, level } });
+    await env.FILES.put(fileKey, renderWs(ws, { topic, level, school }), { metadata: { name: ws.title.replace(/[\\/:*?"<>|]/g, '_') + '.html', type: 'text/html; charset=utf-8', kind: 'ws', teacher: tc.id, day: today(), topic, level } });
   } catch (e) { console.error('ws_put', e && e.stack || e); return no('file_save'); }
   return addMaterial(env, tc, { group: m.group, topic, level, title: ws.title, type: str(m.type, 20) || '활동지', desc: ws.desc, desc_fr: ws.desc_fr, school }, '/f/' + fileKey, fileKey);
 }
 
 // 활동지 보기 화면. 글은 모두 esc를 거치고, 인쇄 단추 스크립트 하나만 CSP 해시로 허용한다(WS_CSP). test/api-test.mjs가 해시를 맞춰 본다
 const WS_PRINT_JS = "document.getElementById('pr').onclick=function(){print()}";
-export const WS_CSP = "default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-IdGlEF9kvOW6SYDTTpuR+0FYqQ2/2Z6s6VRzPp15Al4='; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+export const WS_CSP = "sandbox allow-scripts allow-modals; default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-IdGlEF9kvOW6SYDTTpuR+0FYqQ2/2Z6s6VRzPp15Al4='; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const CIRCLED = '①②③④⑤⑥⑦⑧';
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, x => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[x]));
 const br = s => esc(s).replace(/\n/g, '<br>');
