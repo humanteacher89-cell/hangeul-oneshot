@@ -421,6 +421,11 @@
   .aiitemh { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .aiitemh b { font-size: 15px; font-weight: 900; }
   .aiwrap .abtns > button { white-space: nowrap; }
+  .wsdoc { display: grid; gap: 12px; margin-top: 12px; min-height: 120px; }
+  .wsdoc canvas { display: block; width: 100%; height: auto; background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(43, 33, 24, .2), 0 6px 18px rgba(43, 33, 24, .12); }
+  .wsdoc .tip { margin: 40px 0; }
+  .wshint { margin: 10px 0 0; text-align: center; font-size: 12.5px; line-height: 1.5; color: var(--sub); font-weight: 600; word-break: keep-all; }
+  .aiwrap .aidraft span { word-break: keep-all; }
 
   /* 즐겨찾기(☆ 단추·#/fav 화면·필터 창·로그인 안내창) */
   .hbtns { display: flex; align-items: center; gap: 8px; }
@@ -765,6 +770,8 @@
       aiWsBtn: '초안 만들기', aiWsBusy: 'AI가 초안을 쓰는 중… 20초쯤 걸려요', aiWsNote: 'AI 초안이에요. 틀린 곳이 없는지 읽고 고친 뒤 올려 주세요.', aiWsNew: '처음부터', aiWsRedo: '다시 만들기',
       aiWsGuide: '안내', aiWsGuideFr: '안내 (프랑스어)', aiWsPassage: '본문', aiWsItem: n => `문항 ${n}`, aiWsQ: '문항', aiWsFr: '프랑스어 안내', aiWsChoices: '보기 (/로 나눠요)', aiWsAnswer: '정답', aiWsDel: '빼기',
       aiWsSave: '자료실에 올리기', aiWsNeed: '제목과 문항을 확인해 주세요',
+      aiWsDrawing: '문서를 그리는 중…', aiWsEditBtn: '고치기', aiWsPdf: 'PDF로 저장', aiWsPdfBusy: 'PDF 만드는 중…', aiWsPdfDone: 'PDF를 저장했어요', aiWsPdfErr: '문서를 만들지 못했어요. 다시 해 주세요',
+      aiWsEditNote: '다 고친 뒤 아래 단추를 누르면 문서에 바로 반영돼요.', aiWsDone: '다 고쳤어요', aiWsUpHint: '올리면 이 PDF가 자료실에 바로 공개돼요.', aiWsAnsHint: '마지막 쪽 정답도 함께 공개돼요.', aiWsPage: (i, n) => `${i}쪽 / ${n}쪽`,
       aiErr: { ai_off: 'AI 도우미가 지금 꺼져 있어요', ai_empty: '이번 달 AI 크레딧을 다 썼어요. 다음 달에 다시 쓸 수 있어요', ai_limit: '오늘 쓸 수 있는 횟수를 다 썼어요. 내일 다시 해 주세요', ai_busy: 'AI가 바빠요. 잠시 뒤 다시 해 주세요',
         ai_refused: 'AI가 이 내용은 처리하지 않았어요. 내용을 바꿔 다시 해 주세요', ai_cut: '내용이 길어 끝까지 만들지 못했어요. 개수를 줄여 주세요', ai_unread: '이 링크는 읽지 못했어요. 제목을 먼저 적고 다시 눌러 주세요',
         ai_big: `파일이 커서 AI가 읽지 못해요. ${AI_FILE_MAX_MB}MB까지예요`, ai_fail: 'AI가 제대로 답하지 못했어요. 다시 해 주세요', file_type: '이 파일 형식은 AI가 읽지 못해요', file_empty: '파일을 읽지 못했어요. 다시 골라 주세요', missing: '빠진 칸이 있어요', too_many: '시도가 너무 많아요. 10분 뒤 다시 해 보세요.' },
@@ -846,6 +853,8 @@
       aiWsBtn: 'Créer l’ébauche', aiWsBusy: 'L’IA rédige l’ébauche… environ 20 secondes', aiWsNote: 'Ébauche de l’IA. Relisez et corrigez avant d’ajouter.', aiWsNew: 'Recommencer', aiWsRedo: 'Refaire',
       aiWsGuide: 'Consigne', aiWsGuideFr: 'Consigne (français)', aiWsPassage: 'Texte', aiWsItem: n => `Question ${n}`, aiWsQ: 'Question', aiWsFr: 'Aide en français', aiWsChoices: 'Choix (séparés par /)', aiWsAnswer: 'Réponse', aiWsDel: 'Retirer',
       aiWsSave: 'Ajouter à la bibliothèque', aiWsNeed: 'Vérifiez le titre et les questions',
+      aiWsDrawing: 'Préparation du document…', aiWsEditBtn: 'Modifier', aiWsPdf: 'Enregistrer en PDF', aiWsPdfBusy: 'Création du PDF…', aiWsPdfDone: 'PDF enregistré', aiWsPdfErr: 'Document impossible à créer. Réessayez',
+      aiWsEditNote: 'Après vos corrections, touchez le bouton ci-dessous pour mettre à jour le document.', aiWsDone: 'Terminer', aiWsUpHint: 'Une fois ajouté, ce PDF est aussitôt public dans la bibliothèque.', aiWsAnsHint: 'Le corrigé en dernière page aussi.', aiWsPage: (i, n) => `Page ${i} / ${n}`,
       aiErr: { ai_off: 'L’assistant IA est désactivé pour le moment', ai_empty: 'Crédits IA épuisés ce mois-ci. Réessayez le mois prochain', ai_limit: 'Limite du jour atteinte. Réessayez demain', ai_busy: 'L’IA est occupée. Réessayez dans un instant',
         ai_refused: 'L’IA n’a pas traité ce contenu. Modifiez-le et réessayez', ai_cut: 'Trop long pour être terminé. Réduisez le nombre', ai_unread: 'Lien illisible. Écrivez d’abord un titre, puis réessayez',
         ai_big: `Fichier trop lourd pour l’IA : ${AI_FILE_MAX_MB} Mo maximum`, ai_fail: 'L’IA n’a pas bien répondu. Réessayez', file_type: 'L’IA ne peut pas lire ce format', file_empty: 'Lecture du fichier impossible. Choisissez-le à nouveau', missing: 'Il manque un champ', too_many: 'Trop d’essais. Réessayez dans 10 minutes.' },
@@ -929,9 +938,14 @@
     },
     async post(body, ms) {   // ms: AI처럼 오래 걸리는 요청의 기다리는 시간(없으면 60초, 파일은 120초)
       if (MOCK) return mockPost(body);
-      if (body.file && body.file.data) {
-        const f = body.file, bin = atob(f.data), bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      if (body.file && (body.file.data || body.file.blob)) {
+        const f = body.file;
+        let bytes = f.blob;   // 화면이 만든 파일(활동지 PDF)은 그대로 보낸다
+        if (!bytes) {
+          const bin = atob(f.data);
+          bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        }
         const meta = Object.assign({}, body, { file: { name: f.name, type: f.type || '' } });
         return timed(120000, signal => fetch(CFG.API_URL, { method: 'POST', body: bytes, signal,
           headers: { 'Content-Type': f.type || 'application/octet-stream', 'X-Oneshot': encodeURIComponent(JSON.stringify(meta)) } }).then(r => r.json()));
@@ -1676,7 +1690,7 @@
 
   // ---------- AI 도우미(#/ai, 2026-11-05 휴먼쌤 "우선 AI기능은 교사용 자료 추천이랑 올리기 자동채우기, 활동지 자동만들기에 반영해줘") ----------
   // 로그인한 교사만. 고른 값과 초안은 이번에 열어 둔 동안만 화면에 있고 기기에 저장하지 않는다. 학습자 화면은 AI를 부르지 않는다.
-  const aiWsBlank = () => ({ f: { topic: '', group: '', level: '', kind: 'sheet', n: 4, who: 'kid', expr: '', words: '' }, busy: false, ws: null, err: '', school: '', left: null });
+  const aiWsBlank = () => ({ f: { topic: '', group: '', level: '', kind: 'sheet', n: 4, who: 'kid', expr: '', words: '' }, busy: false, ws: null, edit: false, pages: null, err: '', school: '', left: null });
   let aiRecS = { ask: '', busy: false, res: null, err: '', left: null }, aiWsS = aiWsBlank();
   const aiMsg = code => t('aiErr')[code] || t('netErr');
   function aiLogout(r) { if (r && r.error === 'bad_code') { teacher = null; saveTeacher(null); location.hash = '#/login'; return true; } return false; }
@@ -1687,7 +1701,7 @@
     if (!teacher.ai) return barSub(t('aiTitle'), '#/mine') + `<div class="pad"><div class="emptycard" style="margin-top:18px"><div class="e">🔌</div>${esc(t('aiOff'))}<a class="btn" href="#/mine">${esc(t('back'))}</a></div></div>`;
     const cur = tab === 'ws' ? 'ws' : 'rec';
     const seg = `<nav class="aiseg" aria-label="${esc(t('aiTitle'))}"><a href="#/ai/rec" class="${cur === 'rec' ? 'on' : ''}"${cur === 'rec' ? ' aria-current="page"' : ''}>${esc(t('aiTabRec'))}</a><a href="#/ai/ws" class="${cur === 'ws' ? 'on' : ''}"${cur === 'ws' ? ' aria-current="page"' : ''}>${esc(t('aiTabWs'))}</a></nav>`;
-    return barSub(t('aiTitle'), '#/mine') + `<div class="pad"><div class="minewrap aiwrap">${seg}${cur === 'ws' ? (aiWsS.ws ? aiWsEdit() : aiWsForm()) : aiRecView()}</div></div>`;
+    return barSub(t('aiTitle'), '#/mine') + `<div class="pad"><div class="minewrap aiwrap">${seg}${cur === 'ws' ? (!aiWsS.ws ? aiWsForm() : aiWsS.edit ? aiWsEdit() : aiWsDoc()) : aiRecView()}</div></div>`;
   }
   // 자료 추천
   function aiRecView() {
@@ -1714,22 +1728,310 @@
       <p class="lhint"><span class="m">i</span><span>${esc(t('aiNoPii'))}</span></p>
       <p class="err" id="aiErr">${esc(S.err)}</p><button class="btn" type="submit"${S.busy ? ' disabled' : ''}>${esc(S.busy ? t('aiWsBusy') : t('aiWsBtn'))}</button></form>`;
   }
-  // 활동지 만들기: 초안 고치기 → 자료실에 올리기
+  // 활동지 만들기: 문서 보기(첫 화면) → PDF로 저장하거나 그 PDF를 자료실에 올리기
+  function aiWsDoc() {
+    const S = aiWsS, b = S.busy ? ' disabled' : '';
+    const hasAns = S.ws.items.some(x => String(x.q || '').trim() && String(x.answer || '').trim());
+    return `<div id="aiWsEdit"><p class="qrnote aidraft"><span>${esc(t('aiWsNote'))}</span></p>
+      <div class="wsdoc" id="wsPages"><p class="tip">${esc(t('aiWsDrawing'))}</p></div>
+      <div class="abtns"><button type="button" data-wedit${b}>${esc(t('aiWsEditBtn'))}</button><button type="button" data-wpdf${b}>${esc(t(S.busy === 'pdf' ? 'aiWsPdfBusy' : 'aiWsPdf'))}</button></div>
+      <div class="f"><label class="lab" for="w-school">${esc(t('fSchool'))}</label><div class="inp sel"><select id="w-school"${(S.school || teacher.school) ? '' : ' class="empty"'}>${schoolOptions(S.school || teacher.school)}</select>${ICON.down}</div></div>
+      ${teacher.terms ? '' : `<label class="agree upterms"><input type="checkbox" id="w-terms"><span>${esc(t('termsAgree'))} <a href="${policyHref('terms')}" target="_blank" rel="noopener">${esc(t('termsLink'))}</a></span></label>`}
+      <p class="err" id="aiErr">${esc(S.err)}</p><button type="button" class="btn" data-wsave${b}>${esc(S.busy === true ? t('uploading') : t('aiWsSave'))}</button>
+      <p class="wshint">${esc(t('aiWsUpHint'))}${hasAns ? ' ' + esc(t('aiWsAnsHint')) : ''}</p>
+      <div class="abtns"><button type="button" data-wredo${b}>${esc(t('aiWsRedo'))}</button><button type="button" data-wnew${b}>${esc(t('aiWsNew'))}</button></div>${S.left != null ? `<p class="tip">${esc(t('aiLeft')(S.left))}</p>` : ''}</div>`;
+  }
+  // 활동지 만들기: 글 고치기. 다 고치면 문서 보기로 돌아간다
   function aiWsEdit() {
     const S = aiWsS, w = S.ws, F = S.f;
     const area = (lab, attr, v, rows) => `<div class="f"><label class="lab">${esc(lab)}<textarea class="ta aita sm" ${attr} rows="${rows || 2}">${esc(v)}</textarea></label></div>`;
     const line = (lab, attr, v) => `<div class="f"><label class="lab">${esc(lab)}<div class="inp aiinp"><input ${attr} value="${esc(v)}"></div></label></div>`;
     const items = w.items.map((x, i) => `<div class="apanel aiitem"><div class="aiitemh"><b>${esc(t('aiWsItem')(i + 1))}</b><button type="button" class="ghostbtn" data-wdel="${i}">${esc(t('aiWsDel'))}</button></div>
       ${area(t('aiWsQ'), `data-wi="${i}" data-wk="q"`, x.q)}${line(t('aiWsFr'), `data-wi="${i}" data-wk="fr"`, x.fr)}${line(t('aiWsChoices'), `data-wi="${i}" data-wk="choices"`, x.choices.join(' / '))}${line(t('aiWsAnswer'), `data-wi="${i}" data-wk="answer"`, x.answer)}</div>`).join('');
-    return `<div id="aiWsEdit"><p class="qrnote aidraft"><span>${esc(t('aiWsNote'))}</span></p>
+    return `<div id="aiWsEdit"><p class="qrnote aidraft"><span>${esc(t('aiWsEditNote'))}</span></p>
       <div class="f"><span class="lab">${esc(F.topic)} · ${esc(F.level)}</span></div>
       ${line(t('fTitle'), 'data-wf="title" maxlength="60"', w.title)}${line(t('fDesc'), 'data-wf="desc" maxlength="80"', w.desc)}${line(t('fDescFr'), 'data-wf="desc_fr" maxlength="120"', w.desc_fr)}
       ${area(t('aiWsGuide'), 'data-wf="guide"', w.guide)}${area(t('aiWsGuideFr'), 'data-wf="guide_fr"', w.guide_fr)}${w.passage ? area(t('aiWsPassage'), 'data-wf="passage"', w.passage, 5) : ''}
       ${items}
-      <div class="f"><label class="lab" for="w-school">${esc(t('fSchool'))}</label><div class="inp sel"><select id="w-school"${(S.school || teacher.school) ? '' : ' class="empty"'}>${schoolOptions(S.school || teacher.school)}</select>${ICON.down}</div></div>
-      ${teacher.terms ? '' : `<label class="agree upterms"><input type="checkbox" id="w-terms"><span>${esc(t('termsAgree'))} <a href="${policyHref('terms')}" target="_blank" rel="noopener">${esc(t('termsLink'))}</a></span></label>`}
-      <p class="err" id="aiErr">${esc(S.err)}</p><button type="button" class="btn" data-wsave${S.busy ? ' disabled' : ''}>${esc(S.busy ? t('uploading') : t('aiWsSave'))}</button>
-      <div class="abtns"><button type="button" data-wredo${S.busy ? ' disabled' : ''}>${esc(t('aiWsRedo'))}</button><button type="button" data-wnew${S.busy ? ' disabled' : ''}>${esc(t('aiWsNew'))}</button></div>${S.left != null ? `<p class="tip">${esc(t('aiLeft')(S.left))}</p>` : ''}</div>`;
+      <p class="err" id="aiErr">${esc(S.err)}</p><button type="button" class="btn" data-wdone>${esc(t('aiWsDone'))}</button></div>`;
+  }
+  // ---------- 활동지 문서(2026-11-05 휴먼쌤 "이 학습지 디자인을 참고해서 문서 모양으로 보이게" · "pdf로 저장하기 기능도" · "이 pdf를 바로 업로드해야지") ----------
+  // A4 한 쪽을 캔버스에 직접 그린다. 미리 보기·저장한 PDF·자료실에 올린 PDF가 같은 그림이라 보이는 그대로 나오고, 외부 도구가 늘지 않는다.
+  // 교사·AI 글은 fillText로만 그려 HTML로 해석되지 않는다. 그림형 PDF라 글자 복사는 안 된다. 서버는 보통 PDF 올리기와 똑같이 받는다.
+  const WD = { W: 794, H: 1123, M: 44, TOP: 40, END: 1068, GAP: 14, SCALE: 2.5, Q: 0.92 };   // A4를 96dpi로 본 크기. SCALE 2.5 = 240dpi
+  const WC = { ink: '#1D2433', sub: '#525C6E', blue: '#2A64C8', tint: '#E9F0FA', line: '#C2CCDA', dash: '#8A95AB', org: '#B9500F', orgD: '#8F3D0B', orgBg: '#FFFAF5', orgLn: '#E8B48F', pill: '#FDF1E7', pillLn: '#D9A27C' };
+  const WF = '"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif';
+  const WKIND = { sheet: '활동지', read: '읽기 글', talk: '대화문', quiz: '퀴즈', vocab: '단어장' };   // 문서 글은 화면 언어와 상관없이 한국어 + 프랑스어
+  const WICON = { pencil: 'M5 19.5l1-4.5L16.2 4.8a1.6 1.6 0 0 1 2.3 0l.7.7a1.6 1.6 0 0 1 0 2.3L9 18.5zM14.5 6.5l3 3', book: 'M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5v13', talk: 'M4 5.5h16v10.5H10l-5 4v-4H4z' };
+  const wFont = (c, wt, sz) => { c.font = `${wt} ${sz}px ${WF}`; };
+  // 줄 나누기: 낱말 중간에서 끊지 않는다(칸보다 긴 낱말만 글자로). 줄바꿈은 그대로
+  function wWrap(c, text, max) {
+    const out = [];
+    String(text == null ? '' : text).split('\n').forEach(par => {
+      let line = '';
+      par.split(' ').forEach(word => {
+        const next = line ? line + ' ' + word : word;
+        if (c.measureText(next).width <= max) { line = next; return; }
+        if (line) out.push(line);
+        line = word;
+        if (c.measureText(word).width > max) {
+          let buf = '';
+          for (const ch of word) { if (buf && c.measureText(buf + ch).width > max) { out.push(buf); buf = ''; } buf += ch; }
+          line = buf;
+        }
+      });
+      out.push(line);
+    });
+    return out;
+  }
+  function wText(c, s, x, y, wt, sz, color, align) { wFont(c, wt, sz); c.fillStyle = color; c.textAlign = align || 'left'; c.textBaseline = 'middle'; c.fillText(s, x, y); }
+  function wLines(c, arr, x, y, lh, wt, sz, color) { arr.forEach((s, i) => wText(c, s, x, y + lh * i + lh / 2, wt, sz, color)); return y + lh * arr.length; }   // y = 첫 줄 위쪽, 돌려주는 값 = 끝 줄 아래쪽
+  function wBox(c, x, y, w, h, r, fill, line, lw, dash) {
+    c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+    if (fill) { c.fillStyle = fill; c.fill(); }
+    if (line) { c.strokeStyle = line; c.lineWidth = lw || 1.5; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); }
+  }
+  function wPill(c, s, x, y, h, sz, fill, color, line) { wFont(c, 800, sz); const w = c.measureText(s).width + 22; wBox(c, x, y, w, h, h / 2, fill, line, 1.2); wText(c, s, x + w / 2, y + h / 2 + 0.5, 800, sz, color, 'center'); return w; }
+  function wDot(c, s, cx, cy, r, fill) { c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fillStyle = fill; c.fill(); if (s) wText(c, String(s), cx, cy + 0.5, 800, r >= 14 ? 15 : 13, '#fff', 'center'); }
+  function wDash(c, x1, x2, y, color) { c.beginPath(); c.moveTo(x1, y); c.lineTo(x2, y); c.strokeStyle = color || WC.dash; c.lineWidth = 1; c.setLineDash([4, 4]); c.stroke(); c.setLineDash([]); }
+  function wRule(c, x1, x2, y, color, lw) { c.beginPath(); c.moveTo(x1, y); c.lineTo(x2, y); c.strokeStyle = color; c.lineWidth = lw || 1.2; c.stroke(); }
+  function wIcon(c, name, x, y, size, color, lw) { c.save(); c.translate(x, y); c.scale(size / 24, size / 24); c.strokeStyle = color; c.lineWidth = lw; c.lineCap = 'round'; c.lineJoin = 'round'; c.stroke(new Path2D(WICON[name])); c.restore(); }
+  function wStar(c, cx, cy, r, fill, line) {
+    c.beginPath();
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, d = i % 2 ? r * 0.45 : r; c[i ? 'lineTo' : 'moveTo'](cx + Math.cos(a) * d, cy + Math.sin(a) * d); }
+    c.closePath();
+    if (fill) { c.fillStyle = fill; c.fill(); }
+    if (line) { c.strokeStyle = line; c.lineWidth = 1.3; c.lineJoin = 'round'; c.stroke(); }
+  }
+  // 문서를 조각(높이 h, 그리기 draw)으로 만든다. keep = 다음 조각과 같은 쪽에, split = 쪽 끝에서 나눌 수 있음
+  function wsBlocks(c, w, F) {
+    const M = WD.M, CW = WD.W - M * 2, body = [];
+    const items = w.items.filter(x => String(x.q || '').trim());
+    // 머리: 아이콘 · 제목 · 이름 칸
+    const boxW = 216, tx = M + 72, tw = CW - 72 - boxW - 18, over = `한글원샷 ${WKIND[F.kind] || WKIND.sheet} · ${F.topic} · ${F.level}`;
+    let tsz = 31; wFont(c, 800, tsz);
+    let tl = wWrap(c, w.title, tw);
+    if (tl.length > 2) { tsz = 25; wFont(c, 800, tsz); tl = wWrap(c, w.title, tw); }
+    const tlh = tsz + 8;
+    body.push({ h: Math.max(84, 24 + tl.length * tlh), draw(g, y) {
+      wBox(g, M, y + 2, 58, 58, 15, WC.blue);
+      wIcon(g, 'pencil', M + 13, y + 15, 32, '#fff', 2);
+      wText(g, over, tx, y + 11, 700, 13, WC.blue);
+      wLines(g, tl, tx, y + 24, tlh, 800, tsz, WC.ink);
+      const bx = M + CW - boxW;
+      wBox(g, bx, y, boxW, 84, 12, '#fff', WC.ink);
+      [['이름 Nom', y + 27], ['날짜 Date', y + 58]].forEach(([s, ly]) => { wText(g, s, bx + 14, ly, 700, 13, WC.ink); wRule(g, bx + 82, bx + boxW - 14, ly + 9, WC.ink, 1); });
+    } });
+    // 오늘의 목표(주황 알약 + 설명)
+    if (String(w.desc || '').trim() || String(w.desc_fr || '').trim()) {
+      wFont(c, 800, 13); const pw = c.measureText('오늘의 목표').width + 22;
+      wFont(c, 700, 16); const gl = String(w.desc || '').trim() ? wWrap(c, w.desc, CW - pw - 10) : [''];
+      wFont(c, 400, 13); const fl = String(w.desc_fr || '').trim() ? wWrap(c, 'Objectif : ' + w.desc_fr, CW) : [];
+      body.push({ h: gl.length * 26 + fl.length * 19 + (fl.length ? 2 : 0), draw(g, y) {
+        wPill(g, '오늘의 목표', M, y, 26, 13, WC.org, '#fff');
+        const end = wLines(g, gl, M + pw + 10, y, 26, 700, 16, WC.ink);
+        wLines(g, fl, M, end + 2, 19, 400, 13, WC.sub);
+      } });
+    }
+    // 안내(파란 띠)
+    if (String(w.guide || '').trim() || String(w.guide_fr || '').trim()) {
+      wFont(c, 700, 15); const gl = String(w.guide || '').trim() ? wWrap(c, w.guide, CW - 32) : [];
+      wFont(c, 400, 13); const fl = String(w.guide_fr || '').trim() ? wWrap(c, w.guide_fr, CW - 32) : [];
+      const h = 24 + gl.length * 23 + fl.length * 19;
+      body.push({ h, keep: true, draw(g, y) {
+        wBox(g, M, y, CW, h, 12, WC.tint);
+        const end = wLines(g, gl, M + 16, y + 12, 23, 700, 15, WC.ink);
+        wLines(g, fl, M + 16, end, 19, 400, 13, WC.sub);
+      } });
+    }
+    // 본문(주황 카드). 길면 쪽을 넘어 이어진다
+    if (String(w.passage || '').trim()) {
+      const talk = F.kind === 'talk', lh = 27, pad = 15, headH = 40;
+      wFont(c, 400, 15.5);
+      const passage = (ls, first) => ({ h: (first ? headH : 0) + ls.length * lh + pad * 2,
+        split(av) {
+          const n = Math.min(Math.floor((av - (first ? headH : 0) - pad * 2) / lh), ls.length - 2);
+          return n < 3 ? null : [passage(ls.slice(0, n), first), passage(ls.slice(n), false)];
+        },
+        draw(g, y) {
+          wBox(g, M, y, CW, this.h, 14, WC.orgBg, WC.orgLn);
+          let yy = y + pad;
+          if (first) {
+            wDot(g, '', M + 34, yy + 14, 14, WC.org);
+            wIcon(g, talk ? 'talk' : 'book', M + 25, yy + 5, 18, '#fff', 2);
+            wText(g, talk ? '대화를 읽어 봐요' : '글을 읽어 봐요', M + 56, yy + 14, 800, 17, WC.ink);
+            wFont(g, 800, 17);
+            wText(g, talk ? 'Lisons le dialogue' : 'Lisons le texte', M + 56 + g.measureText(talk ? '대화를 읽어 봐요' : '글을 읽어 봐요').width + 10, yy + 15, 400, 13, WC.sub);
+            yy += headH;
+          }
+          wLines(g, ls, M + 22, yy, lh, 400, 15.5, WC.ink);
+        } });
+      body.push(passage(wWrap(c, String(w.passage).trim(), CW - 44), true));
+    }
+    // 문항(파란 번호 + 네모 칸 보기, 보기가 없으면 점선 쓰기 줄)
+    items.forEach((x, i) => {
+      const TX = M + 56, TW = CW - 56 - 18, GAPX = 12;
+      wFont(c, 700, 16.5); const q = wWrap(c, x.q, TW);
+      wFont(c, 400, 13); const fr = String(x.fr || '').trim() ? wWrap(c, x.fr, TW) : [];
+      const chs = (x.choices || []).map(s => String(s).trim()).filter(Boolean);
+      wFont(c, 500, 15);
+      const widest = chs.length ? Math.max(...chs.map(s => c.measureText(s).width + 24)) : 0;
+      const cols = !chs.length ? 0 : chs.length <= 4 && widest <= (TW - GAPX * (chs.length - 1)) / chs.length ? chs.length : widest <= (TW - GAPX) / 2 ? 2 : 1;
+      const rows = cols === 1 ? chs.map(s => wWrap(c, s, TW - 24)) : null;
+      const chH = !chs.length ? 66 : rows ? rows.reduce((a, r) => a + r.length * 22 + 6, 0) : Math.ceil(chs.length / cols) * 28;
+      const h = 15 + q.length * 25 + fr.length * 19 + 8 + chH + 14;
+      const tick = (g, cy, tx0) => wBox(g, tx0, cy - 7, 14, 14, 3, '#fff', WC.sub, 1.3);
+      body.push({ h, draw(g, y) {
+        wBox(g, M, y, CW, h, 14, '#fff', WC.line);
+        wDot(g, i + 1, M + 30, y + 28, 14, WC.blue);
+        let yy = wLines(g, q, TX, y + 15, 25, 700, 16.5, WC.ink);
+        yy = wLines(g, fr, TX, yy, 19, 400, 13, WC.sub) + 8;
+        if (!chs.length) { wDash(g, TX, TX + TW, yy + 30); wDash(g, TX, TX + TW, yy + 62); }
+        else if (rows) rows.forEach(r => { tick(g, yy + 11, TX); yy = wLines(g, r, TX + 24, yy, 22, 500, 15, WC.ink) + 6; });
+        else {
+          const cw = (TW - GAPX * (cols - 1)) / cols;
+          chs.forEach((s, j) => { const cx = TX + (j % cols) * (cw + GAPX), cy = yy + Math.floor(j / cols) * 28 + 14; tick(g, cy, cx); wText(g, s, cx + 24, cy, 500, 15, WC.ink); });
+        }
+      } });
+    });
+    // 끝: 돌아보기 · 선생님 한마디(자리가 남을 때만, 쪽 아래에 붙인다)
+    const tail = { h: 118, draw(g, y) {
+      wBox(g, M, y, CW, 118, 14, '#fff', WC.line);
+      wDot(g, '', M + 30, y + 30, 14, WC.blue); wStar(g, M + 30, y + 30, 8, '#fff');
+      wText(g, '돌아보기', M + 54, y + 30, 800, 16.5, WC.ink);
+      wFont(g, 800, 16.5); wText(g, '잘한 만큼 별에 색칠해요', M + 54 + g.measureText('돌아보기').width + 9, y + 31, 400, 12.5, WC.sub);
+      wText(g, '끝까지 스스로 해 봤어요.', M + 18, y + 67, 500, 14.5, WC.ink);
+      [0, 1, 2].forEach(i => wStar(g, M + CW / 2 - 76 + i * 24, y + 67, 9, null, WC.ink));
+      wText(g, 'Colorie les étoiles selon ta réussite.', M + 18, y + 93, 400, 12.5, WC.sub);
+      const rx = M + CW / 2 + 4, rw = CW / 2 - 14;
+      wBox(g, rx, y + 10, rw, 98, 12, WC.orgBg, WC.orgLn);
+      const pw = wPill(g, '선생님 한마디', rx + 12, y + 19, 24, 12.5, WC.pill, WC.orgD, WC.pillLn);
+      wText(g, 'Mot de l’enseignant', rx + 12 + pw + 8, y + 31, 400, 12.5, WC.sub);
+      wDash(g, rx + 14, rx + rw - 14, y + 66, WC.pillLn); wDash(g, rx + 14, rx + rw - 14, y + 92, WC.pillLn);
+    } };
+    // 정답: 마지막 쪽에 따로(학습자용 쪽만 인쇄할 수 있게)
+    const ans = [];
+    const rowsA = items.map((x, i) => ({ n: i + 1, a: String(x.answer || '').trim() })).filter(x => x.a);
+    if (rowsA.length) {
+      ans.push({ h: 34, keep: true, draw(g, y) { const pw = wPill(g, '정답 · Corrigé', M, y, 28, 14, WC.org, '#fff'); wText(g, '선생님용이에요 · Réservé à l’enseignant', M + pw + 10, y + 14.5, 500, 13.5, WC.sub); } });
+      rowsA.forEach(r => {
+        wFont(c, 500, 15); const ls = wWrap(c, r.a, CW - 56);
+        const h = Math.max(ls.length * 23, 26) + 12;
+        ans.push({ h, gap: 0, draw(g, y) {
+          wDot(g, r.n, M + 13, y + 19, 13, WC.blue);
+          wLines(g, ls, M + 40, y + 7, 23, 500, 15, WC.ink);
+          wRule(g, M, M + CW, y + h, WC.line, 1);
+        } });
+      });
+    }
+    return { body, tail, ans };
+  }
+  // 조각을 쪽에 나눠 놓는다. 문항은 쪽 사이에서 잘리지 않는다
+  function wsLayout(c, w, F) {
+    const B = wsBlocks(c, w, F), pages = [], y2 = WD.TOP + 34;   // 둘째 쪽부터는 위에 제목 한 줄
+    const flow = (list, y0) => {
+      let cur = [], y = y0;
+      const q = list.slice();
+      const place = b => { cur.push({ b, y }); y += b.h + (b.gap == null ? WD.GAP : b.gap); };
+      while (q.length) {
+        const b = q.shift(), next = q[0], av = WD.END - y;
+        const need = b.h + (b.keep && next ? WD.GAP + (next.split ? 120 : next.h) : 0);
+        const parts = need > av && b.split ? b.split(av) : null;
+        if (need <= av) place(b);
+        else if (parts) { place(parts[0]); q.unshift(parts[1]); pages.push(cur); cur = []; y = y2; }
+        else if (!cur.length) place(b);
+        else { q.unshift(b); pages.push(cur); cur = []; y = y2; }
+      }
+      return { cur, y };
+    };
+    const end = flow(B.body, WD.TOP);
+    if (end.y + B.tail.h <= WD.END) end.cur.push({ b: B.tail, y: WD.END - B.tail.h, fix: true });
+    pages.push(end.cur);
+    // 자리가 남으면 조각 사이를 조금 넓힌다
+    pages.forEach(p => {
+      const free = p.filter(x => !x.fix), fix = p.find(x => x.fix);
+      if (free.length < 2) return;
+      const last = free[free.length - 1], extra = Math.min(((fix ? fix.y - WD.GAP : WD.END) - last.y - last.b.h) / (free.length - 1), 12);
+      if (extra > 0) free.forEach((x, i) => { x.y += extra * i; });
+    });
+    if (B.ans.length) pages.push(flow(B.ans, y2).cur);
+    return pages;
+  }
+  function wsPaint(page, i, n, w) {
+    const cv = document.createElement('canvas'), S = WD.SCALE, M = WD.M;
+    cv.width = Math.round(WD.W * S); cv.height = Math.round(WD.H * S);
+    const c = cv.getContext('2d', { alpha: false });
+    c.scale(S, S);
+    c.fillStyle = '#fff'; c.fillRect(0, 0, WD.W, WD.H);
+    if (i) {
+      wFont(c, 700, 13);
+      wText(c, wWrap(c, w.title, WD.W - M * 2)[0], M, WD.TOP + 8, 700, 13, WC.sub);
+      wRule(c, M, WD.W - M, WD.TOP + 22, WC.line, 1);
+    }
+    page.forEach(x => x.b.draw(c, x.y));
+    wText(c, 'AI 초안을 선생님이 확인해 올린 자료예요 · Ébauche créée avec l’IA, vérifiée par l’enseignant', M, WD.H - 30, 400, 11, WC.sub);
+    wText(c, `한글원샷  ${i + 1} / ${n}`, WD.W - M, WD.H - 30, 700, 11, WC.sub, 'right');
+    return cv;
+  }
+  // 글꼴은 필요한 글자의 조각만 받으므로 그리기 전에 받아 둔다. 글꼴 CDN이 막혀 있으면 4초 뒤 기기 글꼴로 그린다
+  async function wsFonts(w) {
+    if (!document.fonts || !document.fonts.load) return;
+    const text = [w.title, w.desc, w.desc_fr, w.guide, w.guide_fr, w.passage].concat(...w.items.map(x => [x.q, x.fr, x.answer].concat(x.choices || []))).join(' ')
+      + ' 한글원샷 활동지읽기글대화문퀴즈단어장 오늘의목표 이름날짜 대화를글을읽어봐요 돌아보기 잘한만큼별에색칠해요 끝까지스스로해봤어요 선생님한마디 정답 선생님용이에요 AI초안을확인해올린자료예요 0123456789 Objectif Nom Date Lisons Colorie Mot Corrigé Réservé Ébauche';
+    await Promise.race([Promise.all([400, 500, 700, 800].map(wt => document.fonts.load(`${wt} 16px "Pretendard Variable"`, text))), new Promise(r => setTimeout(r, 4000))]).catch(() => {});
+  }
+  async function wsPages(S) {
+    if (S.pages) return S.pages;
+    await wsFonts(S.ws);
+    const layout = wsLayout(document.createElement('canvas').getContext('2d'), S.ws, S.f);
+    S.pages = layout.map((p, i) => wsPaint(p, i, layout.length, S.ws));
+    return S.pages;
+  }
+  async function wsShow() {
+    const S = aiWsS, box = $('#wsPages');
+    try {
+      const pages = await wsPages(S);
+      if (!box.isConnected || S !== aiWsS) return;
+      box.textContent = '';
+      pages.forEach((cv, i) => { cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', `${S.ws.title} ${t('aiWsPage')(i + 1, pages.length)}`); box.appendChild(cv); });
+    } catch (ex) { console.error('ws_doc', ex); if (box.isConnected) box.textContent = t('aiWsPdfErr'); }
+  }
+  // 쪽 그림(JPEG)을 A4 쪽마다 하나씩 담은 PDF 1.4 파일을 만든다
+  async function wsPdf(S) {
+    const pages = await wsPages(S), jpg = [];
+    for (const cv of pages) {
+      const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', WD.Q));
+      if (!blob) throw new Error('toBlob');
+      jpg.push(new Uint8Array(await new Response(blob).arrayBuffer()));
+    }
+    const enc = new TextEncoder(), parts = [], at = [], FIRST = 4, kid = i => FIRST + i * 3;
+    let len = 0;
+    const put = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
+    const obj = (n, head, data) => { at[n] = len; put(`${n} 0 obj\n${head}\n`); if (data) { put('stream\n'); put(data); put('\nendstream\n'); } put('endobj\n'); };
+    let title = 'FEFF';
+    for (const u of String(S.ws.title)) for (let i = 0; i < u.length; i++) title += u.charCodeAt(i).toString(16).padStart(4, '0').toUpperCase();
+    put('%PDF-1.4\n%âãÏÓ\n');
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, `<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_, i) => `${kid(i)} 0 R`).join(' ')}] >>`);
+    obj(3, `<< /Title <${title}> /Creator (Hangeul Oneshot) /Producer (Hangeul Oneshot) >>`);
+    pages.forEach((cv, i) => {
+      const n = kid(i), draw = enc.encode('q 595.28 0 0 841.89 0 0 cm /I Do Q');
+      obj(n, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /I ${n + 2} 0 R >> >> /Contents ${n + 1} 0 R >>`);
+      obj(n + 1, `<< /Length ${draw.length} >>`, draw);
+      obj(n + 2, `<< /Type /XObject /Subtype /Image /Width ${cv.width} /Height ${cv.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg[i].length} >>`, jpg[i]);
+    });
+    const size = kid(pages.length), xref = len;
+    let tbl = `xref\n0 ${size}\n0000000000 65535 f \n`;
+    for (let n = 1; n < size; n++) tbl += String(at[n]).padStart(10, '0') + ' 00000 n \n';
+    put(tbl + `trailer\n<< /Size ${size} /Root 1 0 R /Info 3 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+    return new Blob(parts, { type: 'application/pdf' });
+  }
+  const wsName = w => (String(w.title).replace(/[\\/:*?"<>|]/g, '_').trim().slice(0, 60) || 'worksheet') + '.pdf';
+  function wsDownload(blob, name) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
   }
   async function aiWsMake() {
     const S = aiWsS, F = S.f;
@@ -1737,7 +2039,7 @@
     try {
       const r = await api.post({ action: 'ai_ws', code: teacher.code, topic: F.topic, level: F.level, kind: F.kind, n: F.n, who: F.who, expr: F.expr, words: F.words, lang }, 120000);
       if (aiLogout(r)) return;
-      if (r.ok) { S.ws = r.ws; S.left = r.left; window.scrollTo(0, 0); } else S.err = aiMsg(r.error);
+      if (r.ok) { S.ws = r.ws; S.edit = false; S.pages = null; S.left = r.left; window.scrollTo(0, 0); } else S.err = aiMsg(r.error);
     } catch (ex) { S.err = t('netErr'); }
     S.busy = false; aiRedraw();
   }
@@ -1779,28 +2081,45 @@
     const ed = $('#aiWsEdit');
     if (ed) {
       const S = aiWsS, w = S.ws;
+      if ($('#wsPages')) wsShow();
       // 고친 글은 칠 때마다 초안에 적어 둔다(다시 그려도 사라지지 않게). 보기는 '/'로 나눈다
       ed.addEventListener('input', e => {
         const d = e.target.dataset; if (!d) return;
         if (d.wf) w[d.wf] = e.target.value;
         else if (d.wk) w.items[Number(d.wi)][d.wk] = d.wk === 'choices' ? e.target.value.split('/').map(x => x.trim()).filter(Boolean) : e.target.value;
+        else return;
+        S.pages = null;   // 문서는 다시 그린다
       });
       const sc = $('#w-school'); if (sc) sc.onchange = () => { S.school = sc.value; sc.classList.toggle('empty', !sc.value); };
       ed.addEventListener('click', async e => {
-        const D = e.target.closest('[data-wdel]'); if (D) { w.items.splice(Number(D.dataset.wdel), 1); render(true); return; }
-        if (e.target.closest('[data-wredo]')) { S.ws = null; aiWsMake(); return; }
+        const fail = m => { S.err = m; const x = $('#aiErr'); if (x) x.textContent = m; toast(m); };
+        const ready = () => String(w.title).trim() && (w.items.some(x => String(x.q).trim()) || String(w.passage).trim());
+        const D = e.target.closest('[data-wdel]'); if (D) { w.items.splice(Number(D.dataset.wdel), 1); S.pages = null; render(true); return; }
+        if (e.target.closest('[data-wredo]')) { S.ws = null; S.pages = null; aiWsMake(); return; }
         if (e.target.closest('[data-wnew]')) { aiWsS = aiWsBlank(); render(); return; }
+        if (e.target.closest('[data-wedit]')) { S.edit = true; S.err = ''; render(); window.scrollTo(0, 0); return; }
+        if (e.target.closest('[data-wdone]')) {
+          if (!ready()) return fail(t('aiWsNeed'));
+          S.edit = false; S.err = ''; render(); window.scrollTo(0, 0); return;
+        }
+        if (e.target.closest('[data-wpdf]')) {
+          S.busy = 'pdf'; S.err = ''; render(true);
+          try { wsDownload(await wsPdf(S), wsName(w)); toast(t('aiWsPdfDone')); }
+          catch (ex) { console.error('ws_pdf', ex); S.err = t('aiWsPdfErr'); }
+          S.busy = false; aiRedraw();
+          return;
+        }
         if (!e.target.closest('[data-wsave]')) return;
         const terms = $('#w-terms'), school = S.school || teacher.school || '', F = S.f;
-        const fail = m => { S.err = m; const x = $('#aiErr'); if (x) x.textContent = m; toast(m); };
-        if (!String(w.title).trim() || !(w.items.some(x => String(x.q).trim()) || String(w.passage).trim())) return fail(t('aiWsNeed'));
         if (SCHOOLS.length && !school) return fail(t('needSchool'));
         if (terms && !terms.checked) return fail(t('needTerms'));
         S.busy = true; S.err = ''; render(true);
         try {
           const known = data.topics.find(x => x.name === F.topic);
-          const r = await api.post({ action: 'ws_save', code: teacher.code, ws: w, agree: terms ? true : undefined,
-            material: { topic: F.topic, group: known ? known.group : (F.group || '기타'), level: F.level, school, type: F.kind === 'quiz' ? '퀴즈' : '활동지' } });
+          // 화면에 보이는 그 문서를 PDF로 만들어 보통 파일 올리기 길로 올린다
+          const r = await api.post({ action: 'upload', code: teacher.code, agree: terms ? true : undefined,
+            material: { topic: F.topic, group: known ? known.group : (F.group || '기타'), level: F.level, title: w.title, desc: w.desc, desc_fr: w.desc_fr, school, type: F.kind === 'quiz' ? '퀴즈' : '활동지' },
+            file: { name: wsName(w), type: 'application/pdf', blob: await wsPdf(S) } });
           if (aiLogout(r)) return;
           if (r.ok) {
             if (!teacher.terms) teacher.terms = true;
@@ -1813,8 +2132,9 @@
             return;
           }
           if (r.error === 'need_terms') { teacher.terms = false; saveTeacher(teacher); S.err = t('needTerms'); }
+          else if (r.error === 'file_big') S.err = t('fileBig')(FILE_MAX_MB);
           else S.err = t('aiErr')[r.error] || t('netErr');
-        } catch (ex) { S.err = t('netErr'); }
+        } catch (ex) { console.error('ws_up', ex); S.err = t('netErr'); }
         S.busy = false; aiRedraw();
       });
     }

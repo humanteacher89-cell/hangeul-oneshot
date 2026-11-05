@@ -5,13 +5,13 @@
 //   POST /api 본문 = 파일 바이트, X-Oneshot = {action:'ai_fill', code, file:{name,type}, title, lang}   (PDF·사진, 5MB까지)
 //   POST /api {action:'ai_fill', code, page:{name,title,desc,text}, title, lang}   HTML 파일: 화면이 글을 뽑아 보낸다(서버 CPU 한도 때문)
 //   POST /api {action:'ai_ws', code, topic, level, kind, n, who, expr, words, lang}   활동지 초안(저장하지 않음)
-//   POST /api {action:'ws_save', code, ws, material, agree}              교사가 고친 초안을 보관함에 HTML로 저장하고 자료로 등록(AI를 부르지 않음)
+// 활동지 문서는 화면(index.html)이 초안으로 PDF를 그려 보통 파일 올리기(action 'upload')로 올린다(2026-11-05 휴먼쌤 "이 pdf를 바로 업로드해야지"). 서버는 PDF를 만들지 않는다.
 // 비밀 ANTHROPIC_API_KEY(Pages secret)가 없으면 ai_off이고 화면에 AI 입구가 보이지 않는다(login 응답 ai).
 // SDK는 파일 맨 위에서 불러온다: 처음 읽는 데 CPU 약 15ms(측정 2026-11-05)라 요청 안에서 부르면 무료 한도 10ms를 넘는다. 맨 위에서 부르면 서버가 켜질 때 한 번만 든다.
 // 파일은 base64로 풀지 않고 Files API에 그대로 넘긴 뒤 바로 지운다(같은 CPU 한도 때문).
 // AI_BASE_URL(비밀 아님, .dev.vars)은 내 컴퓨터 시험에서 test/fake-anthropic.mjs로 돌릴 때만 쓴다.
 import Anthropic, { APIConnectionError, APIError, AuthenticationError, ContentTooLargeError, InternalServerError, PermissionDeniedError, RateLimitError } from '@anthropic-ai/sdk';
-import { json, no, str, today, LEVEL_KEYS, addMaterial, termsOk, rid } from './app.js';
+import { json, no, str, today, LEVEL_KEYS } from './app.js';
 
 const AI_MODEL = 'claude-opus-5-5';
 const FALLBACK_BETA = 'server-side-fallback-2026-07-01';   // 안전 분류기가 거절하면 서버가 다른 모델로 다시 돌린다(fallbacks: 'default')
@@ -280,41 +280,4 @@ function cleanWs(w) {
       choices: (Array.isArray(x && x.choices) ? x.choices : []).slice(0, 8).map(y => str(y, 120)).filter(Boolean)
     })).filter(x => x.q)
   };
-}
-
-// 교사가 확인한 초안을 저장: 보관함(KV)에 HTML, 자료 표에 링크 /f/<키>. 올린 파일과 같은 길이라 삭제·되살리기·QR·계정 삭제가 그대로 맞는다
-export async function wsSave(env, b, tc) {
-  if (!(await termsOk(env, b, tc))) return no('need_terms');
-  const m = b.material || {}, ws = cleanWs(b.ws), topic = str(m.topic, 60), level = str(m.level, 10);
-  if (!ws.title || !topic || !LEVEL_KEYS.includes(level) || !(ws.items.length || ws.passage)) return no('missing');
-  const fileKey = rid() + '.html', school = str(m.school, 60) || tc.school || '';
-  try {
-    await env.FILES.put(fileKey, renderWs(ws, { topic, level, school }), { metadata: { name: ws.title.replace(/[\\/:*?"<>|]/g, '_') + '.html', type: 'text/html; charset=utf-8', kind: 'ws', teacher: tc.id, day: today(), topic, level } });
-  } catch (e) { console.error('ws_put', e && e.stack || e); return no('file_save'); }
-  return addMaterial(env, tc, { group: m.group, topic, level, title: ws.title, type: str(m.type, 20) || '활동지', desc: ws.desc, desc_fr: ws.desc_fr, school }, '/f/' + fileKey, fileKey);
-}
-
-// 활동지 보기 화면. 글은 모두 esc를 거치고, 인쇄 단추 스크립트 하나만 CSP 해시로 허용한다(WS_CSP). test/api-test.mjs가 해시를 맞춰 본다
-const WS_PRINT_JS = "document.getElementById('pr').onclick=function(){print()}";
-export const WS_CSP = "sandbox allow-scripts allow-modals; default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-IdGlEF9kvOW6SYDTTpuR+0FYqQ2/2Z6s6VRzPp15Al4='; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
-const CIRCLED = '①②③④⑤⑥⑦⑧';
-const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, x => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[x]));
-const br = s => esc(s).replace(/\n/g, '<br>');
-export function renderWs(ws, m) {
-  const items = ws.items.map((x, i) => `<li class="q"><p class="qt">${br(x.q)}</p>${x.fr ? `<p class="fr">${br(x.fr)}</p>` : ''}`
-    + (x.choices.length ? `<ul class="ch">${x.choices.map((y, j) => `<li>${CIRCLED[j] || ''} ${esc(y)}</li>`).join('')}</ul>` : '<div class="ln"></div>') + '</li>').join('');
-  const answers = ws.items.map((x, i) => (x.answer ? `<li value="${i + 1}">${br(x.answer)}</li>` : '')).join('');
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(ws.title)}</title><style>
-*{box-sizing:border-box}body{margin:0 auto;max-width:720px;padding:20px 16px 48px;color:#2B2118;background:#fff;line-height:1.6;font:16px/1.6 "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",-apple-system,sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:#8A7B6C}#pr{flex:none;border:2px solid #F0E4D4;background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-weight:700;color:#6E5E50;cursor:pointer;white-space:nowrap}
-h1{margin:10px 0 4px;font-size:clamp(21px,5.6vw,27px);line-height:1.3}.who{display:flex;gap:18px;margin:14px 0;font-size:14px}.who span{flex:1;border-bottom:1.5px solid #2B2118;padding-bottom:4px}
-.guide{margin:14px 0 2px;font-weight:700}.fr{margin:0;font-size:13.5px;color:#7A6B5C}.pas{margin:14px 0;padding:14px 16px;border:2px solid #F0E4D4;border-radius:14px}
-ol.qs{margin:18px 0 0;padding:0 0 0 26px}.q{margin:0 0 20px;break-inside:avoid}.qt{margin:0;font-weight:600}.ch{list-style:none;margin:8px 0 0;padding:0}.ch li{margin:3px 0}.ln{height:32px;border-bottom:1.5px dashed #C9BBAB}
-details{margin-top:26px;padding:10px 14px;border:2px dashed #F0E4D4;border-radius:14px}summary{cursor:pointer;font-weight:700;color:#6E5E50}details ol{margin:10px 0 0;padding-left:24px}
-.foot{margin-top:24px;font-size:12px;color:#8A7B6C}@page{size:A4;margin:15mm}@media print{#pr,details:not([open]){display:none}body{max-width:none;padding:0}}
-</style></head><body><div class="top"><span>${esc(m.topic)} · ${esc(m.level)}${m.school ? ' · ' + esc(String(m.school).replace(/\s*한글학교$/, '')) : ''}</span><button type="button" id="pr">인쇄 · Imprimer</button></div>
-<h1>${esc(ws.title)}</h1><div class="who"><span>이름 Nom :</span><span>날짜 Date :</span></div>
-${ws.guide ? `<p class="guide">${br(ws.guide)}</p>` : ''}${ws.guide_fr ? `<p class="fr">${br(ws.guide_fr)}</p>` : ''}${ws.passage ? `<div class="pas">${br(ws.passage)}</div>` : ''}
-${items ? `<ol class="qs">${items}</ol>` : ''}${answers ? `<details><summary>정답 · Corrigé</summary><ol>${answers}</ol></details>` : ''}
-<p class="foot">AI 초안을 선생님이 확인해 올린 자료예요 · Ébauche créée avec l’IA, vérifiée par l’enseignant</p><script>${WS_PRINT_JS}</script></body></html>`;
 }

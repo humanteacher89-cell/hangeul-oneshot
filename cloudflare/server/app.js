@@ -10,8 +10,8 @@
 // 로그인 코드는 HMAC-SHA256(비밀 CODE_PEPPER) 해시만 저장한다. 틀린 코드·가입 코드는 기기별 10분 30번, 전체 300번이면 10분 막는다.
 // Google Play 정책(2026-11-04): POST /api {action:'report', id, reason, text} 자료 신고(로그인 없이) · {action:'leave', code, confirm:true} 계정 삭제 ·
 //   올리기는 이용 규칙에 동의한 교사만(teachers.terms_at, 아직이면 agree:true를 함께 보내 동의를 적는다).
-// AI 도우미(2026-11-05): POST /api {action:'ai_rec'|'ai_fill'|'ai_ws'|'ws_save', code, ...} — 로그인한 교사만. 내용은 ./ai.js
-import { aiAction, wsSave, WS_CSP } from './ai.js';
+// AI 도우미(2026-11-05): POST /api {action:'ai_rec'|'ai_fill'|'ai_ws', code, ...} — 로그인한 교사만. 내용은 ./ai.js
+import { aiAction } from './ai.js';
 
 const FILE_MAX_MB = 10;   // index.html의 FILE_MAX_MB·FILE_EXT와 같게
 const FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'html', 'htm'];   // HTML은 2026-11-05 휴먼쌤 "넣어줘"
@@ -30,7 +30,7 @@ export const json = (obj, status) => new Response(JSON.stringify(obj), { status:
 export const no = error => json({ ok: false, error });
 export const str = (v, n) => String(v == null ? '' : v).trim().slice(0, n || 1000);
 const rand = n => crypto.getRandomValues(new Uint32Array(1))[0] % n;
-export const rid = () => crypto.randomUUID().replace(/-/g, '').slice(0, 20);
+const rid = () => crypto.randomUUID().replace(/-/g, '').slice(0, 20);
 export function today() {   // yyyy-MM-dd, 파리 날짜(시트와 같게)
   try { return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Paris' }).format(new Date()); } catch (e) { return new Date().toISOString().slice(0, 10); }
 }
@@ -79,8 +79,8 @@ export async function handleFile(request, env, key) {
       'Cache-Control': 'private, no-cache',   // 지우면 바로 닫히게 늘 서버에 다시 묻는다
       'X-Content-Type-Options': 'nosniff'
     };
-    // HTML은 격리해서 연다. 서버가 만든 활동지(kind 'ws')는 더 좁게, 인쇄 단추 스크립트 하나만
-    if (String(md.type || '').startsWith('text/html')) headers['Content-Security-Policy'] = md.kind === 'ws' ? WS_CSP : HTML_CSP;
+    // HTML은 격리해서 연다
+    if (String(md.type || '').startsWith('text/html')) headers['Content-Security-Policy'] = HTML_CSP;
     return new Response(got.value, { headers });
   } catch (e) {
     console.error('file', e && e.stack || e);
@@ -168,7 +168,6 @@ async function post(request, env, origin) {
   if (b.action === 'fav') return fav(env, b, tc);
   if (b.action === 'upload') return upload(env, request, b, tc, !!meta);
   if (b.action === 'ai_rec' || b.action === 'ai_fill' || b.action === 'ai_ws') return aiAction(env, request, b, tc, !!meta);
-  if (b.action === 'ws_save') return wsSave(env, b, tc);
   if (b.action === 'delete' || b.action === 'hide') return remove(env, b, tc, b.action);
   if (b.action === 'leave') return leave(env, b, tc);
   return no('unknown');
@@ -253,7 +252,7 @@ async function fav(env, b, tc) {
 
 // 올리기: 링크 하나, 또는 파일(PDF·사진 10MB) → KV에 두고 링크는 '/f/<키>'
 // 이용 규칙(Play 사용자 제작 콘텐츠 정책): 가입 때 동의하지 않은 옛 교사는 첫 올리기 때 한 번 동의한다
-export async function termsOk(env, b, tc) {
+async function termsOk(env, b, tc) {
   if (tc.terms_at) return true;
   if (b.agree !== true) return false;
   await env.DB.prepare('UPDATE teachers SET terms_at = ?2 WHERE id = ?1').bind(tc.id, today()).run();
@@ -288,8 +287,8 @@ async function upload(env, request, b, tc, isFile) {
   return addMaterial(env, tc, Object.assign({}, m, { topic, level, title }), url, fileKey);
 }
 
-// 자료 표에 한 줄 더하기(링크·올린 파일·활동지 공통). 실패하면 보관함에 넣어 둔 파일을 지운다
-export async function addMaterial(env, tc, m, url, fileKey) {
+// 자료 표에 한 줄 더하기(링크·올린 파일 공통). 실패하면 보관함에 넣어 둔 파일을 지운다
+async function addMaterial(env, tc, m, url, fileKey) {
   const { topic, level, title } = m;
   let id = 'm' + Date.now().toString(36), grp;
   try { grp = await ensureTopic(env, topic, m.group); }

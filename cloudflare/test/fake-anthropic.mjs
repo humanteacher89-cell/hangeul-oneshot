@@ -20,6 +20,25 @@ function answer(body) {
     return { intro: '이 수업에 맞는 자료예요.', picks: [{ id: ids[0] || 'nope', why: '주제가 같아요.' }, { id: 'unknown-id', why: '목록에 없는 자료' }, { id: ids[0] || 'nope', why: '겹침' }], gap: '말하기 카드가 더 있으면 좋겠어요.' };
   }
   if (props.includes('passage')) {
+    const asked = JSON.stringify(body.messages);
+    // 문서 모양 확인용(words 칸에 적는다): [[ws-cafe]] 실제 Claude가 쓴 초안 하나, [[ws-long]] 쪽을 넘는 긴 글·문항 10개, [[ws-write]] 본문 없이 쓰기 문항만(정답 쪽 없음)
+    if (asked.includes('[[ws-cafe]]')) {
+      return { title: '카페에 가요', desc: '카페 이야기를 읽고 알맞은 답을 골라요.', desc_fr: 'Lis l’histoire au café et choisis la bonne réponse.', guide: '글을 잘 읽고 알맞은 것을 하나 골라요.', guide_fr: 'Lis bien le texte et choisis une seule bonne réponse.',
+        passage: '오늘은 토요일이에요. 민지는 엄마와 같이 카페에 갔어요. 카페는 학교 옆에 있어요. 카페 직원이 웃으면서 주문을 받았어요. 엄마는 따뜻한 커피를 주문했어요. 민지는 커피를 안 마셔요. 그래서 시원한 딸기 주스를 주문했어요. 그리고 초콜릿 케이크도 하나 샀어요. 카페 안에는 사람이 아주 많았어요. 민지와 엄마는 창문 옆 자리에 앉았어요. 케이크가 정말 맛있었어요.',
+        items: [{ q: '민지는 카페에서 무엇을 마셨어요?', fr: 'Qu’est-ce que Minji a bu au café ?', choices: ['따뜻한 커피', '딸기 주스', '우유', '녹차'], answer: '딸기 주스' },
+          { q: '이 사람은 카페에서 일해요. 주문을 받고 음료를 만들어요. 이 사람은 누구예요?', fr: 'Cette personne travaille au café. Elle prend les commandes et prépare les boissons. Qui est-ce ?', choices: ['선생님', '카페 직원', '경찰관', '학생'], answer: '카페 직원' },
+          { q: '민지와 엄마는 어디에 앉았어요?', fr: 'Où Minji et sa maman se sont-elles assises ?', choices: ['문 옆 자리', '창문 옆 자리', '카페 밖', '학교 안'], answer: '창문 옆 자리' }] };
+    }
+    if (asked.includes('[[ws-long]]')) {
+      const para = '오늘은 토요일이에요. 민지는 엄마와 같이 시장에 갔어요. 시장에는 사과와 배, 생선과 채소를 파는 가게가 아주 많았어요. 민지는 처음 보는 과일을 보고 이름을 물어봤어요. 가게 아주머니가 웃으면서 맛을 보게 해 주셨어요. ';
+      return { title: '시장에서 물건을 사고 이야기를 나누는 아주 긴 제목의 활동지 초안이에요', desc: '긴 글을 읽고 내용을 확인해요. 문항이 많아 여러 쪽으로 나뉘어요.', desc_fr: 'Lis un long texte et vérifie ta compréhension. Le document tient sur plusieurs pages.', guide: '글을 잘 읽고 알맞은 것을 골라요.', guide_fr: 'Lis bien le texte et choisis la bonne réponse.', passage: Array.from({ length: 9 }, (_, i) => para.repeat(3).trim() + ' (' + (i + 1) + ')').join('\n'),
+        items: Array.from({ length: 10 }, (_, i) => ({ q: i % 3 === 2 ? '이 글에서 가장 기억에 남는 장면을 고르고, 왜 그렇게 생각했는지 자기 말로 짧게 이어서 설명해 보세요.' : '민지는 시장에서 무엇을 물어봤어요?', fr: i % 3 === 2 ? 'Choisis la scène qui t’a le plus marqué et explique pourquoi avec tes propres mots.' : 'Qu’est-ce que Minji a demandé au marché ?',
+          choices: i % 3 === 0 ? ['과일 이름', '생선 값', '가게 이름', '집에 가는 길'] : i % 3 === 1 ? ['가게 아주머니가 웃으면서 맛을 보게 해 주셨어요', '엄마가 큰 사과를 한 봉지 샀어요', '민지가 혼자 시장에 갔어요', '시장에 사람이 아무도 없었어요', '비가 와서 집으로 돌아갔어요', '민지가 생선을 샀어요'] : [], answer: i % 3 === 2 ? '' : '과일 이름' })) };
+    }
+    if (asked.includes('[[ws-write]]')) {
+      return { title: '내 문장 만들기', desc: '', desc_fr: '', guide: '낱말로 문장을 만들어 써요.', guide_fr: 'Écris une phrase avec chaque mot.', passage: '',
+        items: [{ q: '‘사과’로 문장을 써요.', fr: 'pomme', choices: [], answer: '' }, { q: '‘학교’로 문장을 써요.', fr: 'école', choices: [], answer: '' }] };
+    }
     return { title: '편의점에서 물건 사기', desc: '편의점 낱말을 익혀요', desc_fr: 'Apprendre les mots de la supérette', guide: '알맞은 낱말을 골라요.', guide_fr: 'Choisis le bon mot.', passage: '가: 이거 얼마예요?\n나: 천 원이에요.',
       items: [{ q: '‘물’은 어느 것이에요?', fr: 'Lequel est « eau » ?', choices: ['물', '빵', '우유'], answer: '물' }, { q: '내가 사고 싶은 것을 써요.', fr: 'Écris ce que tu veux acheter.', choices: [], answer: '' }] };
   }
