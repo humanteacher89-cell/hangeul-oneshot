@@ -10,23 +10,25 @@
 // 로그인 코드는 HMAC-SHA256(비밀 CODE_PEPPER) 해시만 저장한다. 틀린 코드·가입 코드는 기기별 10분 30번, 전체 300번이면 10분 막는다.
 // Google Play 정책(2026-11-04): POST /api {action:'report', id, reason, text} 자료 신고(로그인 없이) · {action:'leave', code, confirm:true} 계정 삭제 ·
 //   올리기는 이용 규칙에 동의한 교사만(teachers.terms_at, 아직이면 agree:true를 함께 보내 동의를 적는다).
+// AI 도우미(2026-11-05): POST /api {action:'ai_rec'|'ai_fill'|'ai_ws'|'ws_save', code, ...} — 로그인한 교사만. 내용은 ./ai.js
+import { aiAction, wsSave, WS_CSP } from './ai.js';
 
 const FILE_MAX_MB = 10;   // index.html의 FILE_MAX_MB·FILE_EXT와 같게
 const FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'];
 const FILE_MIME = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', heic: 'image/heic' };
 const FAIL_LIMIT = 30, FAIL_ALL = 300, FAIL_WINDOW_MS = 600000;
 const FAV_MAX = 500;
-const LEVEL_KEYS = ['하', '중', '상'];   // config.js LEVELS와 같게
+export const LEVEL_KEYS = ['하', '중', '상'];   // config.js LEVELS와 같게
 const SETTING_KEYS = { join_code: 40, notice: 300 };   // 관리자 화면에서 고치는 설정과 글자 수 한도
 const REPORT_REASONS = ['inappropriate', 'privacy', 'copyright', 'person', 'other'];   // index.html RP_REASONS와 같게
 const REPORT_LIMIT = 10, REPORT_ALL = 200;   // 신고 도배 막기: 기기별·전체, FAIL_WINDOW_MS(10분) 안에
 
-const json = (obj, status) => new Response(JSON.stringify(obj), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
-const no = error => json({ ok: false, error });
-const str = (v, n) => String(v == null ? '' : v).trim().slice(0, n || 1000);
+export const json = (obj, status) => new Response(JSON.stringify(obj), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+export const no = error => json({ ok: false, error });
+export const str = (v, n) => String(v == null ? '' : v).trim().slice(0, n || 1000);
 const rand = n => crypto.getRandomValues(new Uint32Array(1))[0] % n;
-const rid = () => crypto.randomUUID().replace(/-/g, '').slice(0, 20);
-function today() {   // yyyy-MM-dd, 파리 날짜(시트와 같게)
+export const rid = () => crypto.randomUUID().replace(/-/g, '').slice(0, 20);
+export function today() {   // yyyy-MM-dd, 파리 날짜(시트와 같게)
   try { return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Paris' }).format(new Date()); } catch (e) { return new Date().toISOString().slice(0, 10); }
 }
 
@@ -68,12 +70,15 @@ export async function handleFile(request, env, key) {
     const got = await env.FILES.getWithMetadata(key, { type: 'stream' });
     if (!got || !got.value) return gone();
     const md = got.metadata || {};
-    return new Response(got.value, { headers: {
+    const headers = {
       'Content-Type': md.type || 'application/octet-stream',
       'Content-Disposition': "inline; filename*=UTF-8''" + encodeURIComponent(md.name || key),
       'Cache-Control': 'private, no-cache',   // 지우면 바로 닫히게 늘 서버에 다시 묻는다
       'X-Content-Type-Options': 'nosniff'
-    } });
+    };
+    // HTML은 서버가 만든 활동지 보기뿐이다(교사가 올리는 파일은 FILE_EXT로 막힘). 이 주소는 교사 로그인 코드가 있는 화면과 같은 곳이라 스크립트를 인쇄 단추 하나로 묶어 둔다
+    if (String(md.type || '').startsWith('text/html')) headers['Content-Security-Policy'] = WS_CSP;
+    return new Response(got.value, { headers });
   } catch (e) {
     console.error('file', e && e.stack || e);
     return new Response('Error', { status: 500 });
@@ -88,7 +93,7 @@ async function readAll(env, origin) {
   const [st, tp, mt] = await db.batch([
     db.prepare("SELECT key, value FROM settings WHERE key NOT IN ('join_code', 'qid_seq') ORDER BY rowid"),
     db.prepare('SELECT topic, fr, grp, ord, icon, qid FROM topics ORDER BY rowid'),
-    db.prepare('SELECT id, grp, topic, level, title, type, url, descr, minutes, school, by_name, date FROM materials WHERE deleted IS NULL AND pub = 1 ORDER BY rowid')
+    db.prepare('SELECT id, grp, topic, level, title, type, url, descr, descr_fr, minutes, school, by_name, date FROM materials WHERE deleted IS NULL AND pub = 1 ORDER BY rowid')
   ]);
   const settings = {};
   st.results.forEach(r => { if (r.key && !HIDDEN_SETTINGS.includes(r.key)) settings[r.key] = String(r.value == null ? '' : r.value); });
@@ -96,7 +101,7 @@ async function readAll(env, origin) {
     ok: true, settings,
     topics: tp.results.map(r => ({ topic: r.topic, fr: r.fr, group: r.grp, order: r.ord == null ? '' : r.ord, icon: r.icon, qid: r.qid == null ? '' : r.qid })),
     materials: mt.results.map(r => ({ id: r.id, group: r.grp, topic: r.topic, level: r.level, title: r.title, type: r.type,
-      url: r.url.startsWith('/') ? origin + r.url : r.url, desc: r.descr, minutes: r.minutes == null ? '' : r.minutes,
+      url: r.url.startsWith('/') ? origin + r.url : r.url, desc: r.descr, desc_fr: r.descr_fr || '', minutes: r.minutes == null ? '' : r.minutes,
       school: r.school, by: String(r.school).trim() === '휴먼쌤' ? '' : r.by_name, date: r.date, pub: '' })),
     updatedAt: new Date().toISOString()
   };
@@ -153,11 +158,14 @@ async function post(request, env, origin) {
   if (b.action === 'login') {
     const r = { ok: true, teacher: { name: tc.name, school: tc.school }, favs: await favList(env, tc.id), mine: await mineList(env, tc), terms: !!tc.terms_at };
     if (tc.is_admin) r.admin = true;   // 화면이 관리자 입구를 보여 줄 뿐, 관리자 동작은 요청마다 다시 확인한다
+    if (env.ANTHROPIC_API_KEY) r.ai = true;   // 키를 넣기 전에는 화면에 AI 입구가 보이지 않는다
     return json(r);
   }
   if (isAdmin) return tc.is_admin ? admin(env, b, tc, origin) : json({ ok: false, error: 'not_admin' }, 403);
   if (b.action === 'fav') return fav(env, b, tc);
   if (b.action === 'upload') return upload(env, request, b, tc, !!meta);
+  if (b.action === 'ai_rec' || b.action === 'ai_fill' || b.action === 'ai_ws') return aiAction(env, request, b, tc, !!meta);
+  if (b.action === 'ws_save') return wsSave(env, b, tc);
   if (b.action === 'delete' || b.action === 'hide') return remove(env, b, tc, b.action);
   if (b.action === 'leave') return leave(env, b, tc);
   return no('unknown');
@@ -201,7 +209,7 @@ async function join(env, b, who) {
     try {
       await env.DB.prepare('INSERT INTO teachers (name, name_key, school, code_hash, joined, terms_at) VALUES (?1, ?2, ?3, ?4, ?5, ?5)')   // 가입 화면에서 이용 규칙에도 동의한다
         .bind(name, key, school, await codeHash(env, code), today()).run();
-      return json({ ok: true, teacher: { name, school }, code });
+      return json({ ok: true, teacher: { name, school }, code, ai: !!env.ANTHROPIC_API_KEY });
     } catch (e) {
       const msg = String(e && e.message);
       if (/name_key/.test(msg)) return no('dup_name');
@@ -241,12 +249,15 @@ async function fav(env, b, tc) {
 }
 
 // 올리기: 링크 하나, 또는 파일(PDF·사진 10MB) → KV에 두고 링크는 '/f/<키>'
+// 이용 규칙(Play 사용자 제작 콘텐츠 정책): 가입 때 동의하지 않은 옛 교사는 첫 올리기 때 한 번 동의한다
+export async function termsOk(env, b, tc) {
+  if (tc.terms_at) return true;
+  if (b.agree !== true) return false;
+  await env.DB.prepare('UPDATE teachers SET terms_at = ?2 WHERE id = ?1').bind(tc.id, today()).run();
+  return true;
+}
 async function upload(env, request, b, tc, isFile) {
-  // 이용 규칙(Play 사용자 제작 콘텐츠 정책): 가입 때 동의하지 않은 옛 교사는 첫 올리기 때 한 번 동의한다
-  if (!tc.terms_at) {
-    if (b.agree !== true) return no('need_terms');
-    await env.DB.prepare('UPDATE teachers SET terms_at = ?2 WHERE id = ?1').bind(tc.id, today()).run();
-  }
+  if (!(await termsOk(env, b, tc))) return no('need_terms');
   const m = b.material || {};
   const topic = str(m.topic, 60), level = str(m.level, 10), title = str(m.title, 60);
   if (!title || !topic || !LEVEL_KEYS.includes(level)) return no('missing');   // 레벨은 하·중·상만(2026-10-31)
@@ -271,15 +282,20 @@ async function upload(env, request, b, tc, isFile) {
     catch (e) { console.error('file_put', e && e.stack || e); return no('file_save'); }
     url = '/f/' + fileKey;
   } else if (!/^https?:\/\//i.test(url)) return no('missing');
+  return addMaterial(env, tc, Object.assign({}, m, { topic, level, title }), url, fileKey);
+}
 
+// 자료 표에 한 줄 더하기(링크·올린 파일·활동지 공통). 실패하면 보관함에 넣어 둔 파일을 지운다
+export async function addMaterial(env, tc, m, url, fileKey) {
+  const { topic, level, title } = m;
   let id = 'm' + Date.now().toString(36), grp;
   try { grp = await ensureTopic(env, topic, m.group); }
   catch (e) { if (fileKey) await env.FILES.delete(fileKey).catch(() => {}); throw e; }
   for (let i = 0; i < 4; i++) {
     try {
-      await env.DB.prepare('INSERT INTO materials (id, grp, topic, level, title, type, url, file_key, descr, minutes, school, by_name, teacher_id, date, pub) ' +
-        'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, 1)')
-        .bind(id, grp, topic, level, title, str(m.type, 20), url, fileKey, str(m.desc, 80), Number(m.minutes) || null,
+      await env.DB.prepare('INSERT INTO materials (id, grp, topic, level, title, type, url, file_key, descr, descr_fr, minutes, school, by_name, teacher_id, date, pub) ' +
+        'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, 1)')
+        .bind(id, grp, topic, level, title, str(m.type, 20), url, fileKey, str(m.desc, 80), str(m.desc_fr, 120), Number(m.minutes) || null,
           str(m.school, 60) || tc.school || '', tc.name, tc.id, today()).run();
       return json({ ok: true, id });
     } catch (e) {
@@ -324,6 +340,7 @@ async function removeTeacher(env, tc) {
     db.prepare(`DELETE FROM reports WHERE material_id IN (SELECT id FROM materials WHERE ${mine})`).bind(tc.id, tc.name),
     db.prepare(`DELETE FROM materials WHERE ${mine}`).bind(tc.id, tc.name),
     db.prepare('DELETE FROM favs WHERE teacher_id = ?1').bind(tc.id),
+    db.prepare('DELETE FROM ai_usage WHERE teacher_id = ?1').bind(tc.id),
     db.prepare('DELETE FROM teachers WHERE id = ?1').bind(tc.id)
   ]);
   // 표에서 지워 파일 링크는 이미 닫혔다. 보관함 삭제가 실패해도 계정 삭제를 되돌리지 않고 기록만 남긴다
@@ -368,22 +385,24 @@ const ADMIN = {
   async overview(env, b, me, origin) {
     const db = env.DB;
     await fillQids(db);
-    const [st, tp, mt, tc, rp] = await db.batch([
+    const [st, tp, mt, tc, rp, ai] = await db.batch([
       db.prepare('SELECT key, value FROM settings ORDER BY rowid'),
       db.prepare('SELECT topic, fr, grp, ord, icon, qid FROM topics ORDER BY rowid'),
-      db.prepare('SELECT id, grp, topic, level, title, type, url, file_key, descr, school, by_name, teacher_id, date, pub, deleted FROM materials ORDER BY rowid'),
+      db.prepare('SELECT id, grp, topic, level, title, type, url, file_key, descr, descr_fr, school, by_name, teacher_id, date, pub, deleted FROM materials ORDER BY rowid'),
       db.prepare('SELECT t.id, t.name, t.school, t.joined, t.active, t.is_admin, (SELECT COUNT(*) FROM materials m WHERE m.deleted IS NULL AND ' +
         '(m.teacher_id = t.id OR (m.teacher_id IS NULL AND m.by_name = t.name))) AS n FROM teachers t ORDER BY t.id'),
       db.prepare('SELECT r.id, r.material_id, r.reason, r.text, r.date, r.done, m.title, m.topic, m.level, m.url, m.by_name, m.pub, m.deleted ' +
-        'FROM reports r LEFT JOIN materials m ON m.id = r.material_id ORDER BY r.id DESC LIMIT 200')
+        'FROM reports r LEFT JOIN materials m ON m.id = r.material_id ORDER BY r.id DESC LIMIT 200'),
+      db.prepare('SELECT COALESCE(SUM(n), 0) AS n, COALESCE(SUM(tokens_in), 0) AS i, COALESCE(SUM(tokens_out), 0) AS o FROM ai_usage WHERE day >= ?1').bind(today().slice(0, 8) + '01')   // 이번 달
     ]);
     const settings = {};
     st.results.forEach(r => { if (r.key) settings[r.key] = String(r.value == null ? '' : r.value); });
     return json({
       ok: true, me: me.id, settings,
+      ai: { on: !!env.ANTHROPIC_API_KEY, n: ai.results[0].n, in: ai.results[0].i, out: ai.results[0].o },
       topics: tp.results.map(r => ({ topic: r.topic, fr: r.fr, group: r.grp, order: r.ord == null ? '' : r.ord, icon: r.icon, qid: r.qid == null ? '' : r.qid })),
       materials: mt.results.map(r => ({ id: r.id, group: r.grp, topic: r.topic, level: r.level, title: r.title, type: r.type,
-        url: r.url.startsWith('/') ? origin + r.url : r.url, file: !!r.file_key, desc: r.descr, school: r.school, by: r.by_name,
+        url: r.url.startsWith('/') ? origin + r.url : r.url, file: !!r.file_key, desc: r.descr, desc_fr: r.descr_fr || '', school: r.school, by: r.by_name,
         teacherId: r.teacher_id, date: r.date, pub: r.pub === 1, deleted: r.deleted || '' })),
       teachers: tc.results.map(r => ({ id: r.id, name: r.name, school: r.school, joined: r.joined, active: r.active === 1, admin: r.is_admin === 1, n: r.n })),
       reports: rp.results.map(r => ({ id: r.id, materialId: r.material_id, reason: r.reason, text: r.text, date: r.date, done: r.done || '', title: r.title || '', topic: r.topic || '', level: r.level || '',
@@ -408,15 +427,15 @@ const ADMIN = {
   // 자료 고치기: 소주제·레벨·제목·유형·링크·설명. 올린 파일 자료는 링크를 바꾸지 않는다. 새 소주제면 표에 만든다
   async mat_save(env, b) {
     const db = env.DB, m = b.material || {};
-    const row = await db.prepare('SELECT id, url, file_key FROM materials WHERE id = ?1').bind(str(b.id, 40)).first();
+    const row = await db.prepare('SELECT id, url, file_key, descr_fr FROM materials WHERE id = ?1').bind(str(b.id, 40)).first();
     if (!row) return no('not_found');
     const topic = str(m.topic, 60), level = str(m.level, 10), title = str(m.title, 60);
     if (!topic || !title || !LEVEL_KEYS.includes(level)) return no('missing');
     let url = row.url;
     if (!row.file_key) { url = str(m.url, 2000); if (!/^https?:\/\//i.test(url)) return no('bad_url'); }
     const grp = await ensureTopic(env, topic, m.group);
-    await db.prepare('UPDATE materials SET grp = ?2, topic = ?3, level = ?4, title = ?5, type = ?6, url = ?7, descr = ?8 WHERE id = ?1')
-      .bind(row.id, grp, topic, level, title, str(m.type, 20), url, str(m.desc, 80)).run();
+    await db.prepare('UPDATE materials SET grp = ?2, topic = ?3, level = ?4, title = ?5, type = ?6, url = ?7, descr = ?8, descr_fr = ?9 WHERE id = ?1')
+      .bind(row.id, grp, topic, level, title, str(m.type, 20), url, str(m.desc, 80), m.desc_fr === undefined ? (row.descr_fr || '') : str(m.desc_fr, 120)).run();
     return ok();
   },
   // 숨김/보이기(공개 칸). 지운 자료도 칸은 바뀌지만 되살리기 전에는 보이지 않는다

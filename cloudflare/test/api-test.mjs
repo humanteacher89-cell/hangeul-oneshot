@@ -148,6 +148,108 @@ const j3b = await post({ action: 'join', joinCode, name: '시험셋째' + tag, s
 ok(j3b.ok, '탈퇴한 이름으로 다시 가입할 수 있음');
 ok((await post({ action: 'delete', code: c1, id: uR.id })).ok, '신고 시험 자료 치우기');
 
+// AI 도우미(2026-11-05): 가짜 Anthropic API(test/fake-anthropic.mjs)가 켜져 있고 AI_FAKE에 그 주소를 주었을 때만. 실제 Claude는 부르지 않는다
+const FAKE = String(process.env.AI_FAKE || '').replace(/\/$/, '');
+if (FAKE) {
+  console.log('AI 도우미');
+  const fakeLog = async () => (await (await fetch(FAKE + '/__log')).json());
+  const lastMsg = async () => (await fakeLog()).log.filter(x => x.path === '/v1/messages').pop();
+  const clearLog = () => fetch(FAKE + '/__clear', { method: 'POST' });
+  const jA = await post({ action: 'join', joinCode, name: '시험AI' + tag, school: '파리 한글학교', agree: true });
+  const cA = jA.code;
+  ok(jA.ok && jA.ai === true && (await post({ action: 'login', code: cA })).ai === true, '가입·로그인 응답에 ai 표시');
+  ok((await post({ action: 'ai_rec', code: 'nope', ask: 'x' })).error === 'bad_code', '틀린 코드로 AI → bad_code');
+  ok((await post({ action: 'ai_rec', code: cA, ask: '  ' })).error === 'missing', '빈 수업 내용 → missing');
+  const uA = await post({ action: 'upload', code: cA, material: Object.assign({}, mat, { topic: '카페', title: '시험 AI 자료 ' + tag, url: 'https://example.org/ai/' + tag, desc_fr: 'Description ' + tag }) });
+  d = await data();
+  ok(uA.ok && d.materials.find(m => m.id === uA.id).desc_fr === 'Description ' + tag, '프랑스어 설명이 저장되어 자료에 나옴');
+  await clearLog();
+  const rec = await post({ action: 'ai_rec', code: cA, ask: '카페 수업, 어린이 초급', lang: 'ko' });
+  ok(rec.ok && rec.picks.length === 1 && d.materials.some(m => m.id === rec.picks[0].id) && rec.intro && rec.gap, '자료 추천: 목록에 없는 id·겹친 id는 빠지고 까닭이 옴');
+  ok(typeof rec.left === 'number' && rec.left === 19, '오늘 남은 횟수가 옴');
+  let lm = await lastMsg();
+  ok(lm.body.model === 'claude-opus-5-5' && lm.body.fallbacks === 'default' && /server-side-fallback-2026-07-01/.test(lm.beta) && lm.version.length === 10, '요청: 모델 · 거절 대체(fallbacks) · API 버전');
+  ok(lm.body.output_config.effort === 'low' && lm.body.output_config.format.type === 'json_schema' && !('temperature' in lm.body) && !('thinking' in lm.body), '요청: effort low · JSON 형식 · 쓰지 않는 값 없음');
+  const allObjStrict = s => !s || typeof s !== 'object' || ((s.type !== 'object' || s.additionalProperties === false && Object.keys(s.properties).every(k => s.required.includes(k))) && Object.values(s.properties || {}).every(allObjStrict) && allObjStrict(s.items));
+  ok(allObjStrict(lm.body.output_config.format.schema), '응답 형식: 모든 객체 additionalProperties false · 모든 칸 required');
+
+  await clearLog();
+  let fl = await post({ action: 'ai_fill', code: cA, url: 'http://127.0.0.1:8799/__log' });
+  ok(fl.error === 'ai_unread' && !(await fakeLog()).log.length, '내 컴퓨터 주소 링크는 읽지 않고, 적어 둔 제목도 없으면 AI를 부르지 않음');
+  fl = await post({ action: 'ai_fill', code: cA, url: 'http://127.0.0.1:8799/__log', title: '교사가 적은 제목' });
+  lm = await lastMsg();
+  ok(fl.ok && fl.fill.level === '하' && /교사가 적은 제목/.test(JSON.stringify(lm.body.messages)) && !/"log"/.test(JSON.stringify(lm.body.messages)), '못 읽은 링크 + 적어 둔 제목 → 그 제목으로만 채움(내부 주소 내용 안 읽음)');
+  fl = await post({ action: 'ai_fill', code: cA, url: 'https://example.org/' });
+  lm = await lastMsg();
+  ok(fl.ok && fl.fill.title && /Example Domain/.test(JSON.stringify(lm.body.messages)), '공개 링크의 제목·글을 읽어 보냄(example.org)');
+
+  await clearLog();
+  const fA = (name, extra) => Object.assign({ action: 'ai_fill', code: cA, file: { name, type: '' }, lang: 'fr' }, extra);
+  ok((await postFile(fA('문서.docx'), pdf, 'application/octet-stream')).error === 'file_type', 'AI 파일: docx → file_type');
+  ok((await postFile(fA('사진.heic'), pdf, 'image/heic')).error === 'file_type', 'AI 파일: HEIC(화면이 못 풀었을 때) → file_type');
+  ok((await postFile(fA('큰.pdf'), new Uint8Array(5 * 1048576 + 1), 'application/pdf')).error === 'ai_big', 'AI 파일: 5MB 넘음 → ai_big');
+  const fp = await postFile(fA('시험.pdf'), pdf, 'application/pdf');
+  let lg = await fakeLog();
+  lm = lg.log.filter(x => x.path === '/v1/messages').pop();
+  const blk = lm.body.messages[0].content[0];
+  ok(fp.ok && blk.type === 'document' && blk.source.type === 'file' && /^file_fake/.test(blk.source.file_id), 'PDF: Files API로 올리고 document 블록으로 참조');
+  ok(lg.log.some(x => x.path === '/v1/files' && x.multipart && x.type === 'application/pdf') && lg.log.some(x => x.path === 'DELETE /v1/files' && x.id === blk.source.file_id) && !lg.files.includes(blk.source.file_id), 'PDF: 답을 받은 뒤 Anthropic 쪽 파일을 지움');
+  ok(/프랑스어/.test(lm.body.messages[0].content[1].text), 'lang fr → why를 프랑스어로 부탁');
+  await postFile(fA('사진.jpg'), pdf, 'image/jpeg');
+  ok((await lastMsg()).body.messages[0].content[0].type === 'image', '사진: image 블록');
+
+  console.log('AI — 오류');
+  const errOf = async ask => (await post({ action: 'ai_rec', code: cA, ask })).error;
+  ok(await errOf('[[429]]') === 'ai_busy', '429 → ai_busy');
+  ok(await errOf('[[529]]') === 'ai_busy', '529 → ai_busy');
+  ok(await errOf('[[401]]') === 'ai_off', '401 → ai_off');
+  ok(await errOf('[[credit]]') === 'ai_empty', '크레딧 부족 → ai_empty');
+  ok(await errOf('[[refusal]]') === 'ai_refused', '거절 → ai_refused');
+  ok(await errOf('[[max_tokens]]') === 'ai_cut', '잘림 → ai_cut');
+  ok(await errOf('[[badjson]]') === 'ai_fail', 'JSON이 아닌 답 → ai_fail');
+  const fpBad = await postFile(fA('오류.pdf', { title: '[[429]]' }), pdf, 'application/pdf');
+  lg = await fakeLog();
+  ok(fpBad.error === 'ai_busy' && !lg.files.length, 'AI 호출이 실패해도 올린 파일을 지움');
+
+  console.log('AI — 활동지');
+  ok((await post({ action: 'ai_ws', code: cA, topic: '카페', level: '최상', kind: 'sheet' })).error === 'missing', '하·중·상 아닌 레벨 → missing');
+  ok((await post({ action: 'ai_ws', code: cA, topic: '카페', level: '하', kind: 'nope' })).error === 'missing', '모르는 종류 → missing');
+  const wsr = await post({ action: 'ai_ws', code: cA, topic: '카페', level: '중', kind: 'quiz', n: 99, who: 'teen', expr: '얼마예요', words: '물, 빵' });
+  lm = await lastMsg();
+  const asked = lm.body.messages[0].content;
+  ok(wsr.ok && wsr.ws.items.length === 2 && wsr.ws.passage.includes('\n'), '초안이 문항·본문으로 옴');
+  ok(lm.body.output_config.effort === 'medium' && /퀴즈 \(10문항\)/.test(asked) && /청소년/.test(asked) && /물, 빵/.test(asked) && /문장을 읽고 알맞은 답 고르기/.test(asked), '개수는 10까지, 학습자·낱말·수준별 모양이 요청에 들어감');
+  ok((await post({ action: 'ws_save', code: 'nope', ws: wsr.ws, material: { topic: '카페', level: '중' } })).error === 'bad_code', '틀린 코드로 활동지 올리기 → bad_code');
+  ok((await post({ action: 'ws_save', code: cA, ws: { title: '', items: [] }, material: { topic: '카페', level: '중' } })).error === 'missing', '제목·문항 없는 활동지 → missing');
+  const evil = Object.assign({}, wsr.ws, { title: '시험 활동지 ' + tag, guide: '<script>alert(1)</script>', passage: '<img src=x onerror=alert(2)>\n둘째 줄', items: [{ q: '"><script>alert(3)</script>', fr: '<b>x</b>', choices: ['<i>y</i>'], answer: '정답</details><script>alert(4)</script>' }] });
+  const sv = await post({ action: 'ws_save', code: cA, ws: evil, material: { topic: '새 시험 소주제' + tag, group: 'AI시험' + tag, level: '중', school: '릴 한글학교', type: '퀴즈' } });
+  d = await data();
+  const mW = d.materials.find(m => m.id === sv.id);
+  ok(sv.ok && mW && mW.type === '퀴즈' && mW.school === '릴 한글학교' && mW.desc_fr && /\/f\/[a-z0-9]+\.html$/.test(mW.url), '활동지가 자료로 등록되고 고유 주소 /f/<키>.html');
+  ok(d.topics.some(x => x.topic === '새 시험 소주제' + tag && x.group === 'AI시험' + tag), '활동지의 새 소주제도 표에 생김');
+  const wr = await fetch(mW.url), wh = await wr.text(), csp = wr.headers.get('content-security-policy') || '';
+  ok(wr.status === 200 && /^text\/html/.test(wr.headers.get('content-type')) && /script-src 'sha256-/.test(csp) && /default-src 'none'/.test(csp), '활동지 주소가 HTML + 스크립트 제한(CSP)');
+  ok(!wh.includes('<script>alert') && !wh.includes('<img src=x') && !wh.includes('<b>x</b>') && !wh.includes('<i>y</i>') && wh.includes('&lt;script&gt;alert(1)'), '교사·AI 글은 모두 글자로만 나옴(스크립트 안 됨)');
+  const scr = wh.match(/<script>([\s\S]*?)<\/script>/);
+  const sha = Buffer.from(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(scr ? scr[1] : ''))).toString('base64');
+  ok(scr && csp.includes(`'sha256-${sha}'`) && (wh.match(/<script/g) || []).length === 1, '인쇄 단추 스크립트 하나만, CSP 해시와 맞음');
+  ok(wh.includes('<br>둘째 줄') && wh.includes('<details>') && wh.includes('AI 초안'), '줄바꿈 · 정답 접기 · AI 초안 표시');
+  ok((await go(sv.id)).to === mW.url, '자료 QR이 활동지 주소로 넘어감');
+  ok((await post({ action: 'login', code: cA })).mine.includes(sv.id), '활동지가 내 자료에 있음');
+  ok((await post({ action: 'delete', code: cA, id: sv.id })).ok && (await fetch(mW.url)).status === 404, '활동지를 지우면 주소도 닫힘');
+
+  console.log('AI — 한도·계정 삭제');
+  let lim = 19 - 16;   // 위에서 쓴 횟수와 상관없이 응답의 left로 끝까지 쓴다
+  for (let i = 0; i < 25; i++) { const r = await post({ action: 'ai_rec', code: cA, ask: '한도 시험' }); lim = r; if (!r.ok) break; }
+  ok(lim.error === 'ai_limit', '교사 하루 20번을 넘으면 ai_limit');
+  const failed = (await post({ action: 'ai_ws', code: cA, topic: '카페', level: '하', kind: 'sheet' })).error;
+  ok(failed === 'ai_limit', '다른 AI 동작도 같은 한도');
+  const jB = await post({ action: 'join', joinCode, name: '시험AI둘' + tag, school: '파리 한글학교', agree: true });
+  ok((await post({ action: 'ai_rec', code: jB.code, ask: '다른 교사' })).ok, '다른 교사는 따로 셈');
+  ok((await post({ action: 'leave', code: jB.code, confirm: true })).ok, 'AI 쓴 교사도 계정 삭제 됨');
+  ok((await post({ action: 'delete', code: cA, id: uA.id })).ok, 'AI 시험 자료 치우기');
+}
+
 const A = String(process.env.ADMIN_CODE || '').trim();
 if (A) {
   console.log('관리자 — 들어가기');
@@ -163,6 +265,7 @@ if (A) {
   let o = await adm('overview');
   ok(o.ok && Array.isArray(o.materials) && Array.isArray(o.topics) && Array.isArray(o.teachers) && typeof o.settings.join_code === 'string', '관리자 자료: 자료·소주제·교사·가입 코드');
   ok(o.teachers.every(x => !('code' in x) && !('code_hash' in x)) && o.teachers.some(x => x.id === o.me && x.admin), '교사 목록에 코드·해시 없음, 나는 관리자');
+  if (FAKE) ok(o.ai.on === true && o.ai.n > 0 && o.ai.in > 0 && o.ai.out > 0, '관리자 자료에 AI 이번 달 사용량');
   ok(o.materials.some(m => m.id === u1.id && m.deleted) && o.materials.some(m => m.id === u2.id && m.deleted && m.file), '지운 자료(파일 포함)도 보임');
   const t1 = o.teachers.find(x => x.name === '시험' + tag);
   ok(t1 && t1.n === 0 && t1.active && !t1.admin && t1.joined.length === 10, '교사: 올린 자료 수(지운 것 빼고)·켜짐·가입일');
@@ -288,6 +391,7 @@ if (A) {
   o = await adm('overview');
   ok(qSeen > qMax && Number(o.topics.find(x => x.topic === T2 + '새').qid) > qSeen, '지운 소주제 번호는 다시 쓰지 않음(새 번호는 지운 번호보다 큼)');
   ok((await adm('topic_del', { topic: T2 + '새' })).ok, '그 소주제도 치우기');
+  if (FAKE) ok((await adm('topic_del', { topic: '새 시험 소주제' + tag })).ok, 'AI 시험 소주제도 치우기');
   d = await data();
   ok(!d.topics.some(x => String(x.group).startsWith(G)) && !d.materials.some(m => String(m.title).includes(tag)), '시험 소주제·자료가 자료실에 남지 않음');
 }

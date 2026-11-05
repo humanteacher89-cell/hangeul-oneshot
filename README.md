@@ -12,6 +12,7 @@ QR 한 번(원샷)에 내 레벨 자료가 열리는 **한 장짜리 페이지**
 | `apps-script/Code.gs` | 구글시트에 붙이는 서버 코드(읽기·교사 로그인·올리기·숨기기) |
 | `manifest.json` · `sw.js` · `icons/` | 홈 화면에 추가(앱 이름·아이콘·전체 화면). `sw.js`는 늘 인터넷에서 먼저 받고 끊겼을 때만 저장해 둔 화면을 쓴다 |
 | `serve.py` | 로컬 확인용 서버(`python serve.py 8765` → http://127.0.0.1:8765/, 뒤에 `mock`을 붙이면 `API_URL`을 비워 시험 모드로 연다) |
+| `cloudflare/server/ai.js` | AI 도우미(자료 추천·올리기 자동 채우기·활동지 만들기, 교사만). 서버 비밀 `ANTHROPIC_API_KEY`가 있을 때만 켜진다. 처음 받으면 `cloudflare/`에서 `npm ci` |
 
 ## 로컬에서 보기
 이 폴더에서 `python serve.py 8765`(맥·리눅스는 `python3`) 뒤 브라우저에서 http://127.0.0.1:8765/ (QR 그리기만 인터넷이 필요).

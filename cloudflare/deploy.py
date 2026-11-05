@@ -7,6 +7,7 @@
 # 공개판은 임시 폴더에 wrangler.prod.toml을 wrangler.toml로 두고 functions·server·public과 함께 올린다(--project humanssaem-hangeul-oneshot도 같은 뜻).
 # wrangler: 환경 변수 WRANGLER_JS(wrangler.js 경로, NODE가 있으면 그 node로) → 위쪽 폴더 어딘가의 tools/cf-wrangler(포터블, 로그인 정보 config/ 포함) → npx wrangler.
 # 비밀 CODE_PEPPER는 미리 보기에서는 .dev.vars(저장소에 안 올림), 두 Pages 프로젝트에는 `wrangler pages secret`(모두 같은 값).
+# AI 도우미(2026-11-05): 서버가 @anthropic-ai/sdk를 쓴다. 새로 받은 저장소에서는 cloudflare/에서 `npm ci` 한 번. 비밀 ANTHROPIC_API_KEY가 없는 프로젝트에서는 AI 입구가 보이지 않는다.
 import glob, os, re, shutil, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -56,10 +57,15 @@ def build():
     print('public/ 채움:', ', '.join(SITE))
 
 
+def need_sdk():
+    if not os.path.isdir(os.path.join(HERE, 'node_modules', '@anthropic-ai', 'sdk')):
+        sys.exit('AI SDK가 없어요: cloudflare 폴더에서 npm ci 를 한 번 실행해 주세요')
+
+
 def deploy_prod(args):
     tmp = tempfile.mkdtemp(prefix='oneshot-deploy-')
     try:
-        for d in ('functions', 'server', 'public'):
+        for d in ('functions', 'server', 'public', 'node_modules'):   # node_modules: 서버를 묶을 때 SDK를 찾는 곳
             shutil.copytree(os.path.join(HERE, d), os.path.join(tmp, d))
         shutil.copy2(conf(True), os.path.join(tmp, 'wrangler.toml'))
         print('공개판(%s)에 올림 — 임시 폴더' % PROD_PROJECT, flush=True)
@@ -96,6 +102,7 @@ def main():
     if what == 'build':
         build()
     elif what == 'dev':
+        need_sdk()
         build()
         if not os.path.exists(os.path.join(HERE, '.dev.vars')):
             sys.exit('.dev.vars가 없어요: CODE_PEPPER=<아무 긴 글자> 한 줄을 넣어 주세요')
@@ -106,6 +113,7 @@ def main():
             sys.exit(1)
         sys.exit(wrangler('pages', 'dev', 'public', '--port', opt('--port', '8788'), '--ip', '127.0.0.1'))
     elif what == 'deploy':
+        need_sdk()
         build()
         args = ['pages', 'deploy', 'public', '--branch', 'main', '--commit-dirty=true']
         if opt('--project') and opt('--project') not in (PROD_PROJECT, 'humanssaem-hangeul-oneshot-v2'):

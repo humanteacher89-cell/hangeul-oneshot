@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS materials (
   url        TEXT NOT NULL,                -- 바깥 링크, 또는 올린 파일이면 '/f/<키>'(주소 앞부분은 내보낼 때 붙인다)
   file_key   TEXT,                         -- 올린 파일의 KV 키
   descr      TEXT NOT NULL DEFAULT '',
+  descr_fr   TEXT NOT NULL DEFAULT '',     -- 설명 프랑스어(2026-11-05, 프랑스어 화면에서 보임). 이미 있는 D1: migrate/20261105-ai-add.sql
   minutes    INTEGER,
   school     TEXT NOT NULL DEFAULT '',
   by_name    TEXT NOT NULL DEFAULT '',     -- 올린이 이름(카드에 보임)
@@ -82,3 +83,14 @@ CREATE TABLE IF NOT EXISTS reports (
 );
 CREATE INDEX IF NOT EXISTS reports_at ON reports (at);
 CREATE INDEX IF NOT EXISTS reports_material ON reports (material_id);
+
+-- AI 도우미 사용량(2026-11-05). 하루 횟수 제한과 관리자 화면 '이번 달 사용량'에 쓴다. 글 내용은 적지 않는다. 계정을 지우면 함께 지운다. kind = rec·fill·ws
+CREATE TABLE IF NOT EXISTS ai_usage (
+  day        TEXT NOT NULL,
+  teacher_id INTEGER NOT NULL,
+  kind       TEXT NOT NULL,
+  n          INTEGER NOT NULL DEFAULT 0,
+  tokens_in  INTEGER NOT NULL DEFAULT 0,
+  tokens_out INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, teacher_id, kind)
+);
