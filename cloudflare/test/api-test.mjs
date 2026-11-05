@@ -235,11 +235,14 @@ if (FAKE) {
   console.log('AI — 활동지');
   ok((await post({ action: 'ai_ws', code: cA, topic: '카페', level: '최상', kind: 'sheet' })).error === 'missing', '하·중·상 아닌 레벨 → missing');
   ok((await post({ action: 'ai_ws', code: cA, topic: '카페', level: '하', kind: 'nope' })).error === 'missing', '모르는 종류 → missing');
-  const wsr = await post({ action: 'ai_ws', code: cA, topic: '카페', level: '중', kind: 'quiz', n: 99, who: 'teen', expr: '얼마예요', words: '물, 빵' });
+  const wsr = await post({ action: 'ai_ws', code: cA, topic: '카페', level: '중', kind: 'quiz', pages: 2, who: 'teen', expr: '얼마예요', words: '물, 빵' });
   lm = await lastMsg();
   const asked = lm.body.messages[0].content;
   ok(wsr.ok && wsr.ws.items.length === 2 && wsr.ws.passage.includes('\n'), '초안이 문항·본문으로 옴');
-  ok(lm.body.output_config.effort === 'medium' && /퀴즈 \(10문항\)/.test(asked) && /청소년/.test(asked) && /물, 빵/.test(asked) && /문장을 읽고 알맞은 답 고르기/.test(asked), '개수는 10까지, 학습자·낱말·수준별 모양이 요청에 들어감');
+  ok(lm.body.output_config.effort === 'medium' && /퀴즈 \(10문항\)/.test(asked) && /A4 2쪽/.test(asked) && /본문은 쓰지 않는다/.test(asked) && /청소년/.test(asked) && /물, 빵/.test(asked) && /문장을 읽고 알맞은 답 고르기/.test(asked), '분량 2쪽, 학습자·낱말·수준별 모양이 요청에 들어감');
+  await post({ action: 'ai_ws', code: cA, topic: '카페', level: '하', kind: 'read', pages: 99 });
+  const asked1 = (await lastMsg()).body.messages[0].content;
+  ok(/읽기 글 \(3질문\)/.test(asked1) && /A4 1쪽/.test(asked1) && /본문은 260자 안팎/.test(asked1), '모르는 쪽수는 1쪽, 본문이 있는 종류는 글자 수와 문항 수');
   ok((await post({ action: 'ws_save', code: cA, ws: wsr.ws, material: { topic: '카페', level: '중' } })).error === 'unknown', '옛 활동지 HTML 저장 동작은 없어짐');
   // 활동지 문서는 화면이 PDF로 그려 보통 파일 올리기로 올린다(2026-11-05). 화면이 보내는 것과 같은 모양으로 시험한다
   const wsUp = (extra, bytes) => postFile(Object.assign({ action: 'upload', code: cA, material: { topic: '새 시험 소주제' + tag, group: 'AI시험' + tag, level: '중', title: '시험 활동지 ' + tag, desc: wsr.ws.desc, desc_fr: wsr.ws.desc_fr, school: '릴 한글학교', type: '퀴즈' }, file: { name: '시험 활동지 ' + tag + '.pdf', type: 'application/pdf' } }, extra), bytes || pdf, 'application/pdf');

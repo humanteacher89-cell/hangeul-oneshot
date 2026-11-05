@@ -424,6 +424,7 @@
   .wsdoc { display: grid; gap: 12px; margin-top: 12px; min-height: 120px; }
   .wsdoc canvas { display: block; width: 100%; height: auto; background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(43, 33, 24, .2), 0 6px 18px rgba(43, 33, 24, .12); }
   .wsdoc .tip { margin: 40px 0; }
+  .wsover { margin: 12px 0 0; padding: 11px 14px; background: #FFF5F2; border: 2px solid #F6CFC4; border-radius: 14px; color: #C4331A; font-size: 13.5px; line-height: 1.5; font-weight: 700; word-break: keep-all; }
   .wshint { margin: 10px 0 0; text-align: center; font-size: 12.5px; line-height: 1.5; color: var(--sub); font-weight: 600; word-break: keep-all; }
   .aiwrap .aidraft span { word-break: keep-all; }
 
@@ -509,11 +510,6 @@
   .tchips { display: flex; flex-wrap: wrap; gap: 7px; }
   .tchips span { display: inline-block; padding: 8px 12px; border-radius: 999px; background: #fff; border: 2px solid var(--line); font-size: 14px; font-weight: 800; color: #5E4F42; }
   .tchips input:checked + span { background: var(--ink); color: #fff; border-color: var(--ink); }
-  .stepper { display: flex; align-items: center; gap: 10px; }
-  .stepper button { width: 50px; height: 50px; border-radius: 16px; border: 2px solid var(--line); background: #fff; font-size: 22px; font-weight: 900; box-shadow: 0 3px 0 #EEDFCB; }
-  .stepper .sv { display: flex; align-items: center; gap: 2px; height: 50px; padding: 0 14px; background: #fff; border: 2px solid var(--line); border-radius: 16px; }
-  .stepper input { width: 46px; border: 0; outline: none; background: none; text-align: center; font-size: 19px; font-weight: 900; }
-  .stepper span { font-weight: 800; color: var(--sub); }
   .cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0 auto; max-width: 480px; padding: 16px 20px calc(14px + env(safe-area-inset-bottom));
          background: linear-gradient(rgba(255,248,239,0), var(--bg) 30%); }
   .cta .btn { margin-top: 0; }
@@ -765,13 +761,14 @@
       aiFilled: 'AI가 채웠어요. 올리기 전에 확인하고 고쳐 주세요.', aiNeedSrc: '먼저 링크를 넣거나 파일을 골라 주세요', aiHeic: '이 사진 형식은 여기서 읽지 못해요. 칸을 직접 채워 주세요.',
       aiNoPii: '학생 이름 같은 개인정보는 적지 마세요. 적은 글은 AI(Anthropic)로 보내져요.', aiLeft: n => `오늘 남은 횟수 ${n}번`,
       aiRecLab: '어떤 수업을 준비하세요?', aiRecPh: '예: 다음 주 편의점 수업, 7세 초급 아이들, 말하기 위주', aiRecBtn: '자료 추천받기', aiRecBusy: 'AI가 자료실을 살펴보는 중…', aiRecNeed: '수업 내용을 적어 주세요', aiRecNone: '이 수업에 맞는 자료를 찾지 못했어요', aiToWs: '활동지 만들러 가기',
-      aiKind: '만들 것', aiKinds: { sheet: '활동지', read: '읽기 글', talk: '대화문', quiz: '퀴즈', vocab: '단어장' }, aiN: '개수', aiWho: '학습자', aiWhos: { kid: '어린이', teen: '청소년', adult: '성인' },
+      aiKind: '만들 것', aiKinds: { sheet: '활동지', read: '읽기 글', talk: '대화문', quiz: '퀴즈', vocab: '단어장' }, aiPages: '분량', aiPagesOpts: { 1: 'A4 1쪽', 2: 'A4 2쪽' }, aiWho: '학습자', aiWhos: { kid: '어린이', teen: '청소년', adult: '성인' },
       aiExpr: '배운 표현', aiExprPh: '예: 이거 얼마예요? / ~ 주세요', aiWords: '쓸 수 있는 낱말', aiWordsPh: '예: 물, 빵, 우유, 과자', aiWordsHint: '적으면 이 낱말로만 만들어요. 비우면 레벨에 맞는 쉬운 낱말을 써요.',
-      aiWsBtn: '초안 만들기', aiWsBusy: 'AI가 초안을 쓰는 중… 20초쯤 걸려요', aiWsNote: 'AI 초안이에요. 틀린 곳이 없는지 읽고 고친 뒤 올려 주세요.', aiWsNew: '처음부터', aiWsRedo: '다시 만들기',
+      aiWsBtn: '초안 만들기', aiWsBusy: p => `AI가 초안을 쓰는 중… ${p === '2' ? '40' : '20'}초쯤 걸려요`, aiWsNote: 'AI 초안이에요. 틀린 곳이 없는지 읽고 고친 뒤 올려 주세요.', aiWsNew: '처음부터', aiWsRedo: '다시 만들기',
       aiWsGuide: '안내', aiWsGuideFr: '안내 (프랑스어)', aiWsPassage: '본문', aiWsItem: n => `문항 ${n}`, aiWsQ: '문항', aiWsFr: '프랑스어 안내', aiWsChoices: '보기 (/로 나눠요)', aiWsAnswer: '정답', aiWsDel: '빼기',
       aiWsSave: '자료실에 올리기', aiWsNeed: '제목과 문항을 확인해 주세요',
       aiWsDrawing: '문서를 그리는 중…', aiWsEditBtn: '고치기', aiWsPdf: 'PDF로 저장', aiWsPdfBusy: 'PDF 만드는 중…', aiWsPdfDone: 'PDF를 저장했어요', aiWsPdfErr: '문서를 만들지 못했어요. 다시 해 주세요',
       aiWsEditNote: '다 고친 뒤 아래 단추를 누르면 문서에 바로 반영돼요.', aiWsDone: '다 고쳤어요', aiWsUpHint: '올리면 이 PDF가 자료실에 바로 공개돼요.', aiWsAnsHint: '마지막 쪽 정답도 함께 공개돼요.', aiWsPage: (i, n) => `${i}쪽 / ${n}쪽`,
+      aiWsOver: (want, got) => `글이 많아 A4 ${want}쪽에 다 들어가지 않고 ${got}쪽으로 나왔어요. 줄이려면 '고치기'에서 글이나 문항을 빼 주세요.`,
       aiErr: { ai_off: 'AI 도우미가 지금 꺼져 있어요', ai_empty: '이번 달 AI 크레딧을 다 썼어요. 다음 달에 다시 쓸 수 있어요', ai_limit: '오늘 쓸 수 있는 횟수를 다 썼어요. 내일 다시 해 주세요', ai_busy: 'AI가 바빠요. 잠시 뒤 다시 해 주세요',
         ai_refused: 'AI가 이 내용은 처리하지 않았어요. 내용을 바꿔 다시 해 주세요', ai_cut: '내용이 길어 끝까지 만들지 못했어요. 개수를 줄여 주세요', ai_unread: '이 링크는 읽지 못했어요. 제목을 먼저 적고 다시 눌러 주세요',
         ai_big: `파일이 커서 AI가 읽지 못해요. ${AI_FILE_MAX_MB}MB까지예요`, ai_fail: 'AI가 제대로 답하지 못했어요. 다시 해 주세요', file_type: '이 파일 형식은 AI가 읽지 못해요', file_empty: '파일을 읽지 못했어요. 다시 골라 주세요', missing: '빠진 칸이 있어요', too_many: '시도가 너무 많아요. 10분 뒤 다시 해 보세요.' },
@@ -848,13 +845,14 @@
       aiFilled: 'Rempli par l’IA. Vérifiez et corrigez avant d’ajouter.', aiNeedSrc: 'Collez d’abord un lien ou choisissez un fichier', aiHeic: 'Ce format de photo n’est pas lisible ici. Remplissez les champs vous-même.',
       aiNoPii: 'N’écrivez aucune donnée personnelle (nom d’un élève…). Votre texte est envoyé à l’IA (Anthropic).', aiLeft: n => `Reste aujourd’hui : ${n}`,
       aiRecLab: 'Quel cours préparez-vous ?', aiRecPh: 'ex. Cours sur la supérette, enfants de 7 ans débutants, à l’oral', aiRecBtn: 'Obtenir des suggestions', aiRecBusy: 'L’IA parcourt la bibliothèque…', aiRecNeed: 'Décrivez votre cours', aiRecNone: 'Aucune ressource adaptée trouvée', aiToWs: 'Créer une fiche',
-      aiKind: 'À créer', aiKinds: { sheet: 'Fiche', read: 'Texte', talk: 'Dialogue', quiz: 'Quiz', vocab: 'Lexique' }, aiN: 'Nombre', aiWho: 'Apprenants', aiWhos: { kid: 'Enfants', teen: 'Ados', adult: 'Adultes' },
+      aiKind: 'À créer', aiKinds: { sheet: 'Fiche', read: 'Texte', talk: 'Dialogue', quiz: 'Quiz', vocab: 'Lexique' }, aiPages: 'Longueur', aiPagesOpts: { 1: 'A4, 1 page', 2: 'A4, 2 pages' }, aiWho: 'Apprenants', aiWhos: { kid: 'Enfants', teen: 'Ados', adult: 'Adultes' },
       aiExpr: 'Expressions apprises', aiExprPh: 'ex. 이거 얼마예요? / ~ 주세요', aiWords: 'Mots autorisés', aiWordsPh: 'ex. 물, 빵, 우유, 과자', aiWordsHint: 'Si vous en indiquez, seuls ces mots seront utilisés. Sinon, des mots simples adaptés au niveau.',
-      aiWsBtn: 'Créer l’ébauche', aiWsBusy: 'L’IA rédige l’ébauche… environ 20 secondes', aiWsNote: 'Ébauche de l’IA. Relisez et corrigez avant d’ajouter.', aiWsNew: 'Recommencer', aiWsRedo: 'Refaire',
+      aiWsBtn: 'Créer l’ébauche', aiWsBusy: p => `L’IA rédige l’ébauche… environ ${p === '2' ? '40' : '20'} secondes`, aiWsNote: 'Ébauche de l’IA. Relisez et corrigez avant d’ajouter.', aiWsNew: 'Recommencer', aiWsRedo: 'Refaire',
       aiWsGuide: 'Consigne', aiWsGuideFr: 'Consigne (français)', aiWsPassage: 'Texte', aiWsItem: n => `Question ${n}`, aiWsQ: 'Question', aiWsFr: 'Aide en français', aiWsChoices: 'Choix (séparés par /)', aiWsAnswer: 'Réponse', aiWsDel: 'Retirer',
       aiWsSave: 'Ajouter à la bibliothèque', aiWsNeed: 'Vérifiez le titre et les questions',
       aiWsDrawing: 'Préparation du document…', aiWsEditBtn: 'Modifier', aiWsPdf: 'Enregistrer en PDF', aiWsPdfBusy: 'Création du PDF…', aiWsPdfDone: 'PDF enregistré', aiWsPdfErr: 'Document impossible à créer. Réessayez',
       aiWsEditNote: 'Après vos corrections, touchez le bouton ci-dessous pour mettre à jour le document.', aiWsDone: 'Terminer', aiWsUpHint: 'Une fois ajouté, ce PDF est aussitôt public dans la bibliothèque.', aiWsAnsHint: 'Le corrigé en dernière page aussi.', aiWsPage: (i, n) => `Page ${i} / ${n}`,
+      aiWsOver: (want, got) => `Trop de contenu pour ${want === 1 ? '1 page A4' : want + ' pages A4'} : le document fait ${got} pages. Pour réduire, retirez du texte ou des questions dans « Modifier ».`,
       aiErr: { ai_off: 'L’assistant IA est désactivé pour le moment', ai_empty: 'Crédits IA épuisés ce mois-ci. Réessayez le mois prochain', ai_limit: 'Limite du jour atteinte. Réessayez demain', ai_busy: 'L’IA est occupée. Réessayez dans un instant',
         ai_refused: 'L’IA n’a pas traité ce contenu. Modifiez-le et réessayez', ai_cut: 'Trop long pour être terminé. Réduisez le nombre', ai_unread: 'Lien illisible. Écrivez d’abord un titre, puis réessayez',
         ai_big: `Fichier trop lourd pour l’IA : ${AI_FILE_MAX_MB} Mo maximum`, ai_fail: 'L’IA n’a pas bien répondu. Réessayez', file_type: 'L’IA ne peut pas lire ce format', file_empty: 'Lecture du fichier impossible. Choisissez-le à nouveau', missing: 'Il manque un champ', too_many: 'Trop d’essais. Réessayez dans 10 minutes.' },
@@ -1690,7 +1688,7 @@
 
   // ---------- AI 도우미(#/ai, 2026-11-05 휴먼쌤 "우선 AI기능은 교사용 자료 추천이랑 올리기 자동채우기, 활동지 자동만들기에 반영해줘") ----------
   // 로그인한 교사만. 고른 값과 초안은 이번에 열어 둔 동안만 화면에 있고 기기에 저장하지 않는다. 학습자 화면은 AI를 부르지 않는다.
-  const aiWsBlank = () => ({ f: { topic: '', group: '', level: '', kind: 'sheet', n: 4, who: 'kid', expr: '', words: '' }, busy: false, ws: null, edit: false, pages: null, err: '', school: '', left: null });
+  const aiWsBlank = () => ({ f: { topic: '', group: '', level: '', kind: 'sheet', pages: '1', who: 'kid', expr: '', words: '' }, busy: false, ws: null, edit: false, pages: null, over: 0, err: '', school: '', left: null });
   let aiRecS = { ask: '', busy: false, res: null, err: '', left: null }, aiWsS = aiWsBlank();
   const aiMsg = code => t('aiErr')[code] || t('netErr');
   function aiLogout(r) { if (r && r.error === 'bad_code') { teacher = null; saveTeacher(null); location.hash = '#/login'; return true; } return false; }
@@ -1721,18 +1719,19 @@
       ${comboField('group', 'w-group', `${esc(t('fGroup'))} <small>${esc(t('fGroupHint'))}</small>`, F.group, t('phGroup'), true)}
       <div class="f"><span class="lab">${esc(t('fLevel'))}</span><div class="seg3">${LEVEL_KEYS.map(k => `<label class="k-${k}"><input type="radio" name="level" value="${k}"${F.level === k ? ' checked' : ''}><span>${k}<small>${esc(levelDesc(k))}</small></span></label>`).join('')}</div></div>
       <div class="f"><span class="lab">${esc(t('aiKind'))}</span>${chips('kind', t('aiKinds'))}</div>
-      <div class="f"><span class="lab">${esc(t('aiN'))}</span><div class="stepper"><button type="button" data-wn="-1" aria-label="-1">−</button><div class="sv"><b id="w-n">${F.n}</b></div><button type="button" data-wn="1" aria-label="+1">+</button></div></div>
+      <div class="f"><span class="lab">${esc(t('aiPages'))}</span>${chips('pages', t('aiPagesOpts'))}</div>
       <div class="f"><span class="lab">${esc(t('aiWho'))}</span>${chips('who', t('aiWhos'))}</div>
       <div class="f"><label class="lab" for="w-expr">${esc(t('aiExpr'))} <small>${esc(t('optional'))}</small></label><div class="inp"><input id="w-expr" name="expr" maxlength="300" value="${esc(F.expr)}" placeholder="${esc(t('aiExprPh'))}"></div></div>
       <div class="f"><label class="lab" for="w-words">${esc(t('aiWords'))} <small>${esc(t('optional'))}</small></label><div class="inp"><input id="w-words" name="words" maxlength="500" value="${esc(F.words)}" placeholder="${esc(t('aiWordsPh'))}"></div><p class="lhint">${esc(t('aiWordsHint'))}</p></div>
       <p class="lhint"><span class="m">i</span><span>${esc(t('aiNoPii'))}</span></p>
-      <p class="err" id="aiErr">${esc(S.err)}</p><button class="btn" type="submit"${S.busy ? ' disabled' : ''}>${esc(S.busy ? t('aiWsBusy') : t('aiWsBtn'))}</button></form>`;
+      <p class="err" id="aiErr">${esc(S.err)}</p><button class="btn" type="submit"${S.busy ? ' disabled' : ''}>${esc(S.busy ? t('aiWsBusy')(F.pages) : t('aiWsBtn'))}</button></form>`;
   }
   // 활동지 만들기: 문서 보기(첫 화면) → PDF로 저장하거나 그 PDF를 자료실에 올리기
   function aiWsDoc() {
     const S = aiWsS, b = S.busy ? ' disabled' : '';
     const hasAns = S.ws.items.some(x => String(x.q || '').trim() && String(x.answer || '').trim());
     return `<div id="aiWsEdit"><p class="qrnote aidraft"><span>${esc(t('aiWsNote'))}</span></p>
+      <p class="wsover" id="wsOver" hidden></p>
       <div class="wsdoc" id="wsPages"><p class="tip">${esc(t('aiWsDrawing'))}</p></div>
       <div class="abtns"><button type="button" data-wedit${b}>${esc(t('aiWsEditBtn'))}</button><button type="button" data-wpdf${b}>${esc(t(S.busy === 'pdf' ? 'aiWsPdfBusy' : 'aiWsPdf'))}</button></div>
       <div class="f"><label class="lab" for="w-school">${esc(t('fSchool'))}</label><div class="inp sel"><select id="w-school"${(S.school || teacher.school) ? '' : ' class="empty"'}>${schoolOptions(S.school || teacher.school)}</select>${ICON.down}</div></div>
@@ -1758,7 +1757,8 @@
   // ---------- 활동지 문서(2026-11-05 휴먼쌤 "이 학습지 디자인을 참고해서 문서 모양으로 보이게" · "pdf로 저장하기 기능도" · "이 pdf를 바로 업로드해야지") ----------
   // A4 한 쪽을 캔버스에 직접 그린다. 미리 보기·저장한 PDF·자료실에 올린 PDF가 같은 그림이라 보이는 그대로 나오고, 외부 도구가 늘지 않는다.
   // 교사·AI 글은 fillText로만 그려 HTML로 해석되지 않는다. 그림형 PDF라 글자 복사는 안 된다. 서버는 보통 PDF 올리기와 똑같이 받는다.
-  const WD = { W: 794, H: 1123, M: 44, TOP: 40, END: 1068, GAP: 14, SCALE: 2.5, Q: 0.92 };   // A4를 96dpi로 본 크기. SCALE 2.5 = 240dpi
+  // 분량(2026-11-05 휴먼쌤 "양을 A4기준 1쪽으로 할지 2쪽으로 할지"): 고른 쪽수를 넘으면 ZOOM 차례로 글자와 간격을 함께 줄여 맞춘다(0.82면 본문 약 9.5pt, 참고한 학습지와 비슷). 그래도 넘으면 원래 크기로 그리고 알린다. 글은 자르지 않는다. 정답 쪽은 쪽수에 넣지 않는다.
+  const WD = { W: 794, H: 1123, M: 44, TOP: 40, END: 1068, GAP: 14, SCALE: 2.5, Q: 0.92, ZOOM: [1, 0.94, 0.88, 0.82] };   // A4를 96dpi로 본 크기. SCALE 2.5 = 240dpi
   const WC = { ink: '#1D2433', sub: '#525C6E', blue: '#2A64C8', tint: '#E9F0FA', line: '#C2CCDA', dash: '#8A95AB', org: '#B9500F', orgD: '#8F3D0B', orgBg: '#FFFAF5', orgLn: '#E8B48F', pill: '#FDF1E7', pillLn: '#D9A27C' };
   const WF = '"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif';
   const WKIND = { sheet: '활동지', read: '읽기 글', talk: '대화문', quiz: '퀴즈', vocab: '단어장' };   // 문서 글은 화면 언어와 상관없이 한국어 + 프랑스어
@@ -1804,8 +1804,8 @@
     if (line) { c.strokeStyle = line; c.lineWidth = 1.3; c.lineJoin = 'round'; c.stroke(); }
   }
   // 문서를 조각(높이 h, 그리기 draw)으로 만든다. keep = 다음 조각과 같은 쪽에, split = 쪽 끝에서 나눌 수 있음
-  function wsBlocks(c, w, F) {
-    const M = WD.M, CW = WD.W - M * 2, body = [];
+  function wsBlocks(c, w, F, V) {
+    const M = V.M, CW = V.W - M * 2, body = [];
     const items = w.items.filter(x => String(x.q || '').trim());
     // 머리: 아이콘 · 제목 · 이름 칸
     const boxW = 216, tx = M + 72, tw = CW - 72 - boxW - 18, over = `한글원샷 ${WKIND[F.kind] || WKIND.sheet} · ${F.topic} · ${F.level}`;
@@ -1926,15 +1926,16 @@
     }
     return { body, tail, ans };
   }
-  // 조각을 쪽에 나눠 놓는다. 문항은 쪽 사이에서 잘리지 않는다
-  function wsLayout(c, w, F) {
-    const B = wsBlocks(c, w, F), pages = [], y2 = WD.TOP + 34;   // 둘째 쪽부터는 위에 제목 한 줄
+  // 조각을 쪽에 나눠 놓는다. 문항은 쪽 사이에서 잘리지 않는다. k = 글자·간격 배율(쪽을 1/k배 넓게 보고 그린 뒤 k배로 줄인다, 여백은 그대로)
+  function wsLayout(c, w, F, k) {
+    const V = { W: WD.W / k, M: WD.M / k, TOP: WD.TOP / k, END: WD.END / k };
+    const B = wsBlocks(c, w, F, V), pages = [], y2 = (WD.TOP + 34) / k;   // 둘째 쪽부터는 위에 제목 한 줄
     const flow = (list, y0) => {
       let cur = [], y = y0;
       const q = list.slice();
       const place = b => { cur.push({ b, y }); y += b.h + (b.gap == null ? WD.GAP : b.gap); };
       while (q.length) {
-        const b = q.shift(), next = q[0], av = WD.END - y;
+        const b = q.shift(), next = q[0], av = V.END - y;
         const need = b.h + (b.keep && next ? WD.GAP + (next.split ? 120 : next.h) : 0);
         const parts = need > av && b.split ? b.split(av) : null;
         if (need <= av) place(b);
@@ -1944,20 +1945,27 @@
       }
       return { cur, y };
     };
-    const end = flow(B.body, WD.TOP);
-    if (end.y + B.tail.h <= WD.END) end.cur.push({ b: B.tail, y: WD.END - B.tail.h, fix: true });
+    const end = flow(B.body, V.TOP);
+    if (end.y + B.tail.h <= V.END) end.cur.push({ b: B.tail, y: V.END - B.tail.h, fix: true });
     pages.push(end.cur);
+    const sheets = pages.length;
     // 자리가 남으면 조각 사이를 조금 넓힌다
     pages.forEach(p => {
       const free = p.filter(x => !x.fix), fix = p.find(x => x.fix);
       if (free.length < 2) return;
-      const last = free[free.length - 1], extra = Math.min(((fix ? fix.y - WD.GAP : WD.END) - last.y - last.b.h) / (free.length - 1), 12);
+      const last = free[free.length - 1], extra = Math.min(((fix ? fix.y - WD.GAP : V.END) - last.y - last.b.h) / (free.length - 1), 12);
       if (extra > 0) free.forEach((x, i) => { x.y += extra * i; });
     });
     if (B.ans.length) pages.push(flow(B.ans, y2).cur);
-    return pages;
+    return { pages, sheets, k };   // sheets = 정답 쪽을 뺀 쪽수
   }
-  function wsPaint(page, i, n, w) {
+  // 고른 쪽수에 들어가는 가장 큰 배율을 찾는다. 어느 배율로도 넘치면 원래 크기로 두고 over를 세운다
+  function wsFit(c, w, F) {
+    const want = Number(F.pages) || 1;
+    for (const k of WD.ZOOM) { const L = wsLayout(c, w, F, k); if (L.sheets <= want) return Object.assign(L, { over: false }); }
+    return Object.assign(wsLayout(c, w, F, 1), { over: true });
+  }
+  function wsPaint(page, i, n, w, k) {
     const cv = document.createElement('canvas'), S = WD.SCALE, M = WD.M;
     cv.width = Math.round(WD.W * S); cv.height = Math.round(WD.H * S);
     const c = cv.getContext('2d', { alpha: false });
@@ -1968,7 +1976,9 @@
       wText(c, wWrap(c, w.title, WD.W - M * 2)[0], M, WD.TOP + 8, 700, 13, WC.sub);
       wRule(c, M, WD.W - M, WD.TOP + 22, WC.line, 1);
     }
+    c.save(); c.scale(k, k);
     page.forEach(x => x.b.draw(c, x.y));
+    c.restore();
     wText(c, 'AI 초안을 선생님이 확인해 올린 자료예요 · Ébauche créée avec l’IA, vérifiée par l’enseignant', M, WD.H - 30, 400, 11, WC.sub);
     wText(c, `한글원샷  ${i + 1} / ${n}`, WD.W - M, WD.H - 30, 700, 11, WC.sub, 'right');
     return cv;
@@ -1983,8 +1993,10 @@
   async function wsPages(S) {
     if (S.pages) return S.pages;
     await wsFonts(S.ws);
-    const layout = wsLayout(document.createElement('canvas').getContext('2d'), S.ws, S.f);
-    S.pages = layout.map((p, i) => wsPaint(p, i, layout.length, S.ws));
+    const L = wsFit(document.createElement('canvas').getContext('2d'), S.ws, S.f);
+    S.pages = L.pages.map((p, i) => wsPaint(p, i, L.pages.length, S.ws, L.k));
+    S.over = L.over ? L.sheets : 0;
+    S.zoom = L.k;
     return S.pages;
   }
   async function wsShow() {
@@ -1992,6 +2004,10 @@
     try {
       const pages = await wsPages(S);
       if (!box.isConnected || S !== aiWsS) return;
+      const over = $('#wsOver');
+      over.hidden = !S.over;
+      over.textContent = S.over ? t('aiWsOver')(Number(S.f.pages) || 1, S.over) : '';
+      box.dataset.zoom = S.zoom;   // 글자 배율(문제를 찾을 때 볼 값)
       box.textContent = '';
       pages.forEach((cv, i) => { cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', `${S.ws.title} ${t('aiWsPage')(i + 1, pages.length)}`); box.appendChild(cv); });
     } catch (ex) { console.error('ws_doc', ex); if (box.isConnected) box.textContent = t('aiWsPdfErr'); }
@@ -2037,7 +2053,7 @@
     const S = aiWsS, F = S.f;
     S.busy = true; S.err = ''; render(true);
     try {
-      const r = await api.post({ action: 'ai_ws', code: teacher.code, topic: F.topic, level: F.level, kind: F.kind, n: F.n, who: F.who, expr: F.expr, words: F.words, lang }, 120000);
+      const r = await api.post({ action: 'ai_ws', code: teacher.code, topic: F.topic, level: F.level, kind: F.kind, pages: Number(F.pages) || 1, who: F.who, expr: F.expr, words: F.words, lang }, 120000);
       if (aiLogout(r)) return;
       if (r.ok) { S.ws = r.ws; S.edit = false; S.pages = null; S.left = r.left; window.scrollTo(0, 0); } else S.err = aiMsg(r.error);
     } catch (ex) { S.err = t('netErr'); }
@@ -2066,11 +2082,10 @@
         ? bindCombo(box, topicItems(), s => t('cbNewTopic')(s))
         : bindCombo(box, data.groups.map(g => ({ v: g.name, label: g.name, sub: t('nTopics')(g.topics.length) })), s => t('cbNewGroup')(s)));
       const sync = () => {
-        ['topic', 'group', 'level', 'kind', 'who', 'expr', 'words'].forEach(n => { F[n] = String(el(n).value || '').trim(); });
+        ['topic', 'group', 'level', 'kind', 'pages', 'who', 'expr', 'words'].forEach(n => { F[n] = String(el(n).value || '').trim(); });
         $('#w-groupField').hidden = !F.topic || data.topics.some(x => x.name === F.topic);
       };
       wf.addEventListener('input', sync); wf.addEventListener('change', sync); sync();
-      wf.querySelectorAll('[data-wn]').forEach(b => b.onclick = () => { F.n = Math.max(2, Math.min(10, F.n + Number(b.dataset.wn))); $('#w-n').textContent = F.n; });
       wf.onsubmit = e => {
         e.preventDefault(); sync();
         const miss = !F.topic ? 'needTopic' : !F.level ? 'needLevel' : '';

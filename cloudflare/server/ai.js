@@ -4,7 +4,7 @@
 //   POST /api {action:'ai_fill', code, url, title, lang}                 올리기 자동 채우기(링크)
 //   POST /api 본문 = 파일 바이트, X-Oneshot = {action:'ai_fill', code, file:{name,type}, title, lang}   (PDF·사진, 5MB까지)
 //   POST /api {action:'ai_fill', code, page:{name,title,desc,text}, title, lang}   HTML 파일: 화면이 글을 뽑아 보낸다(서버 CPU 한도 때문)
-//   POST /api {action:'ai_ws', code, topic, level, kind, n, who, expr, words, lang}   활동지 초안(저장하지 않음)
+//   POST /api {action:'ai_ws', code, topic, level, kind, pages, who, expr, words, lang}   활동지 초안(저장하지 않음). pages = A4 쪽수 1 또는 2
 // 활동지 문서는 화면(index.html)이 초안으로 PDF를 그려 보통 파일 올리기(action 'upload')로 올린다(2026-11-05 휴먼쌤 "이 pdf를 바로 업로드해야지"). 서버는 PDF를 만들지 않는다.
 // 비밀 ANTHROPIC_API_KEY(Pages secret)가 없으면 ai_off이고 화면에 AI 입구가 보이지 않는다(login 응답 ai).
 // SDK는 파일 맨 위에서 불러온다: 처음 읽는 데 CPU 약 15ms(측정 2026-11-05)라 요청 안에서 부르면 무료 한도 10ms를 넘는다. 맨 위에서 부르면 서버가 켜질 때 한 번만 든다.
@@ -71,6 +71,7 @@ ${LEARNERS}
 - 한국어 문장은 해요체(-아/어요)로 통일한다.
 - 소재와 말투는 학습자 나이에 맞춘다. 청소년·성인 자료를 유아적으로 만들지 않는다.
 - 실제 사람의 이름이나 사진, 학생 정보를 넣지 않는다.
+- 인쇄하는 문서다. 주어진 분량을 지킨다. 문항은 한두 줄, 보기는 짧은 말, 프랑스어 안내는 한 줄로 쓴다.
 
 칸:
 - title: 자료 제목, 한국어 30자 안.
@@ -81,13 +82,15 @@ ${LEARNERS}
 
 // 만들 것과 수준별 도움 정도(2026-10-16 요청문 만들기의 문장 틀, 커밋 29b7df7에서 가져옴)
 const KINDS = {
-  sheet: { what: '활동지', unit: '문항', lv: ['그림·낱말 보기가 있는 짧은 표현', '설명을 읽고 알맞은 것을 고르는 문장', '상황 카드를 보고 추천하고 이유를 말하기'] },
-  read: { what: '읽기 글', unit: '질문', lv: ['3~4문장 짧은 글과 낱말 보기', '6~8문장 글과 내용 확인 질문', '같은 주제 글을 읽고 내 생각 한 문장 쓰기'] },
-  talk: { what: '대화문', unit: '문항', lv: ['두 사람이 4줄 주고받는 대화와 바꿔 말할 낱말 칸', '6~8줄 대화에서 빈칸 채우기', '상황만 주고 짝과 이어 말하는 역할 카드'] },
-  quiz: { what: '퀴즈', unit: '문항', lv: ['낱말을 보고 뜻·그림 고르기', '문장을 읽고 알맞은 답 고르기', '질문에 짧게 답 쓰기'] },
-  vocab: { what: '단어장', unit: '낱말', lv: ['낱말·프랑스어 뜻·그림 설명', '낱말마다 쉬운 예문 하나', '낱말로 내 문장 만들기 칸'] }
+  sheet: { what: '활동지', unit: '문항', plain: [5, 10], lv: ['그림·낱말 보기가 있는 짧은 표현', '설명을 읽고 알맞은 것을 고르는 문장', '상황 카드를 보고 추천하고 이유를 말하기'] },
+  read: { what: '읽기 글', unit: '질문', text: true, lv: ['3~4문장 짧은 글과 낱말 보기', '6~8문장 글과 내용 확인 질문', '같은 주제 글을 읽고 내 생각 한 문장 쓰기'] },
+  talk: { what: '대화문', unit: '문항', text: true, lv: ['두 사람이 4줄 주고받는 대화와 바꿔 말할 낱말 칸', '6~8줄 대화에서 빈칸 채우기', '상황만 주고 짝과 이어 말하는 역할 카드'] },
+  quiz: { what: '퀴즈', unit: '문항', plain: [5, 10], lv: ['낱말을 보고 뜻·그림 고르기', '문장을 읽고 알맞은 답 고르기', '질문에 짧게 답 쓰기'] },
+  vocab: { what: '단어장', unit: '낱말', plain: [5, 9], lv: ['낱말·프랑스어 뜻·그림 설명', '낱말마다 쉬운 예문 하나', '낱말로 내 문장 만들기 칸'] }
 };
 const WHO = { kid: '어린이', teen: '청소년', adult: '성인' };
+// 분량별 글 양: 본문이 있는 종류(text). 인쇄 문서 크기(index.html wsBlocks)로 잰 어림값이다. 조금 넘치면 화면이 글자를 줄여 맞추고, 더 넘치면 교사에게 알린다
+const WS_TEXT = { 1: { chars: 260, lines: 8, n: 3 }, 2: { chars: 800, lines: 20, n: 7 } };
 
 const uiLang = b => (b.lang === 'fr' ? '프랑스어' : '한국어');
 
@@ -260,10 +263,11 @@ async function fill(c, env, request, b, tc, isFile) {
 async function worksheet(c, env, request, b, tc) {
   const topic = str(b.topic, 60), level = str(b.level, 10), K = KINDS[b.kind];
   if (!topic || !LEVEL_KEYS.includes(level) || !K) throw new AiStop('missing');
-  const n = Math.max(2, Math.min(10, Math.round(Number(b.n)) || 4)), who = WHO[b.who] || WHO.kid;
+  const pages = Number(b.pages) === 2 ? 2 : 1, T = WS_TEXT[pages], n = K.text ? T.n : K.plain[pages - 1], who = WHO[b.who] || WHO.kid;
   const expr = str(b.expr, 300), words = str(b.words, 500);
   const help = K.lv[LEVEL_KEYS.indexOf(level)];
-  const lines = [`만들 것: ${K.what} (${n}${K.unit})`, `소주제: ${topic}`, `레벨: ${level} — 이 수준의 모양: ${help}`, `학습자: ${who}`];
+  const size = `분량: 인쇄하면 A4 ${pages}쪽이 되게 맞춘다. ` + (K.text ? `본문은 ${T.chars}자 안팎(대화문이면 ${T.lines}줄 안팎)으로 쓴다. ` : '본문은 쓰지 않는다(빈 문자열). ') + `${K.unit}은 ${n}개로 한다.`;
+  const lines = [`만들 것: ${K.what} (${n}${K.unit})`, size, `소주제: ${topic}`, `레벨: ${level} — 이 수준의 모양: ${help} (어려운 정도만 따르고, 길이와 개수는 분량을 따른다)`, `학습자: ${who}`];
   if (expr) lines.push(`이미 배운 표현: ${expr}`);
   if (words) lines.push(`쓸 수 있는 낱말(이것만 쓴다): ${words}`);
   const out = await ask(c, env, tc, 'ws', { system: WS_SYSTEM, schema: WS_SCHEMA, effort: 'medium', max: 12000, content: lines.join('\n') });

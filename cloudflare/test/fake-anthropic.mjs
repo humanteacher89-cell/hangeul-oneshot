@@ -21,13 +21,15 @@ function answer(body) {
   }
   if (props.includes('passage')) {
     const asked = JSON.stringify(body.messages);
-    // 문서 모양 확인용(words 칸에 적는다): [[ws-cafe]] 실제 Claude가 쓴 초안 하나, [[ws-long]] 쪽을 넘는 긴 글·문항 10개, [[ws-write]] 본문 없이 쓰기 문항만(정답 쪽 없음)
-    if (asked.includes('[[ws-cafe]]')) {
-      return { title: '카페에 가요', desc: '카페 이야기를 읽고 알맞은 답을 골라요.', desc_fr: 'Lis l’histoire au café et choisis la bonne réponse.', guide: '글을 잘 읽고 알맞은 것을 하나 골라요.', guide_fr: 'Lis bien le texte et choisis une seule bonne réponse.',
+    // 문서 모양 확인용(words 칸에 적는다): [[ws-cafe]] 실제 Claude가 쓴 초안 하나, [[ws-near]] 같은 초안에 문항을 더해 A4 1쪽을 조금 넘음, [[ws-long]] 쪽을 넘는 긴 글·문항 10개, [[ws-write]] 본문 없이 쓰기 문항만(정답 쪽 없음)
+    if (asked.includes('[[ws-cafe]]') || asked.includes('[[ws-near]]')) {
+      const cafe = { title: '카페에 가요', desc: '카페 이야기를 읽고 알맞은 답을 골라요.', desc_fr: 'Lis l’histoire au café et choisis la bonne réponse.', guide: '글을 잘 읽고 알맞은 것을 하나 골라요.', guide_fr: 'Lis bien le texte et choisis une seule bonne réponse.',
         passage: '오늘은 토요일이에요. 민지는 엄마와 같이 카페에 갔어요. 카페는 학교 옆에 있어요. 카페 직원이 웃으면서 주문을 받았어요. 엄마는 따뜻한 커피를 주문했어요. 민지는 커피를 안 마셔요. 그래서 시원한 딸기 주스를 주문했어요. 그리고 초콜릿 케이크도 하나 샀어요. 카페 안에는 사람이 아주 많았어요. 민지와 엄마는 창문 옆 자리에 앉았어요. 케이크가 정말 맛있었어요.',
         items: [{ q: '민지는 카페에서 무엇을 마셨어요?', fr: 'Qu’est-ce que Minji a bu au café ?', choices: ['따뜻한 커피', '딸기 주스', '우유', '녹차'], answer: '딸기 주스' },
           { q: '이 사람은 카페에서 일해요. 주문을 받고 음료를 만들어요. 이 사람은 누구예요?', fr: 'Cette personne travaille au café. Elle prend les commandes et prépare les boissons. Qui est-ce ?', choices: ['선생님', '카페 직원', '경찰관', '학생'], answer: '카페 직원' },
           { q: '민지와 엄마는 어디에 앉았어요?', fr: 'Où Minji et sa maman se sont-elles assises ?', choices: ['문 옆 자리', '창문 옆 자리', '카페 밖', '학교 안'], answer: '창문 옆 자리' }] };
+      if (asked.includes('[[ws-near]]')) cafe.items = cafe.items.concat(cafe.items);
+      return cafe;
     }
     if (asked.includes('[[ws-long]]')) {
       const para = '오늘은 토요일이에요. 민지는 엄마와 같이 시장에 갔어요. 시장에는 사과와 배, 생선과 채소를 파는 가게가 아주 많았어요. 민지는 처음 보는 과일을 보고 이름을 물어봤어요. 가게 아주머니가 웃으면서 맛을 보게 해 주셨어요. ';
