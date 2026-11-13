@@ -117,11 +117,49 @@
   .foot { margin: 24px 0 0; text-align: center; font-size: 12.5px; color: var(--sub); font-weight: 600; line-height: 1.7; }
   .mock { display: inline-block; margin-top: 6px; padding: 4px 10px; border-radius: 999px; background: #FFF1D6; color: #8A5A00; font-size: 12px; font-weight: 800; }
 
+
+  /* 자료실 '새로 올라온 자료' 한 줄(2026-11-13 휴먼쌤 "'새로 올라온 자료' 한 줄 ... 이것만 해") — 옆으로 밀어 본다 */
+  .newmat .sec { margin-top: 20px; }
+  .nrow { display: flex; gap: 10px; margin: 0 -20px; padding: 2px 20px 8px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+  .nrow::-webkit-scrollbar { display: none; }
+  .nmc { flex: none; width: 172px; display: flex; flex-direction: column; gap: 6px; background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 12px; box-shadow: var(--press); scroll-snap-align: start; }
+  .nmc:active { transform: translateY(3px); box-shadow: 0 1px 0 #EEDFCB; }
+  .nmc .top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .nmc .ti { width: 40px; height: 40px; border-radius: 13px; font-size: 21px; }
+  .nmc .lvb { font-size: 11.5px; font-weight: 900; padding: 3px 8px; border-radius: 8px; }
+  .nmc .nt { font-size: 14.5px; font-weight: 900; letter-spacing: -.03em; line-height: 1.3; word-break: keep-all; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em; }
+  .nmc .nm { font-size: 12px; font-weight: 700; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nmc .nd { align-self: flex-start; font-size: 11.5px; font-weight: 900; color: var(--coral-d); background: #FFEDE6; padding: 2px 8px; border-radius: 999px; }
+  /* 한글월드 탭(2026-11-13 휴먼쌤 시안 2판 "이대로 올려"): 유럽 한글학교 메타버스로 가는 카드 하나 + 할 수 있는 것 */
+  .whero { position: relative; margin-top: 4px; background: linear-gradient(135deg, #5AA9FF 0%, #6C63FF 100%); border-radius: 26px; padding: 22px 20px 24px; color: #fff; box-shadow: 0 5px 0 #4B47C9; overflow: hidden; }
+  .whero:before { content: ""; position: absolute; right: -36px; top: -44px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,.16); }
+  .whero h1 { position: relative; margin: 0; font-size: 24px; line-height: 1.35; font-weight: 900; letter-spacing: -.03em; max-width: calc(100% - 64px); word-break: keep-all; }
+  .whero .mascot { position: absolute; right: 12px; bottom: 12px; font-size: 60px; line-height: 1; transform: rotate(-7deg); }
+  .wlist { display: grid; gap: 14px; margin-top: 18px; }
+  .wcard { display: block; background: #fff; border: 2px solid var(--line); border-radius: 24px; overflow: hidden; box-shadow: var(--press); }
+  .wcard:active { transform: translateY(3px); box-shadow: 0 1px 0 #EEDFCB; }
+  .wart { position: relative; display: grid; place-items: center; height: 128px; font-size: 66px; line-height: 1; }
+  .wart .flags { position: absolute; left: 14px; top: 14px; display: flex; gap: 6px; }
+  .wart .flags svg { display: block; width: 27px; height: 18px; border-radius: 4px; box-shadow: 0 0 0 2px rgba(255,255,255,.85); }
+  .wart .cnt { position: absolute; right: 12px; top: 12px; background: rgba(255,255,255,.92); color: var(--ink); font-size: 12px; font-weight: 900; padding: 4px 10px; border-radius: 999px; }
+  .wbody { display: flex; align-items: center; gap: 12px; padding: 14px 14px 15px 16px; }
+  .wbody .tx { flex: 1; min-width: 0; }
+  .wbody b { display: block; font-size: 18px; font-weight: 900; letter-spacing: -.03em; line-height: 1.3; word-break: keep-all; }
+  .wbody small { display: block; margin-top: 2px; font-size: 12px; font-weight: 700; color: var(--sub); }
+  .wbody .wds { display: block; margin-top: 6px; font-size: 13.5px; font-weight: 700; color: #6E5E50; line-height: 1.45; word-break: keep-all; }
+  .wbody .go { background: var(--bl); box-shadow: 0 3px 0 var(--bl-d); }
+  .wcan { margin-top: 16px; background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 14px 16px 6px; }
+  .wcan h2 { margin: 0 0 4px; font-size: 16px; font-weight: 900; letter-spacing: -.02em; }
+  .wcan ul { list-style: none; margin: 0; padding: 0; }
+  .wcan li { display: flex; gap: 11px; align-items: flex-start; padding: 10px 0; border-top: 2px dashed #F4EEE6; font-size: 14px; font-weight: 700; color: #6E5E50; line-height: 1.5; word-break: keep-all; }
+  .wcan li:first-child { border-top: 0; }
+  .wcan li .e { flex: none; width: 34px; height: 34px; border-radius: 11px; background: #EEF3FF; display: grid; place-items: center; font-size: 19px; line-height: 1; }
+
   /* 아래 탭 */
   .tabbar { position: fixed; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 480px; z-index: 30; display: flex; justify-content: space-around;
             background: #FFFDF9; border-top: 2px solid var(--line); box-shadow: 0 -6px 16px rgba(120,90,50,.06); padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); }
   .sidelogo { display: none; }   /* PC 왼쪽 메뉴에서만 보인다 */
-  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 84px; padding: 2px 0; font-size: 11.5px; font-weight: 800; color: #B6A796; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 80px; padding: 2px 0; font-size: 11.5px; font-weight: 800; color: #B6A796; }
   .tab svg { width: 27px; height: 27px; }
   .tab.on { color: var(--coral); }
 
@@ -564,6 +602,19 @@
     .sheet .pvf { grid-column: 2; grid-row: 1 / span 20; position: sticky; top: 24px; margin-top: 0; }
     .sheet .cta { position: static; padding: 0; background: none; margin: 20px 0 0; max-width: none; }
     .toast { bottom: 32px; }
+    /* 새로 올라온 자료 · 한글월드(넓은 화면) */
+    .nrow { margin: 0; padding: 2px 0 8px; }
+    .nmc { width: 196px; }
+    .whero { padding: 30px 32px 32px; }
+    .whero h1 { font-size: 32px; }
+    .whero .mascot { font-size: 84px; right: 28px; bottom: 16px; }
+    .wcard { display: grid; grid-template-columns: 360px 1fr; }
+    .wart { height: auto; min-height: 180px; font-size: 84px; }
+    .wbody { padding: 22px 24px; }
+    .wbody b { font-size: 22px; }
+    .wcan { padding: 18px 22px 10px; }
+    .wcan ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 22px; }
+    .wcan li { border-top: 0; }
     /* 관리자 화면: 가운데 한 줄기, 위 칸 고르기는 제목 줄 아래에 붙는다 */
     .mgseg { top: 70px; }
     .mgentry { margin-top: 14px; }
@@ -665,6 +716,7 @@
     gear: S('<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/><circle cx="12" cy="12" r="6.4"/>', 2),
     star: S('<path d="M12 3.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>'),
     shelf: S('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2h6.5A1.5 1.5 0 0 1 20 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/>'),
+    globe: S('<circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2M12 3.4c2.5 2.4 3.8 5.3 3.8 8.6s-1.3 6.2-3.8 8.6c-2.5-2.4-3.8-5.3-3.8-8.6s1.3-6.2 3.8-8.6z"/>'),
     search: S('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
     upfile: S('<path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 14.5v3A2 2 0 0 0 6.5 19.5h11a2 2 0 0 0 2-2v-3"/>', 2.2),
     spark: S('<path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9-1.9 5.1-1.9-5.1-5.1-1.9 5.1-1.9zM19 16v4M17 18h4M5 3.5v3M3.5 5h3"/>', 2),
@@ -680,6 +732,12 @@
       mats: n => `자료 ${n}개`, empty: '아직 자료가 없어요', emptyHint: '다른 레벨도 둘러보세요', emptyTeacher: '‘자료 올리기’로 올리면 여기 생겨요',
       min: '분', newtab: '자료는 새 창에서 열려요', noTopic: '소주제를 찾지 못했어요',
       tabHome: '자료실', tabFav: '즐겨찾기', tabTeacher: '선생님', back: '뒤로', close: '닫기',
+      // 새로 올라온 자료 · 한글월드(2026-11-13)
+      tabWorld: '한글월드', newMats: '새로 올라온 자료', today: '오늘', yday: '어제', dmy: (y, m, d) => `${m}/${d}`,
+      wHero: '온라인에서 만나볼까?<br>한글학교 메타버스 링크',
+      wEu: '유럽 한글학교 메타버스', wEuOther: 'Métavers des écoles coréennes d’Europe', wEuDs: '프랑스 · 독일 · 영국 한글학교 70곳이 한 지도에 모여 있어요. 나라를 고르면 그 나라 로비로 들어가요.', wEuCnt: '학교 70곳',
+      wCanT: '메타버스에서 할 수 있어요',
+      wCan: [['🗺️', '유럽 지도에서 나라를 고르고, 캐릭터로 걸어 다니며 한글학교를 찾아요.'], ['🏫', '교실에 들어가 교장 선생님 퀴즈를 풀고, 책 · 사진첩 · TV · 게시판으로 학교를 둘러봐요.'], ['💬', '같은 시간에 들어온 사람들과 만나 한국어 말풍선(정해진 표현 20개)으로 인사해요.']],
       // 즐겨찾기(#/fav, 2026-10-24 휴먼쌤: 교사가 담아 두었다가 학생에게 QR로 보여 주는 곳)
       favOn: '즐겨찾기에 담기', favOff: '즐겨찾기에서 빼기', favAdded: '즐겨찾기에 담았어요', favRemoved: '즐겨찾기에서 뺐어요',
       favCount: n => `담은 자료 ${n}개`, favFound: n => `찾은 자료 ${n}개`, libSearch: '자료 찾기 (제목·소주제·설명)', clearQ: '지우기',
@@ -767,6 +825,11 @@
       mats: n => `${n} ressource${n > 1 ? 's' : ''}`, empty: 'Pas encore de ressource', emptyHint: 'Regarde les autres niveaux', emptyTeacher: 'Ajoutez une ressource pour la voir ici',
       min: ' min', newtab: 'Les ressources s’ouvrent dans un nouvel onglet', noTopic: 'Sous-thème introuvable',
       tabHome: 'Ressources', tabFav: 'Favoris', tabTeacher: 'Enseignant', back: 'Retour', close: 'Fermer',
+      tabWorld: 'Monde', newMats: 'Nouvelles ressources', today: 'Aujourd’hui', yday: 'Hier', dmy: (y, m, d) => `${d}/${m}`,
+      wHero: 'On se retrouve en ligne ?<br>Le métavers des écoles coréennes',
+      wEu: 'Métavers des écoles coréennes d’Europe', wEuOther: '유럽 한글학교 메타버스', wEuDs: '70 écoles coréennes de France, d’Allemagne et du Royaume-Uni sur une même carte. Choisis un pays pour entrer dans son hall.', wEuCnt: '70 écoles',
+      wCanT: 'Ce que tu peux y faire',
+      wCan: [['🗺️', 'Choisis un pays sur la carte d’Europe et promène-toi avec ton personnage pour trouver les écoles.'], ['🏫', 'En classe, réponds au quiz du directeur et découvre l’école : livre, album photo, TV, tableau d’affichage.'], ['💬', 'Retrouve les visiteurs connectés et salue-les avec des bulles en coréen (20 phrases au choix).']],
       favOn: 'Ajouter aux favoris', favOff: 'Retirer des favoris', favAdded: 'Ajouté aux favoris', favRemoved: 'Retiré des favoris',
       favCount: n => `${n} favori${n > 1 ? 's' : ''}`, favFound: n => `${n} résultat${n > 1 ? 's' : ''}`, libSearch: 'Chercher une ressource (titre, sous-thème, description)', clearQ: 'Effacer',
       sortK: 'Tri', sortAdded: 'Ajout récent', sortTitle: 'Titre', sortTopic: 'Sous-thème', reset: 'Réinitialiser',
@@ -1071,6 +1134,18 @@
   function dupOf(u, exceptId, list) { const k = linkKey(u); return k ? (list || data.materials).find(m => m.id !== exceptId && linkKey(m.url) === k) || null : null; }
 
   // ---------- 화면 ----------
+  // 자료실 '새로 올라온 자료' 한 줄(2026-11-13): 올린 날짜가 늦은 차례(같은 날이면 나중에 올린 것 먼저) 8개. 누르면 자료가 새 창에서 열린다(다른 자료 카드와 같게)
+  function newRow() {
+    if (!data.materials.length) return '';
+    const L = data.materials.map((m, i) => ({ m, i })).sort((a, b) => (b.m.date || '').localeCompare(a.m.date || '') || b.i - a.i).slice(0, 8).map(x => x.m);
+    const now = new Date(), iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const yd = new Date(now.getTime() - 864e5);
+    const day = s => { if (!s) return ''; if (s === iso(now)) return t('today'); if (s === iso(yd)) return t('yday'); const [y, mo, d] = s.split('-').map(Number); return t('dmy')(y, mo, d); };
+    const card = m => { const [emo, bg] = TYPE_ICON[m.type] || TYPE_ICON['기타']; const school = String(m.school || '').replace(/\s*한글학교$/, '');
+      return `<a class="nmc" href="${esc(m.url)}" target="_blank" rel="noopener"><span class="top"><span class="ti" style="background:${bg}">${emo}</span><b class="lvb l-${esc(m.level)}">${esc(m.level)}</b></span>`
+        + `<b class="nt">${esc(m.title)}</b><span class="nm">${esc([m.topic, school].filter(Boolean).join(' · '))}</span>${m.date ? `<span class="nd">${esc(day(m.date))}</span>` : ''}</a>`; };
+    return `<section class="newmat"><div class="sec"><h2>${esc(t('newMats'))}</h2></div><div class="nrow">${L.map(card).join('')}</div></section>`;
+  }
   function viewHome() {
     const groups = data.groups;
     const sel = groups.some(g => g.name === groupFilter) ? groupFilter : '';
@@ -1080,7 +1155,7 @@
     const chips = groups.length > 1 ? `<div class="chips">${[{ name: '' }].concat(groups).map(g => `<button type="button" class="chip${g.name === sel ? ' on' : ''}" data-group="${esc(g.name)}">${esc(g.name ? gName(g.name) : t('all'))}</button>`).join('')}</div>` : '';
     const search = data.materials.length ? `<label class="srch lib">${ICON.search}<input id="libQ" type="search" enterkeyhint="search" placeholder="${esc(t('libSearch'))}" value="${esc(libQ)}" aria-label="${esc(t('libSearch'))}">`
       + `<button type="button" class="sx" data-libqx aria-label="${esc(t('clearQ'))}"${libQ ? '' : ' hidden'}>✕</button></label>` : '';
-    return barHome() + `<div class="pad">${hero}${notice}${search}${chips}<div id="libBody">${libBody(shown)}</div>${footLine()}</div>`;
+    return barHome() + `<div class="pad">${hero}${notice}${newRow()}${search}${chips}<div id="libBody">${libBody(shown)}</div>${footLine()}</div>`;
   }
   // 자료실 글자 찾기(2026-10-25 휴먼쌤 "즐겨찾기 탭에 있는 검색창은 없애주고 대신 자료실에는 신규로 만들어줘").
   // 제목·주제(프랑스어 이름도)·설명·유형·묶음에서 찾고, 묶음 칩을 골라 두었으면 그 안에서. 글자가 없으면 주제 카드 그대로.
@@ -1375,14 +1450,33 @@
     </form>`;
   }
 
-  // 아래 탭: 자료실 · 즐겨찾기 · 선생님(2026-10-24 휴먼쌤 "이 QR탭을 없애고 ... '홈' 탭은 '자료실' 탭으로 ... 'QR탭'을 '즐겨찾기'로")
+  // 한글월드 탭(2026-11-13 휴먼쌤 시안 2판 "이대로 올려"): 유럽 한글학교 메타버스(프랑스 · 독일 · 영국 로비) 하나를 새 창으로 연다.
+  // 한글원샷에는 저장·로그인이 생기지 않는다(로비는 다른 사이트). 주소는 유럽 입구(나라 고르기) — 월드부 '로비 합치기'로 대표 주소가 바뀌면 이 줄도 맞춘다.
+  const FLAG = {
+    fr: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="10" height="20" fill="#2E5BD8"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#E5484D"/></svg>',
+    de: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="6.7" fill="#1B1B1B"/><rect y="6.6" width="30" height="6.8" fill="#DD2C2C"/><rect y="13.3" width="30" height="6.7" fill="#FFCC00"/></svg>',
+    uk: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#1F3FAE"/><path d="M0 0L30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M0 0L30 20M30 0L0 20" stroke="#E5484D" stroke-width="1.5"/><path d="M15 0V20M0 10H30" stroke="#fff" stroke-width="6"/><path d="M15 0V20M0 10H30" stroke="#E5484D" stroke-width="3.4"/></svg>'
+  };
+  const WORLD = [{ k: 'Eu', url: 'https://humanssaem-hangul-france.pages.dev/eu/', emo: '🗺️', bg: 'linear-gradient(135deg,#DCEBFF 0%,#E3F5EA 55%,#FFF0C2 100%)', flags: ['fr', 'de', 'uk'] }];
+  function viewWorld() {
+    const head = `<header class="appbar"><b class="atitle">${esc(t('tabWorld'))}</b>${langToggle(true)}</header>`;
+    const hero = `<section class="whero"><h1>${t('wHero')}</h1><div class="mascot">🌍</div></section>`;
+    const card = w => `<a class="wcard" href="${esc(w.url)}" target="_blank" rel="noopener"><span class="wart" style="background:${w.bg}"><span class="flags">${w.flags.map(f => FLAG[f]).join('')}</span>${w.emo}<span class="cnt">${esc(t('w' + w.k + 'Cnt'))}</span></span>`
+      + `<span class="wbody"><span class="tx"><b>${esc(t('w' + w.k))}</b><small>${esc(t('w' + w.k + 'Other'))}</small><span class="wds">${esc(t('w' + w.k + 'Ds'))}</span></span><span class="go">${ICON.out}</span></span></a>`;
+    const can = `<section class="wcan"><h2>${esc(t('wCanT'))}</h2><ul>${t('wCan').map(([e, x]) => `<li><span class="e">${e}</span><span>${esc(x)}</span></li>`).join('')}</ul></section>`;
+    return head + `<div class="pad">${hero}<div class="wlist">${WORLD.map(card).join('')}</div>${can}</div>`;
+  }
+
+  // 아래 탭: 자료실 · 즐겨찾기 · 선생님 · 한글월드(2026-11-13 휴먼쌤 "한글월드 탭은 맨 오른쪽, '선생님' 오른쪽으로")
+  // (2026-10-24 휴먼쌤 "이 QR탭을 없애고 ... '홈' 탭은 '자료실' 탭으로 ... 'QR탭'을 '즐겨찾기'로")
   function renderTabs(page) {
     const tc = ['login', 'join', 'mine', 'upload', 'admin', 'ai'].includes(page);
-    const on = { fav: page === 'fav', tc, lib: page !== 'fav' && !tc };
+    const on = { fav: page === 'fav', tc, world: page === 'world', lib: page !== 'fav' && page !== 'world' && !tc };
     $('#tabbar').innerHTML = `<a class="sidelogo" href="#/" aria-label="${esc(t('tabHome'))}"><img src="icons/logo-h.svg" alt="${esc(appTitle())}"></a>
       <a class="tab${on.lib ? ' on' : ''}" href="#/">${ICON.shelf}<span>${esc(t('tabHome'))}</span></a>
       <a class="tab${on.fav ? ' on' : ''}" href="#/fav">${ICON.star}<span>${esc(t('tabFav'))}</span></a>
-      <a class="tab${on.tc ? ' on' : ''}" href="${teacher ? '#/mine' : '#/login'}">${ICON.person}<span>${esc(t('tabTeacher'))}</span></a>`;
+      <a class="tab${on.tc ? ' on' : ''}" href="${teacher ? '#/mine' : '#/login'}">${ICON.person}<span>${esc(t('tabTeacher'))}</span></a>
+      <a class="tab${on.world ? ' on' : ''}" href="#/world">${ICON.globe}<span>${esc(t('tabWorld'))}</span></a>`;
   }
 
   // ---------- 길 찾기(해시) ----------
@@ -1412,6 +1506,7 @@
       case 'qr': v.innerHTML = viewQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'mq': v.innerHTML = viewMatQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'fav': v.innerHTML = viewFav(); title = t('tabFav') + ' · ' + title; break;
+      case 'world': v.innerHTML = viewWorld(); title = t('tabWorld') + ' · ' + title; break;
       case 'login': v.innerHTML = teacher ? viewMine() : viewLogin(true); bindLogin(); break;
       case 'join': v.innerHTML = teacher && !joined ? viewMine() : viewJoin(); bindJoin(); title = t('joinTitle') + ' · ' + title; break;
       case 'mine': v.innerHTML = viewMine(); bindLogin(); break;
