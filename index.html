@@ -114,17 +114,6 @@
   .lv3 b { font-size: 11.5px; font-weight: 900; padding: 3px 7px; border-radius: 8px; }
   .l-하 { background: var(--g-l); color: var(--g-d); } .l-중 { background: var(--bl-l); color: var(--bl-d); } .l-상 { background: var(--pu-l); color: var(--pu-d); }
   .l-z { background: #F4EEE6; color: #C2B4A4; }
-  .install { display: flex; align-items: center; gap: 12px; margin-top: 16px; background: #fff; border: 2px solid var(--line); border-radius: 20px;
-             padding: 11px 10px 11px 12px; box-shadow: var(--press); }
-  .install .logo { width: 42px; height: 42px; border-radius: 13px; }
-  .install .logo svg { width: 26px; height: 26px; }
-  .install .tx { flex: 1; min-width: 0; }
-  .install b { display: block; font-size: 14.5px; font-weight: 900; letter-spacing: -.02em; line-height: 1.35; }
-  .install small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 700; color: var(--sub); line-height: 1.45; }
-  .install small svg { display: inline-block; width: 15px; height: 15px; vertical-align: -3px; color: var(--bl); }
-  .inbtn { flex: none; border: 0; background: var(--coral); color: #fff; font-weight: 900; font-size: 14px; padding: 9px 14px; border-radius: 999px; box-shadow: 0 3px 0 var(--coral-d); }
-  .inx { flex: none; align-self: flex-start; width: 28px; height: 28px; border: 0; border-radius: 50%; background: #F4EEE6; color: #8A7B6C; display: grid; place-items: center; }
-  .inx svg { width: 13px; height: 13px; }
   .foot { margin: 24px 0 0; text-align: center; font-size: 12.5px; color: var(--sub); font-weight: 600; line-height: 1.7; }
   .mock { display: inline-block; margin-top: 6px; padding: 4px 10px; border-radius: 999px; background: #FFF1D6; color: #8A5A00; font-size: 12px; font-weight: 800; }
 
@@ -678,7 +667,6 @@
     shelf: S('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2h6.5A1.5 1.5 0 0 1 20 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/>'),
     search: S('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
     upfile: S('<path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 14.5v3A2 2 0 0 0 6.5 19.5h11a2 2 0 0 0 2-2v-3"/>', 2.2),
-    share: S('<path d="M12 3.5v11M8 7.5l4-4 4 4"/><path d="M8.5 10.5H6.5A1.5 1.5 0 0 0 5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7a1.5 1.5 0 0 0-1.5-1.5h-2"/>', 2),
     spark: S('<path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9-1.9 5.1-1.9-5.1-5.1-1.9 5.1-1.9zM19 16v4M17 18h4M5 3.5v3M3.5 5h3"/>', 2),
     target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="#fff" stroke-width="2.8"/><circle cx="12" cy="12" r="3.9" fill="#fff"/></svg>'
   };
@@ -751,8 +739,6 @@
       lkSite: '웹사이트 · 직접 만든 사이트도 공개 주소면 돼요', lkHttp: 'http 주소는 휴대폰에서 막힐 수 있어요 · https 주소를 권해요',
       dupLink: (s, w) => `같은 링크가 이미 있어요: ‘${s}’ (${w})`, dupAsk: '같은 링크가 이미 자료실에 있어요.\n그래도 올릴까요?',
       mineTip: '고치려면 삭제하고 다시 올려 주세요', total: n => `자료 ${n}개`, updated: '갱신', loading: '불러오는 중…',
-      installTitle: '홈 화면에 추가하기', installSub: '주소창 없이 앱처럼 바로 열려요', installBtn: '추가',
-      installIos: s => `공유 버튼 ${s} 누르고 → ‘홈 화면에 추가’`,
       mockNote: '견본 자료로 보는 중 · 올린 자료는 이 기기에만 남아요',
       // AI 도우미(2026-11-05): 로그인한 교사만. 올리기 자동 채우기 · 자료 추천 · 활동지 만들기
       fDescFr: '프랑스어 설명', phDescFr: '예: Répéter en regardant les images',
@@ -836,8 +822,6 @@
       lkSite: 'Site web · votre propre site fonctionne s’il est public', lkHttp: 'Les liens http peuvent être bloqués sur mobile · préférez https',
       dupLink: (s, w) => `Ce lien existe déjà : « ${s} » (${w})`, dupAsk: 'Ce lien est déjà dans la bibliothèque.\nL’ajouter quand même ?',
       mineTip: 'Pour modifier : supprimez puis ajoutez à nouveau', total: n => `${n} ressource${n > 1 ? 's' : ''}`, updated: 'mis à jour', loading: 'Chargement…',
-      installTitle: 'Ajouter à l’écran d’accueil', installSub: 'S’ouvre comme une appli, sans barre d’adresse', installBtn: 'Ajouter',
-      installIos: s => `Touchez Partager ${s} puis « Sur l’écran d’accueil »`,
       mockNote: 'Données d’exemple · vos ajouts restent sur cet appareil',
       fDescFr: 'Description en français', phDescFr: 'ex. Répéter en regardant les images',
       aiTitle: 'Assistant IA', aiEntrySub: 'Suggestions · Créer une fiche', aiTabRec: 'Suggestions', aiTabWs: 'Créer une fiche', aiOff: 'L’assistant IA est désactivé pour le moment',
@@ -868,8 +852,6 @@
   let firstRender = true;
   let afterLogin = '';
   let joined = null;         // 방금 가입한 결과(로그인 코드를 한 번 크게 보여 주려고. 가입 화면을 떠나면 잊는다)
-  let installEvt = null;     // 안드로이드 크롬이 주는 '앱 설치' 기회
-  let installHide = false;   // 홈 화면 추가 안내를 닫았는지(이번에 열어 둔 동안만)
   let upSrc = 'link';        // 올리기 화면: 'link'(링크, 왼쪽·처음) 또는 'file'(파일 PDF/이미지, 오른쪽) — 2026-10-24 휴먼쌤
   // 즐겨찾기 화면 상태(이번에 열어 둔 동안만): 찾는 글자, 필터(묶음·주제·레벨·유형 여러 개), 정렬, 필터 창 열림
   let libQ = '', favF ={ group: [], topic: [], level: [], type: [] }, favSort = 'added';
@@ -1088,16 +1070,6 @@
   }
   function dupOf(u, exceptId, list) { const k = linkKey(u); return k ? (list || data.materials).find(m => m.id !== exceptId && linkKey(m.url) === k) || null : null; }
 
-  // 홈 화면에 추가(주소창 없이 앱처럼). 안드로이드 크롬은 '추가' 단추, 아이폰은 공유 버튼 안내. 이미 앱으로 열었거나 PC면 보이지 않는다.
-  const IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-  function installCard() {
-    if (installHide || isStandalone() || !window.matchMedia('(pointer: coarse)').matches || !(installEvt || IOS)) return '';
-    const sub = installEvt ? esc(t('installSub')) : t('installIos')(ICON.share);
-    return `<div class="install noprint"><span class="logo sym"><img src="icons/symbol.svg" alt=""></span><div class="tx"><b>${esc(t('installTitle'))}</b><small>${sub}</small></div>
-      ${installEvt ? `<button type="button" class="inbtn" data-install>${esc(t('installBtn'))}</button>` : ''}<button type="button" class="inx" data-install-x aria-label="${esc(t('close'))}">${ICON.x}</button></div>`;
-  }
-
   // ---------- 화면 ----------
   function viewHome() {
     const groups = data.groups;
@@ -1108,7 +1080,7 @@
     const chips = groups.length > 1 ? `<div class="chips">${[{ name: '' }].concat(groups).map(g => `<button type="button" class="chip${g.name === sel ? ' on' : ''}" data-group="${esc(g.name)}">${esc(g.name ? gName(g.name) : t('all'))}</button>`).join('')}</div>` : '';
     const search = data.materials.length ? `<label class="srch lib">${ICON.search}<input id="libQ" type="search" enterkeyhint="search" placeholder="${esc(t('libSearch'))}" value="${esc(libQ)}" aria-label="${esc(t('libSearch'))}">`
       + `<button type="button" class="sx" data-libqx aria-label="${esc(t('clearQ'))}"${libQ ? '' : ' hidden'}>✕</button></label>` : '';
-    return barHome() + `<div class="pad">${hero}${notice}${installCard()}${search}${chips}<div id="libBody">${libBody(shown)}</div>${footLine()}</div>`;
+    return barHome() + `<div class="pad">${hero}${notice}${search}${chips}<div id="libBody">${libBody(shown)}</div>${footLine()}</div>`;
   }
   // 자료실 글자 찾기(2026-10-25 휴먼쌤 "즐겨찾기 탭에 있는 검색창은 없애주고 대신 자료실에는 신규로 만들어줘").
   // 제목·주제(프랑스어 이름도)·설명·유형·묶음에서 찾고, 묶음 칩을 골라 두었으면 그 안에서. 글자가 없으면 주제 카드 그대로.
@@ -2583,8 +2555,6 @@
     const G = e.target.closest('[data-group]'); if (G) { groupFilter = G.dataset.group; render(true); return; }
     const V = e.target.closest('[data-level]'); if (V) { const p = route(), tq = p[0] === 'q' ? topicByQid(p[1]) : null; history.replaceState(null, '', topicHref(tq ? tq.name : (p[1] || ''), V.dataset.level)); render(true); return; }
     if (e.target.closest('[data-print]')) { window.print(); return; }
-    if (e.target.closest('[data-install]')) { const ev = installEvt; if (ev) { ev.prompt(); Promise.resolve(ev.userChoice).catch(() => {}).then(() => { installEvt = null; render(true); }); } return; }
-    if (e.target.closest('[data-install-x]')) { installHide = true; render(true); return; }
     if (e.target.closest('[data-logout]')) { teacher = null; adm = null; aiRecS = { ask: '', busy: false, res: null, err: '', left: null }; aiWsS = aiWsBlank(); saveTeacher(null); toast(t('logout')); if (location.hash === '#/') render(); else location.hash = '#/'; return; }
     const LV = e.target.closest('[data-leave]'); if (LV) { leaveAccount(LV); return; }
     if (admClick(e)) return;
@@ -2637,9 +2607,9 @@
   const admOops = m => { if ((route()[0] || '') === 'admin') toast('오류: ' + String(m || '').slice(0, 80)); };
   window.addEventListener('error', e => admOops(e.message));
   window.addEventListener('unhandledrejection', e => admOops(e.reason && (e.reason.message || e.reason)));
-  // 홈 화면에 추가: 크롬이 설치 기회를 주면 첫 화면 안내에 '추가' 단추를 단다. 서비스 워커는 앱처럼 열리게 하는 최소한의 것(sw.js).
-  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if ($('.hero')) render(true); });
-  window.addEventListener('appinstalled', () => { installEvt = null; if ($('.hero')) render(true); });
+  // 홈 화면에 추가 안내는 뺐다(2026-11-13 휴먼쌤 "홈 화면에 추가하라는 이 안내는 그냥 삭제해줘").
+  // 크롬이 스스로 띄우는 설치 알림도 뜨지 않게 막는다. 브라우저 메뉴의 '홈 화면에 추가'는 그대로 된다. 서비스 워커는 앱처럼 열리게 하는 최소한의 것(sw.js).
+  window.addEventListener('beforeinstallprompt', e => e.preventDefault());
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
   boot();
 })();
