@@ -1,0 +1,55 @@
+# 올리기(한글원샷 공개판): 공개판 가지 feature/ai-helper에 들어오면 점검 → Cloudflare Pages humanssaem-hangeul-oneshot(화면 + Functions) → 실제 주소 확인. 확인이 실패하면 앞 판으로 되돌린다.
+# 하는 일은 PC의 `python cloudflare/deploy.py deploy --prod`와 같다(임시 폴더에 wrangler.prod.toml을 wrangler.toml로 두고 functions · server · public을 올림).
+# D1 표 고치기(migrate)는 여기서 하지 않는다 — 표를 바꿔야 하면 PC에서 먼저(deploy.py migrate --prod) 한 뒤 올린다.
+# 열쇠는 저장소 비밀 CLOUDFLARE_API_TOKEN(휴먼쌤이 넣음, 2026-11-16). 실제 교사 · 자료(D1 · KV)와 비밀 값(CODE_PEPPER · ANTHROPIC_API_KEY)은 Cloudflare 안에만 있고 올려도 그대로다.
+name: 올리기
+on:
+  push:
+    branches: [feature/ai-helper]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deploy-humanssaem-hangeul-oneshot
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_ACCOUNT_ID: b40158737f29a6a83b3f53ef2aa147aa
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      WRANGLER_SEND_METRICS: 'false'
+      PROJECT: humanssaem-hangeul-oneshot
+      SITE_URL: https://humanssaem-hangeul-oneshot.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 준비
+        run: cd cloudflare && npm ci --no-audit --no-fund
+      - name: 묶음 만들기
+        run: python3 -X utf8 cloudflare/deploy.py build
+      - name: 올리기 전 점검
+        run: |
+          node scripts/check.mjs cloudflare/public
+          for f in cloudflare/functions/api.js cloudflare/server/app.js cloudflare/server/ai.js; do node --check "$f"; done
+      - name: 지금 공개판 번호 기억(되돌리기용)
+        run: node scripts/cf.mjs current | tee prev.txt
+      - name: Cloudflare에 올리기
+        id: deploy
+        run: |
+          T="$(mktemp -d)"
+          cp -r cloudflare/functions cloudflare/server cloudflare/public cloudflare/node_modules "$T/"
+          cp cloudflare/wrangler.prod.toml "$T/wrangler.toml"
+          cd "$T"
+          npx --yes wrangler@4.162.0 pages deploy public --branch main --commit-hash "$GITHUB_SHA" --commit-message "github ${GITHUB_SHA::7}"
+      - name: 올린 뒤 실제 주소 확인
+        run: |
+          node scripts/verify.mjs cloudflare/public "$SITE_URL"
+          curl -sf "$SITE_URL/api" | grep -q '"ok":true' || { echo "::error::서버(/api) 응답 이상"; exit 1; }
+          echo "서버(/api) 응답 정상"
+      - name: 확인이 실패하면 앞 판으로 되돌리기
+        if: failure() && steps.deploy.outcome == 'success'
+        run: node scripts/cf.mjs rollback "$(cat prev.txt)"

@@ -51,3 +51,9 @@ id · 묶음 · 주제 · 레벨(상/중/하) · 제목 · 유형 · 링크 · �
 - 주소로 처음 들어오면(QR) 주제 화면 위에 'QR로 바로 왔어요'가 잠깐 보인다. 학습자 쪽은 언어·레벨 어느 것도 저장하지 않는다.
 - 홈 화면 추가 안내는 첫 화면에만, 휴대폰에서만 보인다(안드로이드 크롬은 '추가' 단추, 아이폰은 공유 버튼 안내). 이미 앱으로 열었으면 보이지 않는다. 실제로 설치되려면 공개 주소(https)여야 한다.
 - 학교를 더하거나 빼려면 `config.js` SCHOOLS만 고친다(17곳. 2026-10-24 리옹 에콜리움을 뺐다가 10-25 '에콜리움 한글학교'로 다시 넣음).
+
+## 올리는 길 · 고장 났을 때 (2026-11-16 주소 정리)
+- 주소: **hangeul-oneshot.human-teacher.com**(11-16 붙임, human-teacher.com/hangeuloneshot도 여기로). 옛 주소 humanssaem-hangeul-oneshot.pages.dev와 QR · 학교에 알린 주소는 그대로 열린다.
+- **공개판 가지 feature/ai-helper에 들어가면 GitHub Actions가 올린다**(`.github/workflows/deploy.yml`): `cloudflare/deploy.py build` → 점검(`scripts/check.mjs cloudflare/public`) → Cloudflare Pages `humanssaem-hangeul-oneshot`(wrangler.prod.toml, 화면 + Functions) → 실제 주소 확인(`scripts/verify.mjs` + `/api`). 확인이 실패하면 앞 판으로 되돌린다. main은 옛 판이라 올리지 않는다.
+- D1 표 고치기(migrate)는 Actions가 하지 않는다. 표를 바꾸는 고침이면 PC에서 `deploy.py migrate --prod`를 먼저.
+- 고장 나면: ① Cloudflare 화면 → Workers & Pages → humanssaem-hangeul-oneshot → Deployments → 앞 판 → Rollback(1분) 또는 GitHub → Actions → 되돌리기 → Run workflow ② 문제 생긴 기록을 Revert(5분) ③ PC 창에 "한글원샷 되돌려"(10분). 교사 · 자료는 D1 · KV에 따로 있어 되돌려도 지워지지 않는다.
