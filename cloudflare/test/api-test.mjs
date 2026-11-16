@@ -97,6 +97,7 @@ ok(mH2 && /\/f\/[a-z0-9]+\.html$/.test(mH2.url), 'HTML 고유 주소 /f/<키>.ht
 const hr = await fetch(mH2.url), hb = new Uint8Array(await hr.arrayBuffer()), hcsp = hr.headers.get('content-security-policy') || '';
 ok(hr.status === 200 && /^text\/html; charset=utf-8/i.test(hr.headers.get('content-type')) && hb.length === htmlBody.length && hb.every((x, i) => x === htmlBody[i]), 'HTML이 그대로 · text/html · UTF-8로 나옴');
 ok(/\bsandbox\b/.test(hcsp) && /allow-scripts/.test(hcsp) && !/allow-same-origin/.test(hcsp), 'HTML은 격리(sandbox) · 스크립트는 됨 · allow-same-origin 없음');
+ok(!/allow-forms/.test(hcsp) && !/allow-popups-to-escape-sandbox/.test(hcsp) && /form-action 'none'/.test(hcsp) && /connect-src 'none'/.test(hcsp), 'HTML 격리 더 좁힘(11-17): 양식 · 격리 벗어나는 새 창 없음, form-action · connect-src 막음');
 ok((await go(uH2.id)).to === mH2.url, '자료 QR이 HTML 주소로 넘어감');
 ok((await postFile(fmeta('큰.html'), new Uint8Array(10 * 1048576 + 1), 'text/html')).error === 'file_big', '10MB 넘는 HTML → file_big');
 ok((await postFile(fmeta('스크립트.js'), htmlBody, 'text/javascript')).error === 'file_type', 'js 파일 → file_type');
@@ -287,7 +288,8 @@ if (A) {
   ok(o.ok && Array.isArray(o.materials) && Array.isArray(o.topics) && Array.isArray(o.teachers) && typeof o.settings.join_code === 'string', '관리자 자료: 자료·소주제·교사·가입 코드');
   ok(o.teachers.every(x => !('code' in x) && !('code_hash' in x)) && o.teachers.some(x => x.id === o.me && x.admin), '교사 목록에 코드·해시 없음, 나는 관리자');
   if (FAKE) ok(o.ai.on === true && o.ai.n > 0 && o.ai.in > 0 && o.ai.out > 0, '관리자 자료에 AI 이번 달 사용량');
-  ok(o.materials.some(m => m.id === u1.id && m.deleted) && o.materials.some(m => m.id === u2.id && m.deleted && m.file), '지운 자료(파일 포함)도 보임');
+  ok(o.materials.some(m => m.id === u1.id && m.deleted && !m.gone) && o.materials.some(m => m.id === u2.id && m.deleted && m.file && m.gone), '지운 자료(파일 포함)도 보임 · 교사가 지운 파일 자료는 파일도 지워짐(gone, 11-17)');
+  ok((await adm('mat_restore', { id: u2.id })).error === 'file_gone', '교사가 지운 파일 자료는 되살릴 수 없음 → file_gone(11-17)');
   const t1 = o.teachers.find(x => x.name === '시험' + tag);
   ok(t1 && t1.n === 0 && t1.active && !t1.admin && t1.joined.length === 10, '교사: 올린 자료 수(지운 것 빼고)·켜짐·가입일');
 
@@ -315,12 +317,22 @@ if (A) {
   o = await adm('overview');
   ok(o.materials.find(m => m.id === u3.id).pub === false, '관리자 자료에는 숨김으로 남음');
   ok((await adm('mat_pub', { id: u3.id, on: true })).ok && (await data()).materials.some(m => m.id === u3.id), '보이기 → 자료실에 다시');
-  ok((await adm('mat_del', { id: u4.id })).ok, '남이 올린 자료도 관리자는 삭제');
-  ok((await fetch(m4.url)).status === 404, '지운 파일 링크 404');
-  ok((await adm('mat_del', { id: u4.id })).error === 'not_found', '다시 삭제 → not_found');
-  ok((await adm('mat_restore', { id: u4.id })).ok && (await data()).materials.some(m => m.id === u4.id), '되살리기 → 자료실에 다시');
-  ok((await fetch(m4.url)).status === 200, '되살린 파일 링크가 다시 열림');
-  ok((await adm('mat_restore', { id: u4.id })).error === 'not_found', '지우지 않은 자료 되살리기 → not_found');
+  // 11-17: 링크 자료는 지웠다 되살릴 수 있고, 올린 파일 자료는 지울 때 파일도 지워 되살릴 수 없다(u4는 아래 분류 시험에 그대로 둔다)
+  const u5 = await post({ action: 'upload', code: c1, material: Object.assign({}, mat, { topic: T1, title: '시험 링크 삭제 ' + tag, url: 'https://example.org/d/' + tag }) });
+  ok(u5.ok && (await adm('mat_del', { id: u5.id })).ok, '남이 올린 자료도 관리자는 삭제');
+  ok((await adm('mat_del', { id: u5.id })).error === 'not_found', '다시 삭제 → not_found');
+  ok((await adm('mat_restore', { id: u5.id })).ok && (await data()).materials.some(m => m.id === u5.id), '링크 자료 되살리기 → 자료실에 다시');
+  ok((await adm('mat_restore', { id: u5.id })).error === 'not_found', '지우지 않은 자료 되살리기 → not_found');
+  const u6 = await postFile(Object.assign(fmeta('관리 시험3.pdf'), { material: Object.assign({}, mat, { topic: T1, title: '시험 파일3 ' + tag, url: '', type: '활동지' }) }), pdf, 'application/pdf');
+  const m6 = (await data()).materials.find(m => m.id === u6.id);
+  ok(m6 && (await fetch(m6.url)).status === 200 && (await adm('mat_del', { id: u6.id })).ok, '관리자가 파일 자료 삭제');
+  ok((await fetch(m6.url)).status === 404, '지운 파일 링크 404');
+  o = await adm('overview');
+  const o6 = o.materials.find(m => m.id === u6.id);
+  ok(o6 && o6.deleted && o6.file && o6.gone, '관리자 자료: 파일도 지워진 자료(gone)');
+  ok((await adm('mat_restore', { id: u6.id })).error === 'file_gone' && !(await data()).materials.some(m => m.id === u6.id), '파일 자료 되살리기 → file_gone(자료실에 안 돌아옴)');
+  ok((await adm('mat_save', { id: u6.id, material: Object.assign({}, fine, { title: '파일3 고침 ' + tag, url: 'https://example.org/x/' + tag }) })).ok
+    && (await adm('overview')).materials.find(m => m.id === u6.id).url === o6.url && (await adm('mat_restore', { id: u6.id })).error === 'file_gone', '파일이 지워진 자료는 고쳐도 링크가 그대로 · 되살아나지 않음');
 
   console.log('관리자 — 분류');
   const T1b = T1 + '고침';
@@ -404,7 +416,7 @@ if (A) {
 
   console.log('관리자 — 치우기');
   const qSeen = Math.max(...(await adm('overview')).topics.map(x => Number(x.qid) || 0));   // 지우기 전 가장 큰 번호(시험 소주제 것)
-  for (const id of [u3.id, u4.id]) await adm('mat_del', { id });
+  for (const id of [u3.id, u4.id, u5.id]) await adm('mat_del', { id });
   ok((await adm('topic_del', { topic: T0 })).ok && (await adm('topic_del', { topic: T1b })).ok && (await adm('topic_del', { topic: T2 })).ok, '시험 소주제 지우기(지운 자료만 남은 소주제)');
   ok((await adm('topic_del', { topic: T2 })).error === 'not_found', '없는 소주제 지우기 → not_found');
   const qMax = Math.max(...(await adm('overview')).topics.map(x => Number(x.qid) || 0));

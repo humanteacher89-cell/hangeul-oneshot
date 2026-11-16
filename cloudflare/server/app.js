@@ -4,10 +4,11 @@
 //  POST /api {action:'join'|'login'|'upload'|'delete'|'hide'|'fav', code, ...}   (본문 JSON)
 //  POST /api 파일 올리기: 본문 = 파일 바이트, 머리글 X-Oneshot = encodeURIComponent(JSON {action:'upload', code, material, file:{name,type}})
 //       (base64 JSON을 풀면 CPU 한도 10ms를 넘으므로 바이트를 그대로 KV에 흘려 넣는다)
-//  GET  /f/<키>            → 올린 파일. 지운 자료의 파일은 404(KV에는 남겨 두어 되살릴 수 있다)
+//  GET  /f/<키>            → 올린 파일. 지운 자료의 파일은 404. 2026-11-17부터 자료를 지우면 파일도 KV에서 바로 지운다(dropFile)
 //  GET  /go/<자료 id>      → 자료별 QR이 담는 주소. 지금 링크로 302(2026-10-31)
 //  POST /api {action:'admin', code, op, ...} → 관리자 화면(2차, 2026-10-31). 요청마다 코드로 is_admin = 1인지 본다(틀린 코드 401, 관리자 아님 403). 아래 ADMIN 표
-// 로그인 코드는 HMAC-SHA256(비밀 CODE_PEPPER) 해시만 저장한다. 틀린 코드·가입 코드는 기기별 10분 30번, 전체 300번이면 10분 막는다.
+// 로그인 코드는 HMAC-SHA256(비밀 CODE_PEPPER) 해시만 저장한다. 틀린 코드·가입 코드는 기기별 10분 30번이면 그 기기를 10분 막는다.
+//   전체 300번이 넘으면 그 10분 안에 틀린 적이 있는 기기만 막는다(2026-11-17 — 남이 쏟아부은 실패로 처음 들어오는 선생님까지 막히지 않게).
 // Google Play 정책(2026-11-04): POST /api {action:'report', id, reason, text} 자료 신고(로그인 없이) · {action:'leave', code, confirm:true} 계정 삭제 ·
 //   올리기는 이용 규칙에 동의한 교사만(teachers.terms_at, 아직이면 agree:true를 함께 보내 동의를 적는다).
 // AI 도우미(2026-11-05): POST /api {action:'ai_rec'|'ai_fill'|'ai_ws', code, ...} — 로그인한 교사만. 내용은 ./ai.js
@@ -17,8 +18,10 @@ const FILE_MAX_MB = 10;   // index.html의 FILE_MAX_MB·FILE_EXT와 같게
 const FILE_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'html', 'htm'];   // HTML은 2026-11-05 휴먼쌤 "넣어줘"
 const FILE_MIME = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', heic: 'image/heic', html: 'text/html; charset=utf-8', htm: 'text/html; charset=utf-8' };
 // 교사가 올린 HTML을 여는 방법. 이 주소는 교사 로그인 코드(localStorage)가 있는 화면과 같은 곳이라, sandbox로 다른 곳처럼 격리해 코드를 읽지 못하게 한다.
-// allow-same-origin은 절대 넣지 않는다(넣으면 격리가 풀린다). 스크립트·양식·알림창·새 창은 된다. 저장소는 막히므로 화면이 올릴 때 새로 열면 사라지는 임시 저장소를 넣어 준다(index.html HTML_SHIM).
-const HTML_CSP = 'sandbox allow-scripts allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-downloads allow-pointer-lock';
+// allow-same-origin은 절대 넣지 않는다(넣으면 격리가 풀린다). 스크립트·알림창·새 창은 된다. 저장소는 막히므로 화면이 올릴 때 새로 열면 사라지는 임시 저장소를 넣어 준다(index.html HTML_SHIM).
+// 2026-11-17 보안 점검: 양식 보내기(allow-forms)와 격리를 벗어나는 새 창(allow-popups-to-escape-sandbox)을 뺐다. 올린 HTML이 가짜 입력 칸으로 받은 것을
+//   밖으로 보내지 못하게 form-action과 connect-src(fetch · XHR · WebSocket)도 막는다. 바깥 스크립트 · 글꼴 · 그림 · 소리 파일을 불러오는 것은 그대로 된다.
+const HTML_CSP = "sandbox allow-scripts allow-modals allow-popups allow-downloads allow-pointer-lock; form-action 'none'; connect-src 'none'";
 const FAIL_LIMIT = 30, FAIL_ALL = 300, FAIL_WINDOW_MS = 600000;
 const FAV_MAX = 500;
 export const LEVEL_KEYS = ['하', '중', '상'];   // config.js LEVELS와 같게
@@ -48,7 +51,19 @@ async function hmac(env, s) {
 const codeHash = (env, code) => hmac(env, 'code|' + code);
 const device = async (env, req) => (await hmac(env, 'ip|' + (req.headers.get('CF-Connecting-IP') || 'local'))).slice(0, 16);
 
-export async function handleApi(request, env) {
+// 기기 주소 해시(fails.who · reports.who)는 10분만 쓴다(개인정보처리방침 '약 10분'). 2026-11-17 보안 점검: 다음 실패 · 신고를 기다리지 않고
+//   요청이 올 때마다(자료 읽기 포함) 10분 지난 것을 지운다. 응답을 늦추지 않게 waitUntil이 있으면 응답 뒤에 한다
+async function purgeStale(env) {
+  const since = Date.now() - FAIL_WINDOW_MS;
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM fails WHERE at <= ?1').bind(since),
+    env.DB.prepare("UPDATE reports SET who = '' WHERE at <= ?1 AND who <> ''").bind(since)
+  ]);
+}
+
+export async function handleApi(request, env, waitUntil) {
+  const purge = purgeStale(env).catch(e => console.error('purge', e && e.stack || e));
+  if (typeof waitUntil === 'function') waitUntil(purge); else await purge;
   try {
     if (request.method === 'GET' || request.method === 'HEAD') {
       const u = new URL(request.url);
@@ -173,9 +188,11 @@ async function post(request, env, origin) {
   return no('unknown');
 }
 
+// 기기별 30번이면 그 기기만 막는다. 전체 300번(여러 기기가 나눠 맞히기)이 넘으면 이 10분 안에 틀린 적이 있는 기기만 막는다(2026-11-17 —
+//   예전에는 전체가 넘으면 모두를 막아, 남이 틀린 코드를 쏟아부으면 처음 들어오는 선생님까지 10분 동안 못 들어왔다)
 async function tooMany(env, who) {
   const r = await env.DB.prepare('SELECT COUNT(*) AS n, COALESCE(SUM(who = ?1), 0) AS mine FROM fails WHERE at > ?2').bind(who, Date.now() - FAIL_WINDOW_MS).first();
-  return r.mine >= FAIL_LIMIT || r.n >= FAIL_ALL;
+  return r.mine >= FAIL_LIMIT || (r.n >= FAIL_ALL && r.mine > 0);
 }
 async function addFail(env, who) {
   const now = Date.now();
@@ -307,14 +324,21 @@ async function addMaterial(env, tc, m, url, fileKey) {
   }
 }
 
-// 삭제(자기 것만): 지운 날짜를 적어 자료실·즐겨찾기에서 빠지고 그 파일 링크도 닫힌다. 숨기기(옛 화면)는 공개만 끈다
+// 자료를 지우면 올린 파일도 보관함(KV)에서 바로 지운다(2026-11-17 보안 점검 — 지운 파일을 남겨 두지 않는다). 자료 줄에서는 file_key를 비워
+//   '파일이 지워진 자료'로 남긴다: 링크 자료는 전처럼 관리자가 되살릴 수 있고, 올린 파일 자료는 되살릴 수 없다(mat_restore → file_gone)
+async function dropFile(env, key) {
+  if (key) await env.FILES.delete(key).catch(e => console.error('del_file', key, e && e.stack || e));
+}
+const SOFT_DELETE = 'UPDATE materials SET deleted = ?2, file_key = NULL WHERE id = ?1 AND deleted IS NULL RETURNING id';
+
+// 삭제(자기 것만): 지운 날짜를 적어 자료실·즐겨찾기에서 빠지고 그 파일도 지운다. 숨기기(옛 화면)는 공개만 끈다(파일은 그대로)
 async function remove(env, b, tc, action) {
-  const row = await env.DB.prepare('SELECT id, teacher_id, by_name FROM materials WHERE id = ?1 AND deleted IS NULL').bind(String(b.id)).first();
+  const row = await env.DB.prepare('SELECT id, teacher_id, by_name, file_key FROM materials WHERE id = ?1 AND deleted IS NULL').bind(String(b.id)).first();
   if (!row) return no('not_found');
   const mine = row.teacher_id != null ? row.teacher_id === tc.id : String(row.by_name).trim() === tc.name;
   if (!mine) return no('not_owner');
   if (action === 'hide') await env.DB.prepare('UPDATE materials SET pub = 0 WHERE id = ?1').bind(row.id).run();
-  else await env.DB.prepare('UPDATE materials SET deleted = ?2 WHERE id = ?1').bind(row.id, today()).run();
+  else if (await env.DB.prepare(SOFT_DELETE).bind(row.id, today()).first()) await dropFile(env, row.file_key);
   return json({ ok: true });
 }
 
@@ -404,7 +428,8 @@ const ADMIN = {
       ai: { on: !!env.ANTHROPIC_API_KEY, n: ai.results[0].n, in: ai.results[0].i, out: ai.results[0].o },
       topics: tp.results.map(r => ({ topic: r.topic, fr: r.fr, group: r.grp, order: r.ord == null ? '' : r.ord, icon: r.icon, qid: r.qid == null ? '' : r.qid })),
       materials: mt.results.map(r => ({ id: r.id, group: r.grp, topic: r.topic, level: r.level, title: r.title, type: r.type,
-        url: r.url.startsWith('/') ? origin + r.url : r.url, file: !!r.file_key, desc: r.descr, desc_fr: r.descr_fr || '', school: r.school, by: r.by_name,
+        url: r.url.startsWith('/') ? origin + r.url : r.url, file: !!r.file_key || r.url.startsWith('/f/'), gone: r.url.startsWith('/f/') && !r.file_key,   // gone: 지울 때 파일도 지운 자료(2026-11-17)
+        desc: r.descr, desc_fr: r.descr_fr || '', school: r.school, by: r.by_name,
         teacherId: r.teacher_id, date: r.date, pub: r.pub === 1, deleted: r.deleted || '' })),
       teachers: tc.results.map(r => ({ id: r.id, name: r.name, school: r.school, joined: r.joined, active: r.active === 1, admin: r.is_admin === 1, n: r.n })),
       reports: rp.results.map(r => ({ id: r.id, materialId: r.material_id, reason: r.reason, text: r.text, date: r.date, done: r.done || '', title: r.title || '', topic: r.topic || '', level: r.level || '',
@@ -434,7 +459,7 @@ const ADMIN = {
     const topic = str(m.topic, 60), level = str(m.level, 10), title = str(m.title, 60);
     if (!topic || !title || !LEVEL_KEYS.includes(level)) return no('missing');
     let url = row.url;
-    if (!row.file_key) { url = str(m.url, 2000); if (!/^https?:\/\//i.test(url)) return no('bad_url'); }
+    if (!row.file_key && !String(row.url).startsWith('/f/')) { url = str(m.url, 2000); if (!/^https?:\/\//i.test(url)) return no('bad_url'); }   // 파일이 지워진 자료(2026-11-17)도 링크를 바꾸지 않는다
     const grp = await ensureTopic(env, topic, m.group);
     await db.prepare('UPDATE materials SET grp = ?2, topic = ?3, level = ?4, title = ?5, type = ?6, url = ?7, descr = ?8, descr_fr = ?9 WHERE id = ?1')
       .bind(row.id, grp, topic, level, title, str(m.type, 20), url, str(m.desc, 80), m.desc_fr === undefined ? (row.descr_fr || '') : str(m.desc_fr, 120)).run();
@@ -444,13 +469,18 @@ const ADMIN = {
   async mat_pub(env, b) {
     return changed(await env.DB.prepare('UPDATE materials SET pub = ?2 WHERE id = ?1').bind(str(b.id, 40), b.on ? 1 : 0).run()) ? ok() : no('not_found');
   },
+  // 삭제: 지운 날짜를 적고 올린 파일은 보관함에서도 지운다(2026-11-17, dropFile)
   async mat_del(env, b) {
-    return changed(await env.DB.prepare('UPDATE materials SET deleted = ?2 WHERE id = ?1 AND deleted IS NULL').bind(str(b.id, 40), today()).run()) ? ok() : no('not_found');
+    const db = env.DB, row = await db.prepare('SELECT id, file_key FROM materials WHERE id = ?1 AND deleted IS NULL').bind(str(b.id, 40)).first();
+    if (!row || !(await db.prepare(SOFT_DELETE).bind(row.id, today()).first())) return no('not_found');
+    await dropFile(env, row.file_key);
+    return ok();
   },
-  // 되살리기: 지운 날짜를 비운다(올린 파일 링크도 다시 열린다). 그사이 소주제가 없어졌으면 다시 만든다
+  // 되살리기: 지운 날짜를 비운다. 그사이 소주제가 없어졌으면 다시 만든다. 올린 파일 자료는 지울 때 파일도 지워 되살릴 수 없다(2026-11-17, file_gone)
   async mat_restore(env, b) {
-    const db = env.DB, row = await db.prepare('SELECT id, topic, grp FROM materials WHERE id = ?1 AND deleted IS NOT NULL').bind(str(b.id, 40)).first();
+    const db = env.DB, row = await db.prepare('SELECT id, topic, grp, url, file_key FROM materials WHERE id = ?1 AND deleted IS NOT NULL').bind(str(b.id, 40)).first();
     if (!row) return no('not_found');
+    if (String(row.url).startsWith('/f/') && !row.file_key) return no('file_gone');
     await ensureTopic(env, row.topic, row.grp);
     await db.prepare('UPDATE materials SET deleted = NULL WHERE id = ?1').bind(row.id).run();
     return ok();

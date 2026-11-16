@@ -1,7 +1,8 @@
 # 시트 → D1 옮기기 SQL 만들기(2026-10-30). 공개 자료(자료·주제·설정)는 지금 판 시트 서버(doGet)에서 그대로 받고,
 # 공개에 안 나오는 것(교사·숨긴 자료·지운 자료·가입 코드)은 비공개 JSON에서 읽는다. 로그인 코드는 cloudflare/.dev.vars의
 # CODE_PEPPER로 해시해 넣는다(코드 자체는 SQL에 없다. 같은 CODE_PEPPER를 Pages 비밀로도 넣어 둔다).
-#   python -X utf8 cloudflare/migrate/sheet_to_sql.py --private <비공개.json> --out <나올.sql> [--public <시트 서버 주소 또는 JSON 파일>]
+#   python -X utf8 cloudflare/migrate/sheet_to_sql.py --private <비공개.json> --out <나올.sql> --public <시트 서버 주소 또는 JSON 파일>
+#   (2026-11-17: 시트 서버 주소는 저장소에 두지 않는다 — --public이나 환경 변수 ONESHOT_SHEET_API로 준다)
 # 비공개 JSON(저장소에 올리지 않는다, 쓰고 바로 지운다):
 #   {"join_code": "…",
 #    "teachers": [[이름, 학교, 코드, 활성, 가입일, 즐겨찾기], …]   ← '교사' 탭 순서 그대로, 첫 줄이 관리자(휴먼쌤)
@@ -12,7 +13,8 @@ import argparse, hashlib, hmac, json, os, re, sys, time, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CF = os.path.dirname(HERE)
-SHEET_API = 'https://script.google.com/macros/s/AKfycbwOIqhLetFQyByTA74HrTk_bhTZEeIvPLREwyMhtTP1SD_LcEeLwsUgnbsNv2TJP_k/exec'
+# 옛 시트 서버 주소는 저장소에 두지 않는다(2026-11-17 보안 점검). 다시 옮길 일이 있으면 --public으로 그 주소나 받아 둔 JSON 파일을 준다.
+SHEET_API = os.environ.get('ONESHOT_SHEET_API', '')
 KEYS = ['id', 'group', 'topic', 'level', 'title', 'type', 'url', 'desc', 'minutes', 'school', 'by', 'date', 'pub']
 
 
@@ -64,6 +66,8 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--public', default=SHEET_API)
     a = ap.parse_args()
+    if not a.public:
+        sys.exit('--public에 시트 서버 주소나 받아 둔 JSON 파일을 주세요(주소는 저장소에 두지 않음)')
     pub, priv, pep = load_public(a.public), json.load(open(a.private, encoding='utf-8')), pepper()
     if not pub.get('ok'):
         sys.exit('시트 서버 응답이 이상해요')
