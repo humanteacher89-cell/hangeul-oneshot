@@ -22,7 +22,9 @@ for (let round = 1; round <= 6; round++) {
     const url = `${BASE}/${rel.split('/').map(encodeURIComponent).join('/')}`.replace(/\/index\.html$/, '/');
     const r = await fetch(url, { headers: { 'cache-control': 'no-cache' }, redirect: 'follow' }).catch(e => ({ ok: false, status: String(e) }));
     if (!r.ok) { bad.push(`${rel} (${r.status})`); continue; }
-    if (h(Buffer.from(await r.arrayBuffer())) !== h(fs.readFileSync(f))) bad.push(`${rel} (내용 다름)`);
+    // 받는 도중 연결이 끊겨도(ECONNRESET 등) 멈추지 않고 '아직 다름'으로 세어 다음 차례에 다시 본다(2026-11-17)
+    let live; try { live = Buffer.from(await r.arrayBuffer()); } catch (e) { bad.push(`${rel} (받다가 끊김: ${e.cause?.code || e.message})`); continue; }
+    if (h(live) !== h(fs.readFileSync(f))) bad.push(`${rel} (내용 다름)`);
   }
   if (!bad.length) { console.log(`실제 주소 확인 끝: 파일 ${files.filter(f => !SKIP.test(path.basename(f))).length}개 모두 같음`); process.exit(0); }
   console.log(`${round}번째: 아직 다른 파일 ${bad.length}개 — 10초 뒤 다시`);

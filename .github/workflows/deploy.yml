@@ -48,7 +48,7 @@ jobs:
       - name: 올린 뒤 실제 주소 확인
         run: |
           node scripts/verify.mjs cloudflare/public "$SITE_URL"
-          curl -sf "$SITE_URL/api" | grep -q '"ok":true' || { echo "::error::서버(/api) 응답 이상"; exit 1; }
+          curl -sf --retry 4 --retry-delay 5 --retry-all-errors "$SITE_URL/api" | grep -q '"ok":true' || { echo "::error::서버(/api) 응답 이상"; exit 1; }
           echo "서버(/api) 응답 정상"
       - name: 확인이 실패하면 앞 판으로 되돌리기
         if: failure() && steps.deploy.outcome == 'success'
