@@ -1,0 +1,37 @@
+# 되돌리기 단추: GitHub → Actions → 되돌리기 → Run workflow. 비워 두면 '바로 앞 판'으로, 번호를 넣으면 그 판으로.
+# 다시 앞으로 오려면: Actions → 올리기 → Run workflow(가지는 feature/ai-helper로 고름).
+name: 되돌리기
+on:
+  workflow_dispatch:
+    inputs:
+      to:
+        description: '되돌릴 배포 번호(비워 두면 바로 앞 판)'
+        required: false
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: deploy-humanssaem-hangeul-oneshot
+  cancel-in-progress: false
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_ACCOUNT_ID: b40158737f29a6a83b3f53ef2aa147aa
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      PROJECT: humanssaem-hangeul-oneshot
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 되돌리기
+        env:
+          TO: ${{ inputs.to }}
+        run: |
+          if [ -z "$TO" ]; then TO="$(node scripts/cf.mjs previous)"; fi
+          echo "지금 공개판: $(node scripts/cf.mjs current)"
+          node scripts/cf.mjs rollback "$TO"
+          sleep 5
+          echo "되돌린 뒤 공개판: $(node scripts/cf.mjs current)"
