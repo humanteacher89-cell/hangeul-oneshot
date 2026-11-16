@@ -13,7 +13,7 @@ import glob, os, re, shutil, subprocess, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 PUB = os.path.join(HERE, 'public')
-SITE = ['index.html', 'config.js', 'sample-data.js', 'manifest.json', 'sw.js', 'icons', 'vendor', 'privacy.html', 'terms.html', '.well-known']
+SITE = ['index.html', 'config.js', 'sample-data.js', 'manifest.json', 'sw.js', 'icons', 'vendor', 'privacy.html', 'terms.html', '.well-known', 'robots.txt']
 PROD_PROJECT = 'humanssaem-hangeul-oneshot'
 TEST_HEADERS = '/*\n  X-Robots-Tag: noindex\n'
 
