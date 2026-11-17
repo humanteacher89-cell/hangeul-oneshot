@@ -801,14 +801,14 @@
       wCanT: '메타버스에서 할 수 있어요',
       wCan: [['🗺️', '유럽 지도에서 나라를 고르고, 캐릭터로 걸어 다니며 한글학교를 찾아요.'], ['🏫', '교실에 들어가 교장 선생님 퀴즈를 풀고, 책 · 사진첩 · TV · 게시판으로 학교를 둘러봐요.'], ['💬', '같은 시간에 들어온 사람들과 만나 한국어 말풍선(정해진 표현 20개)으로 인사해요.']],
       // 하나랑 탭 · 놀러 가요 · 하나랑 이야기(2026-11-17 한글원샷 큰 집 1단계)
-      tabHana: '하나랑', hwPlay: '놀러 가요', hwPlayDs: '장소 5곳 · AI 없이', hwTalk: '하나랑 이야기', hwTalkDs: 'AI 대화 · 반 코드',
+      tabHana: '하나랑', hwPlay: '놀러 가요', hwPlayDs: '장소 5곳 · AI 없이', hwTalk: '하나랑 이야기', hwTalkDs: '대화 연습 · 바로 시작',
       hHero: '하나랑 한국어로<br>놀고 이야기해요',
       plT: '놀러 가요', plN: '5곳', plIntro: '하나가 집주인 · 점원 · 역무원 · 약사로 나와요. 그 장소에서 쓰는 말과 낱말 10개를 배워요. 가입 없이 바로 열려요.',
-      plSheet: '활동지 PDF', plLib: n => `자료실 · ${n}`, plMeta: m => `약 ${m}분 · 낱말 10개`,
-      hkT: '하나랑 이야기', hkN: '주제 20가지', hkAi: '하나는 AI예요. 대답이 틀릴 수도 있어요.',
-      hkRules: [['🎫', '선생님께 받은 반 코드가 있어야 이야기할 수 있어요.'], ['🧑‍🏫', '수업에서는 선생님과, 집에서는 보호자와 함께 써요.'], ['🙂', '이름은 별명으로 써도 돼요. 대화 글은 따로 모아 두지 않아요.']],
+      plSheet: '활동지 PDF', plTalk: '하나랑 대화', plLib: n => `자료실 · ${n}`, plMeta: m => `약 ${m}분 · 낱말 10개`,
+      hkT: '하나랑 이야기', hkN: '주제 8가지', hkBadge: '연습', hkAi: '하나가 묻고, 나는 보기에서 골라 대답해요.',
+      hkRules: [['🔁', '모르면 "다시 말해 주세요."를 눌러요. 하나가 천천히 다시 말해요.'], ['🎮', '놀러 가요 장소와 같은 말이 나와요. 끝나면 3D · 활동지 · 자료실로 이어서 해 봐요.'], ['🔒', '코드도 이름도 필요 없어요. 고른 말은 기기 밖으로 나가지 않아요.']],
       hkOpen: '하나랑 이야기 열기',
-      tmT: '이 주제로 더 해 봐요', tmPlay: m => `놀러 가요 · AI 없이 · 약 ${m}분`, tmTalk: '하나랑 이야기', tmTalkDs: 'AI 대화 · 반 코드가 있어야 해요',
+      tmT: '이 주제로 더 해 봐요', tmPlay: m => `놀러 가요 · AI 없이 · 약 ${m}분`, tmTalk: '하나랑 이야기', tmTalkDs: '대화 연습 · 보기에서 골라요',
       // 즐겨찾기(#/fav, 2026-10-24 휴먼쌤: 교사가 담아 두었다가 학생에게 QR로 보여 주는 곳)
       favOn: '즐겨찾기에 담기', favOff: '즐겨찾기에서 빼기', favAdded: '즐겨찾기에 담았어요', favRemoved: '즐겨찾기에서 뺐어요',
       favCount: n => `담은 자료 ${n}개`, favFound: n => `찾은 자료 ${n}개`, libSearch: '자료 찾기 (제목·소주제·설명)', clearQ: '지우기',
@@ -901,14 +901,14 @@
       wEu: 'Métavers des écoles coréennes d’Europe', wEuOther: '유럽 한글학교 메타버스', wEuDs: '70 écoles coréennes de France, d’Allemagne et du Royaume-Uni sur une même carte. Choisis un pays pour entrer dans son hall.', wEuCnt: '70 écoles',
       wCanT: 'Ce que tu peux y faire',
       wCan: [['🗺️', 'Choisis un pays sur la carte d’Europe et promène-toi avec ton personnage pour trouver les écoles.'], ['🏫', 'En classe, réponds au quiz du directeur et découvre l’école : livre, album photo, TV, tableau d’affichage.'], ['💬', 'Retrouve les visiteurs connectés et salue-les avec des bulles en coréen (20 phrases au choix).']],
-      tabHana: 'Avec Hana', hwPlay: 'Allons-y !', hwPlayDs: '5 lieux · sans IA', hwTalk: 'Parler avec Hana', hwTalkDs: 'Chat IA · code de classe',
+      tabHana: 'Avec Hana', hwPlay: 'Allons-y !', hwPlayDs: '5 lieux · sans IA', hwTalk: 'Parler avec Hana', hwTalkDs: 'Dialogue guidé · sans code',
       hHero: 'Joue et parle<br>coréen avec Hana',
       plT: 'Allons-y !', plN: '5 lieux', plIntro: 'Hana joue l’hôtesse, la vendeuse, l’agente du métro et la pharmacienne. Apprends les phrases du lieu et 10 mots. Sans inscription.',
-      plSheet: 'Fiche PDF', plLib: n => `Ressources · ${n}`, plMeta: m => `env. ${m} min · 10 mots`,
-      hkT: 'Parler avec Hana', hkN: '20 sujets', hkAi: 'Hana est une IA. Elle peut se tromper.',
-      hkRules: [['🎫', 'Il faut le code de classe donné par l’enseignant.'], ['🧑‍🏫', 'En classe avec l’enseignant, à la maison avec un parent.'], ['🙂', 'Un surnom suffit. Les conversations ne sont pas conservées.']],
+      plSheet: 'Fiche PDF', plTalk: 'Parler avec Hana', plLib: n => `Ressources · ${n}`, plMeta: m => `env. ${m} min · 10 mots`,
+      hkT: 'Parler avec Hana', hkN: '8 sujets', hkBadge: 'Exercice', hkAi: 'Hana pose une question, tu choisis ta réponse.',
+      hkRules: [['🔁', 'Si tu ne comprends pas, touche « 다시 말해 주세요. » : Hana répète lentement.'], ['🎮', 'Les mêmes phrases que dans « Allons-y ! ». À la fin, continue en 3D, avec la fiche ou les ressources.'], ['🔒', 'Pas de code, pas de prénom. Rien n’est envoyé.']],
       hkOpen: 'Ouvrir « Parler avec Hana »',
-      tmT: 'Encore plus sur ce thème', tmPlay: m => `Allons-y ! · sans IA · env. ${m} min`, tmTalk: 'Parler avec Hana', tmTalkDs: 'Chat IA · code de classe nécessaire',
+      tmT: 'Encore plus sur ce thème', tmPlay: m => `Allons-y ! · sans IA · env. ${m} min`, tmTalk: 'Parler avec Hana', tmTalkDs: 'Dialogue guidé · choisis ta réponse',
       favOn: 'Ajouter aux favoris', favOff: 'Retirer des favoris', favAdded: 'Ajouté aux favoris', favRemoved: 'Retiré des favoris',
       favCount: n => `${n} favori${n > 1 ? 's' : ''}`, favFound: n => `${n} résultat${n > 1 ? 's' : ''}`, libSearch: 'Chercher une ressource (titre, sous-thème, description)', clearQ: 'Effacer',
       sortK: 'Tri', sortAdded: 'Ajout récent', sortTitle: 'Titre', sortTopic: 'Sous-thème', reset: 'Réinitialiser',
@@ -1565,16 +1565,12 @@
     { id: 'pharmacy', topic: '약국', emo: '💊', bg: '#EDE5FF', min: 10, ko: '약국에 가요', fr: 'À la pharmacie',
       dKo: '“머리가 아파요” · “열이 나요”처럼 아픈 곳을 말하고 약을 받아 봐요. 한국어 연습용이라 의학 정보가 아니에요.', dFr: 'Dis où tu as mal (« 머리가 아파요 », « 열이 나요 ») et reçois un médicament. C’est pour pratiquer le coréen, pas une information médicale.' }
   ];
-  const HANA_URL = 'https://hana.human-teacher.com/';
-  const HANA_T = [['intro', '👋', '자기소개', 'Se présenter'], ['food', '🍜', '음식', 'La nourriture'], ['weekend', '🎨', '주말과 취미', 'Le week-end'], ['family', '👨‍👩‍👧', '가족', 'La famille'],
-    ['weather', '☀️', '날씨와 계절', 'Météo et saisons'], ['daily', '⏰', '하루 일과', 'Ma journée'], ['town', '🏘️', '우리 동네', 'Mon quartier'], ['transport', '🚇', '버스와 지하철', 'Bus et métro'],
-    ['study', '📚', '한국어 공부', 'Apprendre le coréen'], ['kculture', '🎬', '드라마와 음악', 'Séries et musique'], ['travel', '✈️', '여행', 'Les voyages'], ['birthday', '🎂', '생일과 기념일', 'Anniversaires et fêtes'],
-    ['cafe', '☕', '카페에서', 'Au café'], ['restaurant', '🍽️', '식당에서', 'Au restaurant'], ['shop', '🛒', '가게에서', 'À l’épicerie'], ['clothes', '👕', '옷 가게', 'Magasin de vêtements'],
-    ['directions', '🗺️', '길 묻기', 'Demander son chemin'], ['pharmacy', '💊', '약국에서', 'À la pharmacie'], ['hotel', '🏨', '호텔에서', 'À l’hôtel'], ['plans', '📅', '약속 잡기', 'Fixer un rendez-vous']]
+  const HANA_URL = 'hana/';   // 11-18 미리 쓴 대화(같은 사이트, AI · 반 코드 없음)
+  const HANA_T = [['cafe', '☕', '카페', 'Au café'], ['hanok', '🏠', '하나네 집', 'Chez Hana'], ['store', '🏪', '편의점', 'À la supérette'], ['bunsik', '🍢', '분식집', 'Au snack coréen'],
+    ['subway', '🚇', '지하철', 'Dans le métro'], ['pharmacy', '💊', '약국', 'À la pharmacie'], ['restaurant', '🍽️', '식당', 'Au restaurant'], ['intro', '👋', '처음 만남', 'Première rencontre']]
     .map(([id, emo, ko, fr]) => ({ id, emo, ko, fr }));
   // 자료실 소주제 → 하나 주제(기획 3의 겹치는 주제 표)
-  const HANA_OF = { '처음 만남': ['intro'], '카페': ['cafe'], '식당': ['restaurant'], '분식집': ['food'], '편의점': ['shop'], '옷가게': ['clothes'], '길 묻기': ['directions'],
-    '지하철': ['transport'], '약국': ['pharmacy'], '호텔': ['hotel'], '여행': ['travel'], '초대': ['plans', 'birthday'] };
+  const HANA_OF = { '처음 만남': ['intro'], '하나네 집': ['hanok'], '카페': ['cafe'], '식당': ['restaurant'], '분식집': ['bunsik'], '편의점': ['store'], '지하철': ['subway'], '약국': ['pharmacy'] };
   const hanaHref = id => HANA_URL + (id ? '?topic=' + encodeURIComponent(id) : '');
   const playOf = name => PLAY.find(p => p.topic === name);
   const hanaOf = name => (HANA_OF[name] || []).map(id => HANA_T.find(h => h.id === id)).filter(Boolean);
@@ -1588,7 +1584,7 @@
     const p = playOf(name), hs = hanaOf(name), fr = lang === 'fr';
     if (!p && !hs.length) return '';
     const rows = (p ? [`<a class="item way" href="${XR_BASE + p.id}/" target="_blank" rel="noopener"><span class="ti" style="background:var(--g-l)">🎮</span><span class="tx"><span class="tt">${esc(fr ? p.fr : p.ko)}</span><span class="meta">${esc(t('tmPlay')(p.min))}</span></span><span class="go">${ICON.out}</span></a>`] : [])
-      .concat(hs.map(h => `<a class="item way" href="${hanaHref(h.id)}" target="_blank" rel="noopener"><span class="ti" style="background:#FFE4EC">💬</span><span class="tx"><span class="tt">${esc(t('tmTalk'))} · ${esc(fr ? h.fr : h.ko)}</span><span class="meta">${esc(t('tmTalkDs'))}</span></span><span class="go h">${ICON.out}</span></a>`));
+      .concat(hs.map(h => `<a class="item way" href="${hanaHref(h.id)}"><span class="ti" style="background:#FFE4EC">💬</span><span class="tx"><span class="tt">${esc(t('tmTalk'))} · ${esc(fr ? h.fr : h.ko)}</span><span class="meta">${esc(t('tmTalkDs'))}</span></span><span class="go h">${ICON.out}</span></a>`));
     return `<section class="tmore"><h3>${esc(t('tmT'))}</h3>${rows.join('')}</section>`;
   }
   function viewHana() {
@@ -1598,12 +1594,12 @@
     const lib = p => { const tp = data.topics.find(x => x.name === p.topic); return tp ? `<a href="${topicHref(tp.name)}">📚 ${esc(t('plLib')(topicLabel(tp).big))}</a>` : ''; };
     const card = (p, i) => `<div class="pcard"><a class="pmain" href="${XR_BASE + p.id}/" target="_blank" rel="noopener"><span class="pn" style="background:${p.bg}">${p.emo}<i>${String(i + 1).padStart(2, '0')}</i></span>`
       + `<span class="tx"><b>${esc(fr ? p.fr : p.ko)}</b><small>${esc(fr ? p.ko : p.fr)}</small><span class="pds">${esc(fr ? p.dFr : p.dKo)}</span><span class="pm">${esc(t('plMeta')(p.min))}</span></span><span class="go">${ICON.out}</span></a>`
-      + `<div class="pfoot"><a href="${XR_BASE}korean/sheets/${p.id}.pdf" target="_blank" rel="noopener">📄 ${esc(t('plSheet'))}</a>${lib(p)}</div></div>`;
+      + `<div class="pfoot"><a href="${XR_BASE}korean/sheets/${p.id}.pdf" target="_blank" rel="noopener">📄 ${esc(t('plSheet'))}</a>${lib(p)}<a href="${hanaHref(p.id)}">💬 ${esc(t('plTalk'))}</a></div></div>`;
     const play = `<div class="sec"><h2>🎮 ${esc(t('plT'))}</h2><span>${esc(t('plN'))}</span></div><p class="hintro">${esc(t('plIntro'))}</p><div class="plist">${PLAY.map(card).join('')}</div>`;
-    const talk = `<div class="sec" id="hanaTalk"><h2>💬 ${esc(t('hkT'))}</h2><span>${esc(t('hkN'))}</span></div><section class="hcard"><p class="hai"><b>AI</b><span>${esc(t('hkAi'))}</span></p>`
+    const talk = `<div class="sec" id="hanaTalk"><h2>💬 ${esc(t('hkT'))}</h2><span>${esc(t('hkN'))}</span></div><section class="hcard"><p class="hai"><b>${esc(t('hkBadge'))}</b><span>${esc(t('hkAi'))}</span></p>`
       + `<ul>${t('hkRules').map(([e, x]) => `<li><span class="e">${e}</span><span>${esc(x)}</span></li>`).join('')}</ul>`
-      + `<div class="htop">${HANA_T.map(h => `<a href="${hanaHref(h.id)}" target="_blank" rel="noopener">${h.emo} ${esc(fr ? h.fr : h.ko)}</a>`).join('')}</div>`
-      + `<a class="btn hbtn" href="${HANA_URL}" target="_blank" rel="noopener">${esc(t('hkOpen'))}${ICON.out}</a></section>`;
+      + `<div class="htop">${HANA_T.map(h => `<a href="${hanaHref(h.id)}">${h.emo} ${esc(fr ? h.fr : h.ko)}</a>`).join('')}</div>`
+      + `<a class="btn hbtn" href="${HANA_URL}">${esc(t('hkOpen'))}${ICON.out}</a></section>`;
     return head + `<div class="pad">${hero}${play}${talk}</div>`;
   }
 
