@@ -154,12 +154,65 @@
   .wcan li { display: flex; gap: 11px; align-items: flex-start; padding: 10px 0; border-top: 2px dashed #F4EEE6; font-size: 14px; font-weight: 700; color: #6E5E50; line-height: 1.5; word-break: keep-all; }
   .wcan li:first-child { border-top: 0; }
   .wcan li .e { flex: none; width: 34px; height: 34px; border-radius: 11px; background: #EEF3FF; display: grid; place-items: center; font-size: 19px; line-height: 1; }
+  /* 한글원샷 큰 집 1단계(2026-11-17 휴먼쌤 "이 기획안대로 만들어줘"): 첫 화면 두 길 · 주제 카드 표시 · 주제 화면 '이 주제로 더 해 봐요' · 하나랑 탭.
+     🎮 = 놀러 가요(휴먼버스 한국어 XR 5곳, AI 없음) · 💬 = 하나랑 이야기(AI 대화, 반 코드). 둘 다 지금 주소로 새 창에서 열린다. */
+  .hways { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .hw { display: flex; align-items: center; gap: 10px; min-width: 0; background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 11px 11px 11px 12px; box-shadow: var(--press); }
+  .hw:active { transform: translateY(3px); box-shadow: 0 1px 0 #EEDFCB; }
+  .hw .ic { flex: none; width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-size: 23px; line-height: 1; }
+  .hw .tx { min-width: 0; }
+  .hw b { display: block; font-size: 15px; font-weight: 900; letter-spacing: -.03em; line-height: 1.25; word-break: keep-all; }
+  .hw small { display: block; margin-top: 2px; font-size: 11.5px; font-weight: 700; color: var(--sub); line-height: 1.35; word-break: keep-all; }
+  .hw.p .ic, .tw2 .p { background: var(--g-l); } .hw.h .ic, .tw2 .h { background: #FFE4EC; }
+  .tcard { position: relative; }
+  .tw2 { position: absolute; right: 10px; top: 12px; display: flex; gap: 3px; }
+  .tw2 span { width: 26px; height: 26px; border-radius: 9px; display: grid; place-items: center; font-size: 14px; line-height: 1; }
+  .tmore { margin: 4px 0 16px; }
+  .tmore h3 { margin: 6px 4px 10px; font-size: 16px; font-weight: 900; letter-spacing: -.02em; }
+  .item.way { margin-bottom: 10px; }
+  .item.way .ti { width: 46px; height: 46px; border-radius: 15px; font-size: 24px; }
+  .go.h { background: #FF6F91; box-shadow: 0 3px 0 #E0507A; }
+  .whero.hh { background: linear-gradient(135deg, #FFA3B5 0%, #FF6F91 100%); box-shadow: 0 5px 0 #E0507A; }
+  .hintro { margin: -4px 4px 12px; font-size: 13.5px; font-weight: 700; color: #6E5E50; line-height: 1.5; word-break: keep-all; }
+  .plist { display: grid; gap: 12px; }
+  .pcard { background: #fff; border: 2px solid var(--line); border-radius: 22px; box-shadow: var(--press); overflow: hidden; }
+  .pmain { display: flex; align-items: center; gap: 12px; padding: 12px 12px 11px; }
+  .pmain:active { background: #FFFBF5; }
+  .pn { position: relative; flex: none; width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; font-size: 30px; line-height: 1; }
+  .pn i { position: absolute; left: -5px; top: -5px; font-style: normal; font-size: 10.5px; font-weight: 900; color: #fff; background: var(--ink); border-radius: 999px; padding: 2px 6px; line-height: 1.2; }
+  .pmain .tx { flex: 1; min-width: 0; }
+  .pmain b { display: block; font-size: 16.5px; font-weight: 900; letter-spacing: -.03em; line-height: 1.3; word-break: keep-all; }
+  .pmain small { display: block; margin-top: 1px; font-size: 12px; font-weight: 700; color: var(--sub); }
+  .pmain .pds { display: block; margin-top: 5px; font-size: 13px; font-weight: 600; color: #6E5E50; line-height: 1.45; word-break: keep-all; }
+  .pmain .pm { display: inline-block; margin-top: 6px; font-size: 11.5px; font-weight: 900; color: var(--g-d); background: var(--g-l); padding: 2px 8px; border-radius: 8px; }
+  .pfoot { display: flex; border-top: 2px dashed #F4EEE6; }
+  .pfoot a { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 800; color: #6E5E50; line-height: 1.35; word-break: keep-all; }
+  @media (max-width: 359px) {   /* 아주 좁은 폰(320): 첫 화면 두 길의 그림을 줄여 글자 자리를 넓힌다 */
+    .hw { gap: 8px; padding: 10px; }
+    .hw .ic { width: 34px; height: 34px; border-radius: 12px; font-size: 19px; }
+    .hw b { font-size: 14px; }
+  }
+  .pfoot a + a { border-left: 2px dashed #F4EEE6; }
+  #hanaTalk { scroll-margin-top: 78px; }
+  .hcard { background: #fff; border: 2px solid var(--line); border-radius: 22px; padding: 14px 14px 16px; box-shadow: var(--press); }
+  .hai { display: flex; gap: 9px; align-items: center; margin: 0 0 6px; background: #FFF0F4; border-radius: 14px; padding: 9px 12px; font-size: 13.5px; font-weight: 800; color: #B23A62; line-height: 1.4; word-break: keep-all; }
+  .hai b { flex: none; background: #FF6F91; color: #fff; font-size: 11.5px; font-weight: 900; border-radius: 8px; padding: 2px 7px; }
+  .hcard ul { list-style: none; margin: 0; padding: 0; }
+  .hcard li { display: flex; gap: 10px; align-items: flex-start; padding: 9px 2px; border-top: 2px dashed #F4EEE6; font-size: 13.5px; font-weight: 700; color: #6E5E50; line-height: 1.5; word-break: keep-all; }
+  .hcard li:first-child { border-top: 0; }
+  .hcard li .e { flex: none; width: 30px; height: 30px; border-radius: 10px; background: #FFF0F4; display: grid; place-items: center; font-size: 16px; line-height: 1; }
+  .htop { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .htop a { padding: 6px 10px; border-radius: 999px; background: #FFF8EF; border: 2px solid var(--line); font-size: 12.5px; font-weight: 800; color: #6E5E50; white-space: nowrap; }
+  .btn.hbtn { background: #FF6F91; box-shadow: 0 4px 0 #E0507A; }
+  .btn.hbtn:active { box-shadow: 0 2px 0 #E0507A; }
 
   /* 아래 탭 */
   .tabbar { position: fixed; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 480px; z-index: 30; display: flex; justify-content: space-around;
             background: #FFFDF9; border-top: 2px solid var(--line); box-shadow: 0 -6px 16px rgba(120,90,50,.06); padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); }
   .sidelogo { display: none; }   /* PC 왼쪽 메뉴에서만 보인다 */
-  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 80px; padding: 2px 0; font-size: 11.5px; font-weight: 800; color: #B6A796; }
+  /* 탭이 다섯 개라(2026-11-17 하나랑 탭) 좁은 폰(320)에서도 한 줄에 들어가게 폭을 나눈다. 글이 길면 … */
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1 1 0; min-width: 0; max-width: 80px; padding: 2px 0; font-size: 11.5px; font-weight: 800; color: #B6A796; }
+  .tab span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tab svg { width: 27px; height: 27px; }
   .tab.on { color: var(--coral); }
 
@@ -615,6 +668,14 @@
     .wcan { padding: 18px 22px 10px; }
     .wcan ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 22px; }
     .wcan li { border-top: 0; }
+    /* 하나랑 탭 · 첫 화면 두 길(넓은 화면, 2026-11-17) — 왼쪽 메뉴에서는 탭이 위아래로 늘어나지 않게 */
+    .tab { flex: none; max-width: none; }
+    .hw { padding: 14px 16px; }
+    .hw b { font-size: 17px; }
+    .hw small { font-size: 12.5px; }
+    .plist { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .hcard { padding: 18px 22px 20px; }
+    .btn.hbtn { max-width: 360px; }
     /* 관리자 화면: 가운데 한 줄기, 위 칸 고르기는 제목 줄 아래에 붙는다 */
     .mgseg { top: 70px; }
     .mgentry { margin-top: 14px; }
@@ -717,6 +778,7 @@
     star: S('<path d="M12 3.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>'),
     shelf: S('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2h6.5A1.5 1.5 0 0 1 20 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/>'),
     globe: S('<circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2M12 3.4c2.5 2.4 3.8 5.3 3.8 8.6s-1.3 6.2-3.8 8.6c-2.5-2.4-3.8-5.3-3.8-8.6s1.3-6.2 3.8-8.6z"/>'),
+    chat: S('<path d="M5 5.5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2h-6l-4.5 4v-4H7a2 2 0 0 1-2-2z"/><path d="M9 9.8h.01M12 9.8h.01M15 9.8h.01"/>', 2.2),
     search: S('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
     upfile: S('<path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 14.5v3A2 2 0 0 0 6.5 19.5h11a2 2 0 0 0 2-2v-3"/>', 2.2),
     spark: S('<path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9-1.9 5.1-1.9-5.1-5.1-1.9 5.1-1.9zM19 16v4M17 18h4M5 3.5v3M3.5 5h3"/>', 2),
@@ -738,6 +800,15 @@
       wEu: '유럽 한글학교 메타버스', wEuOther: 'Métavers des écoles coréennes d’Europe', wEuDs: '프랑스 · 독일 · 영국 한글학교 70곳이 한 지도에 모여 있어요. 나라를 고르면 그 나라 로비로 들어가요.', wEuCnt: '학교 70곳',
       wCanT: '메타버스에서 할 수 있어요',
       wCan: [['🗺️', '유럽 지도에서 나라를 고르고, 캐릭터로 걸어 다니며 한글학교를 찾아요.'], ['🏫', '교실에 들어가 교장 선생님 퀴즈를 풀고, 책 · 사진첩 · TV · 게시판으로 학교를 둘러봐요.'], ['💬', '같은 시간에 들어온 사람들과 만나 한국어 말풍선(정해진 표현 20개)으로 인사해요.']],
+      // 하나랑 탭 · 놀러 가요 · 하나랑 이야기(2026-11-17 한글원샷 큰 집 1단계)
+      tabHana: '하나랑', hwPlay: '놀러 가요', hwPlayDs: '장소 5곳 · AI 없이', hwTalk: '하나랑 이야기', hwTalkDs: 'AI 대화 · 반 코드',
+      hHero: '하나랑 한국어로<br>놀고 이야기해요',
+      plT: '놀러 가요', plN: '5곳', plIntro: '하나가 집주인 · 점원 · 역무원 · 약사로 나와요. 그 장소에서 쓰는 말과 낱말 10개를 배워요. 가입 없이 바로 열려요.',
+      plSheet: '활동지 PDF', plLib: n => `자료실 · ${n}`, plMeta: m => `약 ${m}분 · 낱말 10개`,
+      hkT: '하나랑 이야기', hkN: '주제 20가지', hkAi: '하나는 AI예요. 대답이 틀릴 수도 있어요.',
+      hkRules: [['🎫', '선생님께 받은 반 코드가 있어야 이야기할 수 있어요.'], ['🧑‍🏫', '수업에서는 선생님과, 집에서는 보호자와 함께 써요.'], ['🙂', '이름은 별명으로 써도 돼요. 대화 글은 따로 모아 두지 않아요.']],
+      hkOpen: '하나랑 이야기 열기',
+      tmT: '이 주제로 더 해 봐요', tmPlay: m => `놀러 가요 · AI 없이 · 약 ${m}분`, tmTalk: '하나랑 이야기', tmTalkDs: 'AI 대화 · 반 코드가 있어야 해요',
       // 즐겨찾기(#/fav, 2026-10-24 휴먼쌤: 교사가 담아 두었다가 학생에게 QR로 보여 주는 곳)
       favOn: '즐겨찾기에 담기', favOff: '즐겨찾기에서 빼기', favAdded: '즐겨찾기에 담았어요', favRemoved: '즐겨찾기에서 뺐어요',
       favCount: n => `담은 자료 ${n}개`, favFound: n => `찾은 자료 ${n}개`, libSearch: '자료 찾기 (제목·소주제·설명)', clearQ: '지우기',
@@ -830,6 +901,14 @@
       wEu: 'Métavers des écoles coréennes d’Europe', wEuOther: '유럽 한글학교 메타버스', wEuDs: '70 écoles coréennes de France, d’Allemagne et du Royaume-Uni sur une même carte. Choisis un pays pour entrer dans son hall.', wEuCnt: '70 écoles',
       wCanT: 'Ce que tu peux y faire',
       wCan: [['🗺️', 'Choisis un pays sur la carte d’Europe et promène-toi avec ton personnage pour trouver les écoles.'], ['🏫', 'En classe, réponds au quiz du directeur et découvre l’école : livre, album photo, TV, tableau d’affichage.'], ['💬', 'Retrouve les visiteurs connectés et salue-les avec des bulles en coréen (20 phrases au choix).']],
+      tabHana: 'Avec Hana', hwPlay: 'Allons-y !', hwPlayDs: '5 lieux · sans IA', hwTalk: 'Parler avec Hana', hwTalkDs: 'Chat IA · code de classe',
+      hHero: 'Joue et parle<br>coréen avec Hana',
+      plT: 'Allons-y !', plN: '5 lieux', plIntro: 'Hana joue l’hôtesse, la vendeuse, l’agente du métro et la pharmacienne. Apprends les phrases du lieu et 10 mots. Sans inscription.',
+      plSheet: 'Fiche PDF', plLib: n => `Ressources · ${n}`, plMeta: m => `env. ${m} min · 10 mots`,
+      hkT: 'Parler avec Hana', hkN: '20 sujets', hkAi: 'Hana est une IA. Elle peut se tromper.',
+      hkRules: [['🎫', 'Il faut le code de classe donné par l’enseignant.'], ['🧑‍🏫', 'En classe avec l’enseignant, à la maison avec un parent.'], ['🙂', 'Un surnom suffit. Les conversations ne sont pas conservées.']],
+      hkOpen: 'Ouvrir « Parler avec Hana »',
+      tmT: 'Encore plus sur ce thème', tmPlay: m => `Allons-y ! · sans IA · env. ${m} min`, tmTalk: 'Parler avec Hana', tmTalkDs: 'Chat IA · code de classe nécessaire',
       favOn: 'Ajouter aux favoris', favOff: 'Retirer des favoris', favAdded: 'Ajouté aux favoris', favRemoved: 'Retiré des favoris',
       favCount: n => `${n} favori${n > 1 ? 's' : ''}`, favFound: n => `${n} résultat${n > 1 ? 's' : ''}`, libSearch: 'Chercher une ressource (titre, sous-thème, description)', clearQ: 'Effacer',
       sortK: 'Tri', sortAdded: 'Ajout récent', sortTitle: 'Titre', sortTopic: 'Sous-thème', reset: 'Réinitialiser',
@@ -1155,7 +1234,7 @@
     const chips = groups.length > 1 ? `<div class="chips">${[{ name: '' }].concat(groups).map(g => `<button type="button" class="chip${g.name === sel ? ' on' : ''}" data-group="${esc(g.name)}">${esc(g.name ? gName(g.name) : t('all'))}</button>`).join('')}</div>` : '';
     const search = data.materials.length ? `<label class="srch lib">${ICON.search}<input id="libQ" type="search" enterkeyhint="search" placeholder="${esc(t('libSearch'))}" value="${esc(libQ)}" aria-label="${esc(t('libSearch'))}">`
       + `<button type="button" class="sx" data-libqx aria-label="${esc(t('clearQ'))}"${libQ ? '' : ' hidden'}>✕</button></label>` : '';
-    return barHome() + `<div class="pad">${hero}${notice}${newRow()}${search}${chips}<div id="libBody">${libBody(shown)}</div>${footLine()}</div>`;
+    return barHome() + `<div class="pad">${hero}${notice}${hways()}${newRow()}${search}${chips}<div id="libBody">${libBody(shown)}</div>${footLine()}</div>`;
   }
   // 자료실 글자 찾기(2026-10-25 휴먼쌤 "즐겨찾기 탭에 있는 검색창은 없애주고 대신 자료실에는 신규로 만들어줘").
   // 제목·주제(프랑스어 이름도)·설명·유형·묶음에서 찾고, 묶음 칩을 골라 두었으면 그 안에서. 글자가 없으면 주제 카드 그대로.
@@ -1189,7 +1268,9 @@
     const L = topicLabel(tp), ic = topicIcon(tp);
     const total = LEVEL_KEYS.reduce((s, k) => s + (tp.counts[k] || 0), 0);
     const badges = total ? LEVEL_KEYS.map(k => { const c = tp.counts[k] || 0; return `<b class="${c ? 'l-' + k : 'l-z'}">${k} ${c}</b>`; }).join('') : `<b class="l-z">${esc(t('waiting'))}</b>`;
-    return `<a class="tcard" href="${topicHref(tp.name)}"><span class="em${ic.txt ? ' txt' : ''}" style="background:${tp.color}">${esc(ic.v)}</span><h3>${esc(L.big)}</h3><p class="fr">${esc(L.small) || '&nbsp;'}</p><div class="lv3">${badges}</div></a>`;
+    // 놀러 가요 · 하나 대화가 있는 주제는 오른쪽 위에 🎮 · 💬(2026-11-17 큰 집 1단계)
+    const ways = (playOf(tp.name) ? '<span class="p">🎮</span>' : '') + (hanaOf(tp.name).length ? '<span class="h">💬</span>' : '');
+    return `<a class="tcard" href="${topicHref(tp.name)}">${ways ? `<span class="tw2" aria-hidden="true">${ways}</span>` : ''}<span class="em${ic.txt ? ' txt' : ''}" style="background:${tp.color}">${esc(ic.v)}</span><h3>${esc(L.big)}</h3><p class="fr">${esc(L.small) || '&nbsp;'}</p><div class="lv3">${badges}</div></a>`;
   }
   function footLine() {
     const upd = data.updatedAt ? new Date(data.updatedAt) : null;
@@ -1218,7 +1299,7 @@
       : `<div class="emptycard"><div class="e">🌱</div>${esc(t('empty'))}<small>${esc(teacher ? t('emptyTeacher') : t('emptyHint'))}</small></div>`;
     const other = [levelDescOther(cur), t('mats')(list.length)].filter(Boolean).join(' · ');
     const fab = teacher ? `<a class="fab" href="#/upload/${encodeURIComponent(name)}/${encodeURIComponent(cur)}">${ICON.plus}<span>${esc(t('upload'))}</span></a>` : '';
-    return `<div class="tview">` + head + sel + `<div class="list${teacher ? ' withfab' : ''}"><div class="lhead"><b>${esc(levelDesc(cur))}</b><span>${esc(other)}</span></div>${items}
+    return `<div class="tview">` + head + sel + `<div class="list${teacher ? ' withfab' : ''}"><div class="lhead"><b>${esc(levelDesc(cur))}</b><span>${esc(other)}</span></div>${items}${topicMore(name)}
       <div class="hand"><span class="h">✋</span><div>${esc(t('hand'))}<small>${esc(t('handOther'))}</small></div></div><p class="tip">${esc(t('newtab'))}</p></div></div>` + fab;
   }
 
@@ -1467,13 +1548,73 @@
     return head + `<div class="pad">${hero}<div class="wlist">${WORLD.map(card).join('')}</div>${can}</div>`;
   }
 
-  // 아래 탭: 자료실 · 즐겨찾기 · 선생님 · 한글월드(2026-11-13 휴먼쌤 "한글월드 탭은 맨 오른쪽, '선생님' 오른쪽으로")
+  // ---------- 하나랑 탭(#/hana) · 놀러 가요 · 하나랑 이야기(2026-11-17 휴먼쌤 "이 기획안대로 만들어줘" — 한글원샷 큰 집 1단계) ----------
+  // 한글원샷에는 저장·로그인·AI가 생기지 않는다. 놀러 가요(휴먼버스 한국어 XR 5곳)와 하나랑 이야기(AI 대화, 반 코드)는 지금 주소로 새 창에서 열린다.
+  // 주제 이름(자료실 소주제)으로 잇는다 — 관리자가 소주제 이름을 바꾸면 그 주제의 길만 안 보이고 다른 곳은 그대로다.
+  // 놀러 가요 글은 world.human-teacher.com/korean/ 소개 글, 하나 주제는 hana.human-teacher.com /api/topics(2026-11-17)에서 옮겼다. 거기가 바뀌면 여기도 맞춘다.
+  const XR_BASE = 'https://world.human-teacher.com/';
+  const PLAY = [
+    { id: 'hanok', topic: '하나네 집', emo: '🏠', bg: '#FFE9D6', min: 8, ko: '하나네 집에 놀러 가요', fr: 'Visite chez Hana',
+      dKo: '한옥 부엌에서 물건 이름을 듣고, 하나가 말하는 대로 밥상을 차려 같이 먹어요.', dFr: 'Dans une cuisine coréenne traditionnelle, écoute le nom des objets et mets la table comme Hana le demande.' },
+    { id: 'store', topic: '편의점', emo: '🏪', bg: '#E0ECFF', min: 10, ko: '편의점에 가요', fr: 'À la supérette',
+      dKo: '물건 이름과 값을 듣고 “어디 있어요?” 물어 바구니에 담은 뒤 계산까지 해 봐요.', dFr: 'Écoute le nom et le prix des produits, demande « 어디 있어요? », remplis ton panier et passe à la caisse.' },
+    { id: 'bunsik', topic: '분식집', emo: '🍢', bg: '#FFE4DC', min: 10, ko: '분식집에 가요', fr: 'Au snack coréen',
+      dKo: '떡볶이 · 김밥 · 라면 이름과 값을 듣고 “떡볶이 하나 주세요” 하고 주문해 먹어 봐요.', dFr: 'Écoute le nom et le prix du tteokbokki, du kimbap et des ramyeon, puis commande : « 떡볶이 하나 주세요 ».' },
+    { id: 'subway', topic: '지하철', emo: '🚇', bg: '#DCF5E8', min: 12, ko: '지하철을 타요', fr: 'Prendre le métro',
+      dKo: '교통카드를 충전하고 “바다역 어떻게 가요?” 물어 1호선에서 2호선으로 갈아타요.', dFr: 'Recharge ta carte de transport, demande « 바다역 어떻게 가요? » et change de la ligne 1 à la ligne 2.' },
+    { id: 'pharmacy', topic: '약국', emo: '💊', bg: '#EDE5FF', min: 10, ko: '약국에 가요', fr: 'À la pharmacie',
+      dKo: '“머리가 아파요” · “열이 나요”처럼 아픈 곳을 말하고 약을 받아 봐요. 한국어 연습용이라 의학 정보가 아니에요.', dFr: 'Dis où tu as mal (« 머리가 아파요 », « 열이 나요 ») et reçois un médicament. C’est pour pratiquer le coréen, pas une information médicale.' }
+  ];
+  const HANA_URL = 'https://hana.human-teacher.com/';
+  const HANA_T = [['intro', '👋', '자기소개', 'Se présenter'], ['food', '🍜', '음식', 'La nourriture'], ['weekend', '🎨', '주말과 취미', 'Le week-end'], ['family', '👨‍👩‍👧', '가족', 'La famille'],
+    ['weather', '☀️', '날씨와 계절', 'Météo et saisons'], ['daily', '⏰', '하루 일과', 'Ma journée'], ['town', '🏘️', '우리 동네', 'Mon quartier'], ['transport', '🚇', '버스와 지하철', 'Bus et métro'],
+    ['study', '📚', '한국어 공부', 'Apprendre le coréen'], ['kculture', '🎬', '드라마와 음악', 'Séries et musique'], ['travel', '✈️', '여행', 'Les voyages'], ['birthday', '🎂', '생일과 기념일', 'Anniversaires et fêtes'],
+    ['cafe', '☕', '카페에서', 'Au café'], ['restaurant', '🍽️', '식당에서', 'Au restaurant'], ['shop', '🛒', '가게에서', 'À l’épicerie'], ['clothes', '👕', '옷 가게', 'Magasin de vêtements'],
+    ['directions', '🗺️', '길 묻기', 'Demander son chemin'], ['pharmacy', '💊', '약국에서', 'À la pharmacie'], ['hotel', '🏨', '호텔에서', 'À l’hôtel'], ['plans', '📅', '약속 잡기', 'Fixer un rendez-vous']]
+    .map(([id, emo, ko, fr]) => ({ id, emo, ko, fr }));
+  // 자료실 소주제 → 하나 주제(기획 3의 겹치는 주제 표)
+  const HANA_OF = { '처음 만남': ['intro'], '카페': ['cafe'], '식당': ['restaurant'], '분식집': ['food'], '편의점': ['shop'], '옷가게': ['clothes'], '길 묻기': ['directions'],
+    '지하철': ['transport'], '약국': ['pharmacy'], '호텔': ['hotel'], '여행': ['travel'], '초대': ['plans', 'birthday'] };
+  const hanaHref = id => HANA_URL + (id ? '?topic=' + encodeURIComponent(id) : '');
+  const playOf = name => PLAY.find(p => p.topic === name);
+  const hanaOf = name => (HANA_OF[name] || []).map(id => HANA_T.find(h => h.id === id)).filter(Boolean);
+  // 첫 화면 두 길(자료실 인사 카드 아래)
+  function hways() {
+    return `<section class="hways"><a class="hw p" href="#/hana"><span class="ic">🎮</span><span class="tx"><b>${esc(t('hwPlay'))}</b><small>${esc(t('hwPlayDs'))}</small></span></a>`
+      + `<a class="hw h" href="#/hana/talk"><span class="ic">💬</span><span class="tx"><b>${esc(t('hwTalk'))}</b><small>${esc(t('hwTalkDs'))}</small></span></a></section>`;
+  }
+  // 주제 화면 아래 '이 주제로 더 해 봐요'(자료 목록 다음, 손 들기 안내 앞) — 자료실 동선은 그대로 두고 아래에만 더한다
+  function topicMore(name) {
+    const p = playOf(name), hs = hanaOf(name), fr = lang === 'fr';
+    if (!p && !hs.length) return '';
+    const rows = (p ? [`<a class="item way" href="${XR_BASE + p.id}/" target="_blank" rel="noopener"><span class="ti" style="background:var(--g-l)">🎮</span><span class="tx"><span class="tt">${esc(fr ? p.fr : p.ko)}</span><span class="meta">${esc(t('tmPlay')(p.min))}</span></span><span class="go">${ICON.out}</span></a>`] : [])
+      .concat(hs.map(h => `<a class="item way" href="${hanaHref(h.id)}" target="_blank" rel="noopener"><span class="ti" style="background:#FFE4EC">💬</span><span class="tx"><span class="tt">${esc(t('tmTalk'))} · ${esc(fr ? h.fr : h.ko)}</span><span class="meta">${esc(t('tmTalkDs'))}</span></span><span class="go h">${ICON.out}</span></a>`));
+    return `<section class="tmore"><h3>${esc(t('tmT'))}</h3>${rows.join('')}</section>`;
+  }
+  function viewHana() {
+    const fr = lang === 'fr';
+    const head = `<header class="appbar"><b class="atitle">${esc(t('tabHana'))}</b>${langToggle(true)}</header>`;
+    const hero = `<section class="whero hh"><h1>${t('hHero')}</h1><div class="mascot">👋</div></section>`;
+    const lib = p => { const tp = data.topics.find(x => x.name === p.topic); return tp ? `<a href="${topicHref(tp.name)}">📚 ${esc(t('plLib')(topicLabel(tp).big))}</a>` : ''; };
+    const card = (p, i) => `<div class="pcard"><a class="pmain" href="${XR_BASE + p.id}/" target="_blank" rel="noopener"><span class="pn" style="background:${p.bg}">${p.emo}<i>${String(i + 1).padStart(2, '0')}</i></span>`
+      + `<span class="tx"><b>${esc(fr ? p.fr : p.ko)}</b><small>${esc(fr ? p.ko : p.fr)}</small><span class="pds">${esc(fr ? p.dFr : p.dKo)}</span><span class="pm">${esc(t('plMeta')(p.min))}</span></span><span class="go">${ICON.out}</span></a>`
+      + `<div class="pfoot"><a href="${XR_BASE}korean/sheets/${p.id}.pdf" target="_blank" rel="noopener">📄 ${esc(t('plSheet'))}</a>${lib(p)}</div></div>`;
+    const play = `<div class="sec"><h2>🎮 ${esc(t('plT'))}</h2><span>${esc(t('plN'))}</span></div><p class="hintro">${esc(t('plIntro'))}</p><div class="plist">${PLAY.map(card).join('')}</div>`;
+    const talk = `<div class="sec" id="hanaTalk"><h2>💬 ${esc(t('hkT'))}</h2><span>${esc(t('hkN'))}</span></div><section class="hcard"><p class="hai"><b>AI</b><span>${esc(t('hkAi'))}</span></p>`
+      + `<ul>${t('hkRules').map(([e, x]) => `<li><span class="e">${e}</span><span>${esc(x)}</span></li>`).join('')}</ul>`
+      + `<div class="htop">${HANA_T.map(h => `<a href="${hanaHref(h.id)}" target="_blank" rel="noopener">${h.emo} ${esc(fr ? h.fr : h.ko)}</a>`).join('')}</div>`
+      + `<a class="btn hbtn" href="${HANA_URL}" target="_blank" rel="noopener">${esc(t('hkOpen'))}${ICON.out}</a></section>`;
+    return head + `<div class="pad">${hero}${play}${talk}</div>`;
+  }
+
+  // 아래 탭: 자료실 · 하나랑 · 즐겨찾기 · 선생님 · 한글월드(2026-11-13 휴먼쌤 "한글월드 탭은 맨 오른쪽, '선생님' 오른쪽으로" · 11-17 큰 집 1단계로 '하나랑'을 자료실 옆에)
   // (2026-10-24 휴먼쌤 "이 QR탭을 없애고 ... '홈' 탭은 '자료실' 탭으로 ... 'QR탭'을 '즐겨찾기'로")
   function renderTabs(page) {
     const tc = ['login', 'join', 'mine', 'upload', 'admin', 'ai'].includes(page);
-    const on = { fav: page === 'fav', tc, world: page === 'world', lib: page !== 'fav' && page !== 'world' && !tc };
+    const on = { fav: page === 'fav', tc, world: page === 'world', hana: page === 'hana', lib: !['fav', 'world', 'hana'].includes(page) && !tc };
     $('#tabbar').innerHTML = `<a class="sidelogo" href="#/" aria-label="${esc(t('tabHome'))}"><img src="icons/logo-h.svg" alt="${esc(appTitle())}"></a>
       <a class="tab${on.lib ? ' on' : ''}" href="#/">${ICON.shelf}<span>${esc(t('tabHome'))}</span></a>
+      <a class="tab${on.hana ? ' on' : ''}" href="#/hana">${ICON.chat}<span>${esc(t('tabHana'))}</span></a>
       <a class="tab${on.fav ? ' on' : ''}" href="#/fav">${ICON.star}<span>${esc(t('tabFav'))}</span></a>
       <a class="tab${on.tc ? ' on' : ''}" href="${teacher ? '#/mine' : '#/login'}">${ICON.person}<span>${esc(t('tabTeacher'))}</span></a>
       <a class="tab${on.world ? ' on' : ''}" href="#/world">${ICON.globe}<span>${esc(t('tabWorld'))}</span></a>`;
@@ -1507,6 +1648,7 @@
       case 'mq': v.innerHTML = viewMatQr(parts[1] || ''); drawQrs(); title = 'QR · ' + title; break;
       case 'fav': v.innerHTML = viewFav(); title = t('tabFav') + ' · ' + title; break;
       case 'world': v.innerHTML = viewWorld(); title = t('tabWorld') + ' · ' + title; break;
+      case 'hana': v.innerHTML = viewHana(); title = t('tabHana') + ' · ' + title; break;
       case 'login': v.innerHTML = teacher ? viewMine() : viewLogin(true); bindLogin(); break;
       case 'join': v.innerHTML = teacher && !joined ? viewMine() : viewJoin(); bindJoin(); title = t('joinTitle') + ' · ' + title; break;
       case 'mine': v.innerHTML = viewMine(); bindLogin(); break;
@@ -1525,6 +1667,7 @@
     document.title = title;
     renderTabs(page, parts);
     if (!keepScroll) window.scrollTo(0, 0);
+    if (page === 'hana' && parts[1] === 'talk' && !keepScroll) { const a = $('#hanaTalk'); if (a) a.scrollIntoView(); }   // 첫 화면 '하나랑 이야기' → 그 칸으로
   }
 
   function bindLogin() {
