@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark"><!-- 다크 모드를 '지원한다'고 알려야 휴대폰 브라우저가 색을 강제로 뒤집지 않는다(색은 아래에서 직접 정함) -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>하나랑 이야기해요</title>
+<!-- 2026-11-17 시안: AI · 반 코드 없이 미리 쓴 대화로(휴먼쌤 "하나와의 대화에서 AI관련된 부분을 싹 없애고 그렇게 가자 반코드 같은거 하지말고").
+     꼴은 공개판 hana.human-teacher.com(talk.html v17)을 그대로 따르고, 보내기 · 직접 쓰기 · 반 코드 · 이름 칸을 뺐다. -->
+<style>
+  :root { color-scheme: light dark; --ink:#2b2420; --dim:#7a6c60; --paper:#fffaf2; --line:#eadfce; --pink:#e86a9a; --pinkbg:#fdeef3; --green:#1f8a4c; --me:#e4eeff; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; overflow:hidden; background:var(--paper); color:var(--ink); font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif; -webkit-tap-highlight-color:transparent; word-break:keep-all; }
+  button { font:inherit; color:inherit; }
+  #app { height:100vh; height:100dvh; display:flex; flex-direction:column; max-width:720px; margin:0 auto; background:var(--paper); }
+
+  /* 위 막대 */
+  #top { flex:none; display:flex; align-items:center; gap:8px; padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px; border-bottom:1px solid var(--line); background:#fff8ee; }
+  #top b { font-size:16px; white-space:nowrap; }
+  #topic { font-size:13px; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+  #top .sp { flex:1; }
+  #top button { flex:none; border:1px solid var(--line); background:#fff; border-radius:999px; padding:5px 10px; font-size:13px; cursor:pointer; }
+  #top button.on { background:var(--pink); border-color:var(--pink); color:#fff; }
+  @media (max-width:420px) { #top b { display:none; } #topic { font-size:14px; color:var(--ink); font-weight:700; } }
+
+  /* 하나가 서 있는 곳 */
+  #stage { flex:none; position:relative; height:clamp(120px, 24dvh, 260px); background:linear-gradient(#dcecf2, #f4efe6 78%); overflow:hidden; }
+  #stage canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+  #loading { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:rgba(30,28,44,.65); color:#fff; padding:6px 12px; border-radius:16px; font-size:12px; }
+  #quest { position:absolute; top:8px; left:8px; width:min(240px, 52%); background:rgba(255,250,242,.92); border-radius:12px; padding:6px 9px 5px; box-shadow:0 3px 12px rgba(60,40,20,.12); }
+  #quest .qhead { display:flex; align-items:center; gap:5px; font-size:12.5px; font-weight:700; color:#8a5a1c; cursor:pointer; user-select:none; }
+  #quest .qhead .prog { margin-left:auto; color:var(--ink); }
+  #quest .bar { height:4px; background:#efe3cf; border-radius:4px; margin:5px 0 3px; overflow:hidden; }
+  #quest .bar i { display:block; height:100%; width:0; background:var(--green); transition:width .5s; }
+  #qlist { list-style:none; margin:0; padding:0; }
+  #qlist li { display:flex; gap:6px; align-items:flex-start; padding:3px 0; font-size:12.5px; line-height:1.3; }
+  #qlist li .box { flex:none; width:16px; height:16px; border-radius:5px; border:2px solid #cdbba4; font-size:10.5px; line-height:12px; text-align:center; color:#fff; margin-top:1px; }
+  #qlist li small { display:block; font-size:10.5px; color:var(--dim); }
+  #qlist li.done { color:#8d8277; } #qlist li.done .t { text-decoration:line-through; }
+  #qlist li.done .box { background:var(--green); border-color:var(--green); }
+  #qlist li.cur { font-weight:700; color:var(--ink); } #qlist li.cur .box { border-color:var(--pink); background:#fff; color:var(--pink); }
+  #qlist li.just .box { animation:pop .6s ease; }
+  @keyframes pop { 0% { transform:scale(.4); } 60% { transform:scale(1.35); } 100% { transform:scale(1); } }
+  #quest.collapsed #qlist li:not(.cur) { display:none; }
+
+  /* 대화 */
+  #log { flex:1; min-height:0; overflow-y:auto; padding:12px 12px 6px; display:flex; flex-direction:column; gap:10px; -webkit-overflow-scrolling:touch; }
+  .msg { display:flex; gap:7px; align-items:flex-end; max-width:92%; }
+  .msg.hana { align-self:flex-start; }
+  .msg.me { align-self:flex-end; flex-direction:column; align-items:flex-end; }
+  .face { flex:none; width:30px; height:30px; border-radius:50%; background:var(--pink); color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center; }
+  .bubble { position:relative; border-radius:18px; padding:9px 13px; line-height:1.45; }
+  .hana .bubble { background:#fff; border:1px solid var(--line); border-bottom-left-radius:6px; padding-right:40px; }
+  .me .bubble { background:var(--me); color:#1d3a6e; border-bottom-right-radius:6px; }
+  .ko { font-size:17px; }
+  .gl { font-size:13px; color:var(--dim); margin-top:3px; }
+  body.nogloss .gl { display:none; }
+  .say { position:absolute; right:6px; bottom:6px; width:30px; height:30px; border-radius:50%; border:0; background:var(--pinkbg); font-size:15px; cursor:pointer; padding:0; }
+  .say.playing { background:var(--pink); }
+  .dots .bubble::after { content:'···'; font-size:20px; letter-spacing:2px; animation:blink 1s infinite; }
+  @keyframes blink { 50% { opacity:.3; } }
+  /* 메뉴판(하나가 보여 줌) */
+  .menucard { align-self:flex-start; margin-left:37px; width:min(260px, 80%); background:#3b2a20; color:#fff6e8; border-radius:14px; padding:10px 14px 8px; box-shadow:0 4px 14px rgba(60,40,20,.2); }
+  .menucard h4 { margin:0 0 6px; font-size:13px; letter-spacing:2px; color:#f3c98b; }
+  .menucard p { display:flex; justify-content:space-between; gap:10px; margin:0; padding:4px 0; border-top:1px dashed rgba(255,246,232,.25); font-size:15px; }
+  .menucard p small { display:block; font-size:11px; color:#d9c4a6; }
+  .menucard p b { font-weight:700; white-space:nowrap; }
+  .endcard { align-self:stretch; background:#fff; border:2px solid var(--green); border-radius:18px; padding:14px; }
+  .endcard h3 { margin:0 0 8px; font-size:17px; color:var(--green); }
+  .endcard ul { list-style:none; margin:0 0 10px; padding:0; }
+  .endcard li { display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px dashed var(--line); font-size:16px; }
+  .endcard li .say { position:static; width:28px; height:28px; flex:none; }
+  .endcard li small { display:block; font-size:12px; color:var(--dim); }
+  .endcard .row { display:flex; gap:8px; }
+  .endcard .row button { flex:1; border:0; border-radius:12px; padding:11px 8px; font-size:15px; font-weight:700; cursor:pointer; background:var(--pink); color:#fff; }
+  .endcard .row button.sub { background:#f1e7da; color:var(--ink); }
+
+  /* 아래: 보기 + 다시 말해 주세요 */
+  #dock { flex:none; border-top:1px solid var(--line); background:#fff8ee; padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px)); }
+  #dock .hint { font-size:12px; color:var(--dim); margin:0 2px 6px; }
+  #choices { display:flex; flex-direction:column; gap:5px; }
+  #choices button { text-align:left; border:1.5px solid var(--pink); background:#fff; border-radius:14px; padding:6px 12px; cursor:pointer; min-height:44px; }
+  #choices button b { display:block; font-size:16px; font-weight:700; }
+  #choices button span { display:block; font-size:12.5px; color:var(--dim); margin-top:1px; }
+  body.nogloss #choices button span { display:none; }
+  #choices button:active { background:var(--pinkbg); }
+  #again { display:block; width:100%; margin-top:6px; border:1px dashed #cdbba4; background:transparent; border-radius:12px; padding:7px 10px; font-size:14px; color:var(--dim); cursor:pointer; }
+  #again b { color:var(--ink); }
+  #dock.busy #choices button, #dock.busy #again { opacity:.45; pointer-events:none; }
+  #dock.done { display:none; }
+
+  /* 시작 화면 */
+  #cover { position:fixed; inset:0; z-index:5; background:linear-gradient(#f6e3c4, #fbf5ec 55%, #f3ece0); overflow-y:auto; padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px)); }
+  #cover .card { max-width:460px; margin:0 auto; background:var(--paper); border-radius:22px; padding:22px 18px 18px; box-shadow:0 16px 44px rgba(80,60,30,.18); }
+  .kicker { color:#b5873e; font-weight:700; font-size:13px; }
+  #cover h1 { margin:6px 0 8px; font-size:26px; }
+  #cover p.lead { margin:0 0 12px; color:var(--dim); font-size:15px; line-height:1.55; }
+  .how { display:flex; gap:8px; margin:0 0 14px; }
+  .how div { flex:1; background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 6px; text-align:center; font-size:12.5px; line-height:1.35; color:var(--dim); }
+  .how div b { display:block; font-size:20px; }
+  .safe { background:#e9f6ee; border-radius:12px; padding:9px 11px; font-size:13.5px; color:#1f6b40; margin-bottom:14px; line-height:1.5; }
+  .safe span { font-size:12px; }
+  .lbl { font-size:14px; font-weight:700; margin:0 0 6px; }
+  .lbl small { font-weight:400; color:var(--dim); }
+  .tgrid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+  #topics button, #readyTopics button { position:relative; display:flex; align-items:center; gap:8px; border:1.5px solid var(--line); background:#fff; border-radius:14px; padding:9px 10px; cursor:pointer; text-align:left; min-width:0; }
+  #topics button .ic, #readyTopics button .ic { font-size:22px; flex:none; }
+  .tgrid button .tx { min-width:0; }
+  .tgrid button b { display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tgrid button .tx span { display:block; font-size:11.5px; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tgrid button.ready { border-color:var(--pink); box-shadow:0 3px 0 var(--pinkbg); }
+  .tgrid button.soon { opacity:.5; cursor:default; }
+  .tgrid button i.xr { position:absolute; right:7px; top:5px; font-style:normal; font-size:13px; }
+  .xrnote { margin:-2px 0 8px; font-size:12px; color:var(--dim); }
+  .back { display:inline-block; margin:0 0 10px; font-size:13px; font-weight:700; color:#b5873e; text-decoration:none; }
+  .nexth { margin:12px 0 6px; font-size:13px; font-weight:700; color:var(--dim); }
+  .nextgo { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .nextgo a { flex:1 1 30%; min-width:96px; text-decoration:none; color:var(--ink); background:#f6efe4; border-radius:12px; padding:8px 10px; }
+  .nextgo a b { display:block; font-size:14px; }
+  .nextgo a span { display:block; font-size:11.5px; color:var(--dim); }
+  .sysnote { align-self:stretch; background:#fff4d6; border-radius:12px; padding:8px 12px; font-size:13.5px; color:#7a4d00; line-height:1.45; }
+  .sysnote span { display:block; font-size:12px; opacity:.85; }
+  body.nogloss .sysnote span { display:none; }
+  #cover small.fine { display:block; margin-top:12px; color:#9a8f84; font-size:11px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="top">
+    <button id="menuBtn" type="button" title="처음 화면으로">← 처음</button>
+    <b>하나랑 이야기해요</b><span id="topic"></span><span class="sp"></span>
+    <button id="voiceBtn" class="on" type="button" title="하나 말 읽어 주기">🔊</button>
+    <button id="glossBtn" class="on" type="button" title="뜻 보기">🇫🇷 뜻</button>
+  </header>
+  <div id="stage">
+    <div id="loading">하나 불러오는 중…</div>
+    <div id="quest" class="collapsed">
+      <div class="qhead" id="qhead">📋 오늘 할 이야기 <span class="prog" id="qprog">0/0</span> <span id="qarrow">▾</span></div>
+      <div class="bar"><i id="qbar"></i></div>
+      <ol id="qlist"></ol>
+    </div>
+  </div>
+  <main id="log" aria-live="polite"></main>
+  <div id="dock" class="busy">
+    <p class="hint">골라서 대답해요 · Choisis ta réponse</p>
+    <div id="choices"></div>
+    <button id="again" type="button">🔁 <b>다시 말해 주세요.</b> · Vous pouvez répéter ?</button>
+  </div>
+</div>
+
+<div id="cover"><div class="card">
+  <a id="toOneshot" class="back" href="https://hangeul-oneshot.human-teacher.com/">← 한글원샷 · Hangeul Oneshot</a>
+  <div class="kicker">한국어 배우기 · Apprendre le coréen</div>
+  <h1>하나랑 이야기해요</h1>
+  <p class="lead">하나와 한국어로 대화 연습을 해요. 하나가 묻고, 나는 보기에서 골라 대답해요.<br><span style="font-size:13px">Hana vous pose des questions, vous choisissez la réponse.</span></p>
+  <div class="how"><div><b>👂</b>하나 말 듣기<br>Écouter</div><div><b>👆</b>보기 고르기<br>Choisir</div><div><b>🔁</b>모르면 다시<br>Répéter</div></div>
+  <div class="safe">코드도 이름도 필요 없어요. 고른 말은 이 기기 밖으로 나가지 않아요.<br><span>Pas de code, pas de prénom. Rien n'est envoyé.</span></div>
+  <div class="lbl">지금 해 볼 수 있어요 <small>· Disponible</small></div>
+  <p class="xrnote">🎮 표시는 한글원샷 '놀러 가요'에서 3D로도 가 볼 수 있는 곳이에요.</p>
+  <div id="readyTopics"></div>
+  <div class="lbl" style="margin-top:14px">준비 중 <small>· Bientôt</small></div>
+  <div id="topics"></div>
+  <small class="fine">한국어 연습용 대화예요. 하나 목소리가 아직 없는 말은 기기 목소리로 읽어요. 캐릭터: Tripo로 제작 · 만든 사람: 휴먼쌤.</small>
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>window.HANA_ASSETS = { glbUrl: 'host.glb', voice: {"안녕하세요!":"voice/01.mp3","괜찮아요!":"voice/06.mp3","이름이 뭐예요?":"voice/27.mp3","어느 나라 사람이에요?":"voice/28.mp3","오늘은 카페 놀이를 해요.":"voice/87.mp3","제가 직원이에요!":"voice/88.mp3","어서 오세요!":"voice/89.mp3","뭐 드릴까요?":"voice/90.mp3","따뜻한 거요, 차가운 거요?":"voice/91.mp3","여기서 드세요?":"voice/92.mp3","가져가세요?":"voice/93.mp3","계산은 카드로 하세요?":"voice/94.mp3","오늘은 식당 놀이를 해요.":"voice/95.mp3","몇 분이세요?":"voice/96.mp3","맵게 해 드릴까요?":"voice/97.mp3","맛있게 드셨어요?":"voice/98.mp3","더 필요한 거 있어요?":"voice/102.mp3","봉투 필요하세요?":"voice/103.mp3","오늘은 약국 놀이를 해요.":"voice/116.mp3","제가 약사예요!":"voice/117.mp3","언제부터 아팠어요?":"voice/119.mp3","궁금한 거 있어요?":"voice/128.mp3"} };</script>
+<script>/* 하나 미리 쓴 대화 — 주제 목록과 공통 도움(2026-11-18)
+   주제는 한글원샷 자료실 소주제 · 놀러 가요 5곳에 맞춘다(11-17 휴먼쌤 "이대로 가자" · "이 목록으로").
+   ready: 대화를 다 쓴 주제(scripts에 있음). wave: 1차 · 2차. xr: 같은 이름의 놀러 가요 장소(id가 곧 XR 주소 · 활동지 이름). lib: 한글원샷 자료실 소주제 이름.            */
+window.HANA_SCRIPTS = window.HANA_SCRIPTS || {};
+window.HANA_TOPICS = [
+  { id: 'cafe', lib: '카페', icon: '☕', title: '카페에서', fr: 'Au café', wave: 1 },
+  { id: 'hanok', lib: '하나네 집', icon: '🏠', title: '하나네 집', fr: 'Chez Hana', wave: 1, xr: true },
+  { id: 'store', lib: '편의점', icon: '🏪', title: '편의점', fr: 'À la supérette', wave: 1, xr: true },
+  { id: 'bunsik', lib: '분식집', icon: '🍢', title: '분식집', fr: 'Au snack coréen', wave: 1, xr: true },
+  { id: 'subway', lib: '지하철', icon: '🚇', title: '지하철', fr: 'Dans le métro', wave: 1, xr: true },
+  { id: 'pharmacy', lib: '약국', icon: '💊', title: '약국', fr: 'À la pharmacie', wave: 1, xr: true },
+  { id: 'restaurant', lib: '식당', icon: '🍽️', title: '식당', fr: 'Au restaurant', wave: 1 },
+  { id: 'intro', lib: '처음 만남', icon: '👋', title: '처음 만남', fr: 'Première rencontre', wave: 1 },
+  { id: 'market', lib: '시장', icon: '🧺', title: '시장', fr: 'Au marché', wave: 2 },
+  { id: 'clothes', lib: '옷가게', icon: '👕', title: '옷가게', fr: 'Magasin de vêtements', wave: 2 },
+  { id: 'groceries', lib: '장보기', icon: '🛒', title: '장보기', fr: 'Faire les courses', wave: 2 },
+  { id: 'directions', lib: '길 묻기', icon: '🗺️', title: '길 묻기', fr: 'Demander son chemin', wave: 2 },
+  { id: 'taxi', lib: '택시', icon: '🚕', title: '택시', fr: 'En taxi', wave: 2 },
+  { id: 'time', lib: '시간', icon: '⏰', title: '시간', fr: "L'heure", wave: 2 },
+  { id: 'colors', lib: '색깔', icon: '🎨', title: '색깔', fr: 'Les couleurs', wave: 2 },
+  { id: 'classroom', lib: '교실 규칙', icon: '🏫', title: '교실 규칙', fr: 'Règles de la classe', wave: 2 },
+  { id: 'invite', lib: '초대', icon: '💌', title: '초대', fr: 'Une invitation', wave: 2 }
+];
+window.HANA_UTIL = {
+  won: (n) => n.toLocaleString('ko-KR') + '원',
+  wonFr: (n) => n.toLocaleString('fr-FR').replace(/ | /g, ' ') + ' wons',
+  // 받침이 있으면 a(은 · 이 · 을), 없으면 b(는 · 가 · 를)
+  jo: (w, a, b) => { const c = String(w).slice(-1).charCodeAt(0) - 0xac00; return w + (c >= 0 && c <= 11171 && c % 28 ? a : b); }
+};
+</script>
+<script>/* 하나랑 이야기해요 — 미리 쓴 대화 '카페에서' (2026-11-17 시안, 11-18 꼴 맞춤)
+   휴먼쌤 "그럼 차라리 하나와의 대화에서 AI관련된 부분을 싹 없애고 그렇게 가자 반코드 같은거 하지말고" · "카페로 시안"
+   하나가 묻고, 아이는 보기에서 골라 대답한다. 고른 말에 따라 하나의 다음 말이 달라진다(갈림길).
+   줄 하나 = [한국어, 프랑스어 뜻]. {이름}은 set으로 기억한 값이나 vars(mem)가 돌려준 값으로 채운다.
+   choice: ko · fr · set(기억할 것) · say(하나의 대답 줄들) · menu(메뉴판 보이기) · go(다음 자리, 'end'면 끝)
+   node: step(체크 목록 몇 번째) · enter(그 자리에 오면 하나가 먼저 하는 말) · choices          */
+(() => {
+  const { won, wonFr, jo } = window.HANA_UTIL;
+  const TEMP_Q = ['따뜻한 거요, 차가운 거요?', 'Chaud ou froid ?'];
+  const HERE_Q = ['여기서 드세요? 가져가세요?', 'Sur place ou à emporter ?'];
+  const PAY_Q = ['계산은 카드로 하세요?', 'Vous payez par carte ?'];
+  const DRINK = {
+    '아메리카노': { fr: 'americano', price: 4000 },
+    '카페라테': { fr: 'café latte', price: 4500 },
+    '녹차': { fr: 'thé vert', price: 4000 },
+    '오렌지 주스': { fr: "jus d'orange", price: 5000 }
+  };
+  const order = (name, ko, fr) => ({ ko, fr, set: { drink: name }, say: [[`네, ${name}요!`, `Oui, un ${DRINK[name].fr} !`], TEMP_Q], go: 'temp' });
+  const pay = {
+    card: { ko: '네, 카드로 할게요.', fr: 'Oui, par carte.', say: [['{price}이에요. 여기 카드 넣어 주세요.', 'Ça fait {priceFr}. Insérez votre carte ici.'], ['다 됐어요! 잠깐만 기다려 주세요.', "C'est bon ! Patientez un instant."]], go: 'serve' },
+    cash: { ko: '아니요, 현금으로 할게요.', fr: 'Non, en espèces.', say: [['{price}이에요.', 'Ça fait {priceFr}.'], ['네, 받았어요. 잠깐만 기다려 주세요.', "Merci, c'est reçu. Patientez un instant."]], go: 'serve' }
+  };
+  const bye = [['또 오세요! 안녕히 가세요.', 'Revenez quand vous voulez ! Au revoir.']];
+
+  window.HANA_SCRIPTS.cafe = {
+    menu: Object.entries(DRINK).map(([ko, d]) => ({ ko, fr: d.fr, price: d.price })),
+    vars: (m) => { const d = DRINK[m.drink] || {}; return { drinkFr: d.fr || '', drinkEun: m.drink ? jo(m.drink, '은', '는') : '', price: d.price ? won(d.price) : '', priceFr: d.price ? wonFr(d.price) : '', temp: m.temp || '' }; },
+    steps: [
+      { title: '주문하기', fr: 'Commander' },
+      { title: '따뜻한 것 · 차가운 것', fr: 'Chaud ou froid' },
+      { title: '여기서 · 가져가기', fr: 'Sur place ou à emporter' },
+      { title: '계산하기', fr: 'Payer' },
+      { title: '받고 인사하기', fr: 'Recevoir et dire au revoir' }
+    ],
+    open: [['오늘은 카페 놀이를 해요. 제가 직원이에요!', "Aujourd'hui, on joue au café. Je suis la serveuse !"], ['어서 오세요! 뭐 드릴까요?', "Bienvenue ! Qu'est-ce que je vous sers ?"]],
+    start: 'order',
+    nodes: {
+      order: { step: 0, choices: [
+        order('아메리카노', '아메리카노 주세요.', "Un americano, s'il vous plaît."),
+        order('카페라테', '카페라테 한 잔 주세요.', "Un café latte, s'il vous plaît."),
+        { ko: '녹차 있어요?', fr: 'Vous avez du thé vert ?', say: [['네, 녹차 있어요. 녹차 드릴까요?', 'Oui, on a du thé vert. Je vous en sers un ?']], go: 'tea' }
+      ] },
+      tea: { step: 0, choices: [
+        { ko: '네, 녹차 주세요.', fr: "Oui, un thé vert, s'il vous plaît.", set: { drink: '녹차' }, say: [['네, 녹차요!', 'Oui, un thé vert !'], TEMP_Q], go: 'temp' },
+        { ko: '아니요, 메뉴 보여 주세요.', fr: "Non, montrez-moi le menu, s'il vous plaît.", say: [['여기 있어요.', 'Voilà.']], menu: true, go: 'menu' }
+      ] },
+      menu: { step: 0, enter: [['뭐 드릴까요?', "Qu'est-ce que je vous sers ?"]], choices: [
+        { ko: '오렌지 주스 주세요.', fr: "Un jus d'orange, s'il vous plaît.", set: { drink: '오렌지 주스', temp: '' }, say: [['네, 오렌지 주스요!', "Oui, un jus d'orange !"], ['얼음 넣어 드릴까요?', 'Je mets des glaçons ?']], go: 'ice' },
+        order('카페라테', '카페라테 주세요.', "Un café latte, s'il vous plaît."),
+        order('아메리카노', '아메리카노 주세요.', "Un americano, s'il vous plaît.")
+      ] },
+      temp: { step: 1, choices: [
+        { ko: '따뜻한 거 주세요.', fr: "Chaud, s'il vous plaît.", set: { temp: '따뜻한 ' }, say: [['따뜻한 {drink}요. 알겠어요!', "Un {drinkFr} chaud, d'accord !"], HERE_Q], go: 'here' },
+        { ko: '차가운 거 주세요.', fr: "Froid, s'il vous plaît.", set: { temp: '차가운 ' }, say: [['차가운 {drink}요. 알겠어요!', "Un {drinkFr} glacé, d'accord !"], HERE_Q], go: 'here' },
+        { ko: '얼음 조금만 주세요.', fr: "Peu de glaçons, s'il vous plaît.", set: { temp: '차가운 ' }, say: [['네, 얼음 조금만 넣을게요.', 'Oui, je mets juste un peu de glaçons.'], HERE_Q], go: 'here' }
+      ] },
+      ice: { step: 1, choices: [
+        { ko: '네, 넣어 주세요.', fr: "Oui, s'il vous plaît.", say: [['네, 얼음 넣을게요!', 'Oui, avec des glaçons !'], HERE_Q], go: 'here' },
+        { ko: '아니요, 빼 주세요.', fr: "Non, sans glaçons, s'il vous plaît.", say: [['네, 얼음 없이 드릴게요.', 'Oui, sans glaçons.'], HERE_Q], go: 'here' },
+        { ko: '조금만 넣어 주세요.', fr: "Juste un peu, s'il vous plaît.", say: [['네, 조금만 넣을게요.', 'Oui, juste un peu.'], HERE_Q], go: 'here' }
+      ] },
+      here: { step: 2, choices: [
+        { ko: '여기서 마실게요.', fr: 'Sur place.', say: [['네, 컵에 드릴게요.', 'Oui, je vous le sers dans une tasse.'], PAY_Q], go: 'pay' },
+        { ko: '가져갈게요.', fr: 'À emporter.', say: [['네, 종이컵에 드릴게요.', 'Oui, dans un gobelet en carton.'], PAY_Q], go: 'pay' },
+        { ko: '밖에서 마실게요.', fr: 'Je vais boire dehors.', say: [['그럼 가져가시는 거죠? 종이컵에 드릴게요.', 'Donc à emporter ? Je vous le mets dans un gobelet.'], PAY_Q], go: 'pay' }
+      ] },
+      pay: { step: 3, choices: [pay.card, pay.cash,
+        { ko: '얼마예요?', fr: "C'est combien ?", say: [['{drinkEun} {price}이에요.', '{drinkFr} : {priceFr}.'], ['카드로 하세요?', 'Par carte ?']], go: 'pay2' }
+      ] },
+      pay2: { step: 3, choices: [pay.card, pay.cash] },
+      serve: { step: 4, enter: [['{temp}{drink} 나왔어요. 맛있게 드세요!', 'Votre {drinkFr} est prêt. Bonne dégustation !']], choices: [
+        { ko: '감사합니다.', fr: 'Merci.', say: bye, go: 'end' },
+        { ko: '잘 마실게요!', fr: 'Merci, je vais en profiter !', say: bye, go: 'end' },
+        { ko: '안녕히 계세요.', fr: 'Au revoir.', say: [['네, 안녕히 가세요! 또 오세요.', 'Au revoir ! Revenez bientôt.']], go: 'end' }
+      ] }
+    }
+  };
+})();
+</script>
+<script>/* 미리 쓴 대화 '하나네 집' (2026-11-18) — 놀러 가요 「하나네 집에 놀러 가요」와 같은 장면 · 낱말(밥 · 국 · 김치 · 비빔밥 · 숟가락 · 젓가락 · 물 · 그릇).
+   꼴은 cafe.js 머리 설명.                                                                                         */
+(() => {
+  const TABLE_Q = ['오늘은 같이 밥상을 차려요. 뭐 할래요?', "Aujourd'hui, on met la table ensemble. Tu veux faire quoi ?"];
+  const SHOES = ['신발은 여기에 벗어요.', 'On enlève ses chaussures ici.'];
+  const MORE = ['더 드세요.', 'Reprenez-en.'];
+  const DONE_Q = ['다 먹었어요?', 'Tu as fini ?'];
+  window.HANA_SCRIPTS.hanok = {
+    steps: [
+      { title: '인사하고 들어가기', fr: 'Saluer et entrer' },
+      { title: '밥상 차리기', fr: 'Mettre la table' },
+      { title: '같이 먹기', fr: 'Manger ensemble' },
+      { title: '더 먹기', fr: 'Se resservir' },
+      { title: '인사하고 나오기', fr: 'Dire au revoir' }
+    ],
+    open: [['오늘은 하나네 집에 놀러 가요.', "Aujourd'hui, on va chez Hana."], ['어서 오세요! 여기가 우리 집이에요.', 'Bienvenue ! Voici ma maison.']],
+    start: 'door',
+    nodes: {
+      door: { step: 0, choices: [
+        { ko: '안녕하세요!', fr: 'Bonjour !', say: [['안녕하세요! 들어오세요.', 'Bonjour ! Entrez.'], SHOES], go: 'shoes' },
+        { ko: '집이 예뻐요!', fr: 'Votre maison est jolie !', say: [['고마워요! 들어오세요.', 'Merci ! Entrez.'], SHOES], go: 'shoes' },
+        { ko: '실례합니다.', fr: 'Excusez-moi de vous déranger.', say: [['괜찮아요! 들어오세요.', 'Pas de souci ! Entrez.'], SHOES], go: 'shoes' }
+      ] },
+      shoes: { step: 0, choices: [
+        { ko: '네, 벗을게요.', fr: 'Oui, je les enlève.', say: [['고마워요. 한국 집에서는 신발을 벗어요.', 'Merci. Dans une maison coréenne, on enlève ses chaussures.'], TABLE_Q], go: 'table' },
+        { ko: '왜 신발을 벗어요?', fr: 'Pourquoi on enlève ses chaussures ?', say: [['한국 집에서는 바닥에 앉아서 먹어요. 그래서 바닥이 깨끗해야 해요.', 'Dans une maison coréenne, on mange assis par terre. Alors le sol doit être propre.'], TABLE_Q], go: 'table' }
+      ] },
+      table: { step: 1, choices: [
+        { ko: '숟가락하고 젓가락을 놓을게요.', fr: 'Je mets les cuillères et les baguettes.', say: [['고마워요! 저는 밥하고 국을 놓을게요.', 'Merci ! Moi, je mets le riz et la soupe.']], go: 'eat' },
+        { ko: '물을 가져올게요.', fr: "Je vais chercher de l'eau.", say: [['고마워요! 물은 그릇 옆에 놓아 주세요.', "Merci ! Pose l'eau à côté des bols."]], go: 'eat' },
+        { ko: '오늘 뭐 먹어요?', fr: "On mange quoi aujourd'hui ?", say: [['밥, 국, 김치, 비빔밥이 있어요.', 'Il y a du riz, de la soupe, du kimchi et du bibimbap.']], go: 'table2' }
+      ] },
+      table2: { step: 1, choices: [
+        { ko: '와, 맛있겠다!', fr: "Ça a l'air délicieux !", say: [['그럼 같이 놓아요!', 'Alors mettons la table ensemble !']], go: 'eat' },
+        { ko: '비빔밥이 뭐예요?', fr: "C'est quoi, le bibimbap ?", say: [['밥에 채소하고 고추장을 넣고 비벼요.', 'On mélange du riz avec des légumes et du gochujang.'], ['그럼 같이 놓아요!', 'Alors mettons la table ensemble !']], go: 'eat' }
+      ] },
+      eat: { step: 2, enter: [['자, 같이 먹어요!', 'Allez, mangeons ensemble !']], choices: [
+        { ko: '잘 먹겠습니다!', fr: 'Bon appétit ! (avant de manger)', say: [['네, 많이 드세요!', 'Oui, mange bien !'], ['맛있어요?', "C'est bon ?"]], go: 'taste' },
+        { ko: '와, 맛있겠다!', fr: "Ça a l'air délicieux !", say: [['먹기 전에는 "잘 먹겠습니다!"라고 해요.', 'Avant de manger, on dit « 잘 먹겠습니다 ! ».']], go: 'eat2' }
+      ] },
+      eat2: { step: 2, choices: [
+        { ko: '잘 먹겠습니다!', fr: 'Bon appétit ! (avant de manger)', say: [['잘했어요! 많이 드세요.', 'Bravo ! Mange bien.'], ['맛있어요?', "C'est bon ?"]], go: 'taste' }
+      ] },
+      taste: { step: 2, choices: [
+        { ko: '네, 맛있어요!', fr: "Oui, c'est bon !", say: [['다행이에요!', 'Tant mieux !'], MORE], go: 'more' },
+        { ko: '조금 매워요.', fr: "C'est un peu épicé.", say: [['김치가 매워요? 물 드세요.', "Le kimchi est épicé ? Bois de l'eau."], MORE], go: 'more' },
+        { ko: '이건 뭐예요?', fr: "Qu'est-ce que c'est ?", say: [['이건 김치예요. 배추로 만들어요.', "C'est du kimchi. On le fait avec du chou."], MORE], go: 'more' }
+      ] },
+      more: { step: 3, choices: [
+        { ko: '네, 더 주세요.', fr: "Oui, encore, s'il te plaît.", say: [['여기 있어요!', 'Voilà !'], DONE_Q], go: 'done' },
+        { ko: '아니요, 괜찮아요.', fr: 'Non, ça va, merci.', say: [['네, 알겠어요.', "D'accord."], DONE_Q], go: 'done' },
+        { ko: '배불러요!', fr: "J'ai bien mangé, je n'ai plus faim !", say: [['하하, 많이 먹었어요!', 'Haha, tu as bien mangé !'], DONE_Q], go: 'done' }
+      ] },
+      done: { step: 4, choices: [
+        { ko: '잘 먹었습니다!', fr: 'Merci pour le repas ! (après)', say: [['또 놀러 오세요!', 'Reviens quand tu veux !']], go: 'bye' },
+        { ko: '네, 다 먹었어요.', fr: "Oui, j'ai fini.", say: [['다 먹으면 "잘 먹었습니다!"라고 해요.', 'Après le repas, on dit « 잘 먹었습니다 ! ».']], go: 'done2' }
+      ] },
+      done2: { step: 4, choices: [
+        { ko: '잘 먹었습니다!', fr: 'Merci pour le repas ! (après)', say: [['잘했어요! 또 놀러 오세요!', 'Bravo ! Reviens quand tu veux !']], go: 'bye' }
+      ] },
+      bye: { step: 4, choices: [
+        { ko: '네, 또 올게요!', fr: 'Oui, je reviendrai !', say: [['안녕히 가세요!', 'Au revoir !']], go: 'end' },
+        { ko: '안녕히 계세요!', fr: 'Au revoir ! (à qui reste)', say: [['안녕히 가세요! 조심히 가요.', 'Au revoir ! Rentre bien.']], go: 'end' }
+      ] }
+    }
+  };
+})();
+</script>
+<script>/* 미리 쓴 대화 '편의점' (2026-11-18) — 놀러 가요 「편의점에 가요」와 같은 장면 · 낱말(물 · 우유 · 김밥 · 빵 · 과자 · 라면 · 아이스크림 · 바구니 · 봉투 · 카드).
+   값은 가상(연습용). 꼴은 cafe.js 머리 설명.                                                                       */
+(() => {
+  const { won, wonFr, jo } = window.HANA_UTIL;
+  const P = { '물': [1000, "de l'eau"], '우유': [2000, 'du lait'], '김밥': [3000, 'des kimbap'], '라면': [2000, 'des ramyeon'], '아이스크림': [1000, 'des glaces'], '빵': [2000, 'du pain'], '과자': [1000, 'des biscuits'] };
+  const FOUND = ['{item} 찾았어요?', 'Vous avez trouvé {itemFr} ?'];
+  const MORE_Q = ['더 필요한 거 있어요?', 'Il vous faut autre chose ?'];
+  const CARD_Q = ['카드로 하세요?', 'Par carte ?'];
+  const RECEIPT_Q = ['영수증 드릴까요?', 'Je vous donne le ticket ?'];
+  const find = (item, ko, fr, where, whereFr) => ({ ko, fr, set: { item }, say: [[where, whereFr], FOUND], go: 'got' });
+  const shelf = [
+    find('물', '물 어디 있어요?', "Où est l'eau ?", '물은 저기 냉장고에 있어요.', "L'eau est dans le frigo là-bas."),
+    find('라면', '라면 있어요?', 'Vous avez des ramyeon ?', '네, 라면은 저쪽에 있어요.', 'Oui, les ramyeon sont par là.'),
+    find('아이스크림', '아이스크림 있어요?', 'Vous avez des glaces ?', '네, 아이스크림은 이쪽 냉동고에 있어요.', 'Oui, les glaces sont dans ce congélateur.')
+  ];
+  window.HANA_SCRIPTS.store = {
+    vars: (m) => {
+      const a = P[m.item] || [0, ''], b = P[m.extra] || [0, ''], t = a[0] + b[0];
+      return { itemFr: a[1], itemEun: m.item ? jo(m.item, '은', '는') : '', price: won(a[0]), priceFr: wonFr(a[0]), total: won(t), totalFr: wonFr(t) };
+    },
+    steps: [
+      { title: '인사하기', fr: 'Saluer' },
+      { title: '물건 찾기', fr: 'Trouver un article' },
+      { title: '더 사기', fr: 'Acheter autre chose' },
+      { title: '계산하기', fr: 'Payer' },
+      { title: '인사하고 나오기', fr: 'Dire au revoir' }
+    ],
+    open: [['오늘은 편의점 놀이를 해요. 제가 점원이에요!', "Aujourd'hui, on joue à la supérette. Je suis la vendeuse !"], ['어서 오세요!', 'Bienvenue !']],
+    start: 'greet',
+    nodes: {
+      greet: { step: 0, choices: [
+        { ko: '안녕하세요!', fr: 'Bonjour !', say: [['안녕하세요! 여기는 하나 편의점이에요. 천천히 둘러보세요.', 'Bonjour ! Ici, c’est la supérette de Hana. Prenez votre temps.']], go: 'find' },
+        find('우유', '우유 있어요?', 'Vous avez du lait ?', '네, 우유는 저기 냉장고에 있어요.', 'Oui, le lait est dans le frigo là-bas.'),
+        find('김밥', '김밥 어디 있어요?', 'Où sont les kimbap ?', '김밥은 여기 있어요.', 'Les kimbap sont ici.')
+      ] },
+      find: { step: 1, choices: shelf },
+      got: { step: 1, choices: [
+        { ko: '네, 찾았어요!', fr: "Oui, j'ai trouvé !", say: [['바구니에 담으세요.', 'Mettez-le dans le panier.'], MORE_Q], go: 'more' },
+        { ko: '이거 얼마예요?', fr: 'Combien ça coûte ?', say: [['{itemEun} {price}이에요. 바구니에 담으세요.', 'Ça fait {priceFr}. Mettez-le dans le panier.'], MORE_Q], go: 'more' }
+      ] },
+      more: { step: 2, choices: [
+        { ko: '빵도 하나 주세요.', fr: "Un pain aussi, s'il vous plaît.", set: { extra: '빵' }, say: [['네, 빵은 2,000원이에요.', 'Oui, le pain fait 2 000 wons.']], go: 'pay' },
+        { ko: '아니요, 이거면 돼요.', fr: 'Non, ça suffit.', set: { extra: '' }, say: [['네, 알겠어요.', "D'accord."]], go: 'pay' },
+        { ko: '과자는 어디 있어요?', fr: 'Où sont les biscuits ?', say: [['과자는 문 옆에 있어요. 과자도 살 거예요?', 'Les biscuits sont près de la porte. Vous en prenez aussi ?']], go: 'snack' }
+      ] },
+      snack: { step: 2, choices: [
+        { ko: '네, 이거 주세요.', fr: "Oui, celui-ci, s'il vous plaît.", set: { extra: '과자' }, say: [['네!', 'D’accord !']], go: 'pay' },
+        { ko: '아니요, 괜찮아요.', fr: 'Non, ça va.', set: { extra: '' }, say: [['네, 알겠어요.', "D'accord."]], go: 'pay' }
+      ] },
+      pay: { step: 3, enter: [['계산대로 오세요. 모두 {total}이에요.', 'Venez à la caisse. Ça fait {totalFr} en tout.'], ['봉투 필요하세요?', 'Il vous faut un sac ?']], choices: [
+        { ko: '네, 주세요.', fr: "Oui, s'il vous plaît.", say: [['네, 여기 봉투요.', 'Voilà un sac.'], CARD_Q], go: 'card' },
+        { ko: '아니요, 괜찮아요.', fr: 'Non, ça va.', say: [['네.', "D'accord."], CARD_Q], go: 'card' },
+        { ko: '가방 있어요.', fr: "J'ai un sac.", say: [['좋아요!', 'Très bien !'], CARD_Q], go: 'card' }
+      ] },
+      card: { step: 3, choices: [
+        { ko: '네, 카드로 할게요.', fr: 'Oui, par carte.', say: [['네, 됐어요.', "C'est bon."], RECEIPT_Q], go: 'receipt' },
+        { ko: '현금으로 할게요.', fr: 'En espèces.', say: [['네, 받았어요.', "Merci, c'est reçu."], RECEIPT_Q], go: 'receipt' }
+      ] },
+      receipt: { step: 4, choices: [
+        { ko: '아니요, 괜찮아요.', fr: 'Non, merci.', say: [['감사합니다. 안녕히 가세요!', 'Merci. Au revoir !']], go: 'bye' },
+        { ko: '네, 주세요.', fr: "Oui, s'il vous plaît.", say: [['여기 있어요. 감사합니다. 안녕히 가세요!', 'Voilà. Merci. Au revoir !']], go: 'bye' }
+      ] },
+      bye: { step: 4, choices: [
+        { ko: '안녕히 계세요!', fr: 'Au revoir ! (à qui reste)', say: [['또 오세요!', 'À bientôt !']], go: 'end' },
+        { ko: '감사합니다!', fr: 'Merci !', say: [['또 오세요!', 'À bientôt !']], go: 'end' }
+      ] }
+    }
+  };
+})();
+</script>
+<script>/* 미리 쓴 대화 '분식집' (2026-11-18) — 놀러 가요 「분식집에 가요」와 같은 장면 · 낱말(떡볶이 · 김밥 · 라면 · 어묵 · 메뉴판 · 포장 · 현금).
+   값은 가상(연습용). 꼴은 cafe.js 머리 설명.                                                                     */
+(() => {
+  const { won, wonFr, jo } = window.HANA_UTIL;
+  const F = { '떡볶이': [4000, 'tteokbokki'], '김밥': [3000, 'kimbap'], '라면': [4000, 'ramyeon'], '어묵': [1000, 'eomuk'] };
+  const SPICY_Q = ['떡볶이 맵게 해 드릴까요?', 'Je fais le tteokbokki épicé ?'];
+  const HERE_Q = ['여기서 드세요? 포장이세요?', 'Sur place ou à emporter ?'];
+  const EOMUK_Q = ['어묵도 드릴까요? 국물은 그냥 드려요.', 'Vous voulez aussi des eomuk ? Le bouillon est offert.'];
+  const TOTAL = ['모두 {total}이에요.', 'Ça fait {totalFr} en tout.'];
+  const pay = [
+    { ko: '카드로 할게요.', fr: 'Par carte.', say: [['네, 됐어요.', "C'est bon."]], go: 'serve' },
+    { ko: '현금으로 할게요.', fr: 'En espèces.', say: [['네, 받았어요.', "Merci, c'est reçu."]], go: 'serve' }
+  ];
+  const eomuk = [
+    { ko: '네, 어묵도 하나 주세요.', fr: "Oui, un eomuk aussi, s'il vous plaît.", set: { extra: '어묵' }, say: [['네!', "D'accord !"], TOTAL], go: 'pay' },
+    { ko: '아니요, 괜찮아요.', fr: 'Non, ça va.', set: { extra: '' }, say: [['네.', "D'accord."], TOTAL], go: 'pay' }
+  ];
+  const here = (ko, fr, a, b) => ({ ko, fr, say: [[a, b], EOMUK_Q], go: 'eomuk' });
+  window.HANA_SCRIPTS.bunsik = {
+    menu: Object.entries(F).map(([ko, d]) => ({ ko, fr: d[1], price: d[0] })),
+    vars: (m) => { const a = F[m.food] || [0, ''], b = F[m.extra] || [0, ''], t = a[0] + b[0]; return { foodFr: a[1], foodI: m.food ? jo(m.food, '이', '가') : '', total: won(t), totalFr: wonFr(t) }; },
+    steps: [
+      { title: '주문하기', fr: 'Commander' },
+      { title: '맵기', fr: 'Épicé ou pas' },
+      { title: '여기서 · 포장', fr: 'Sur place ou à emporter' },
+      { title: '계산하기', fr: 'Payer' },
+      { title: '먹고 인사하기', fr: 'Manger et dire au revoir' }
+    ],
+    open: [['오늘은 분식집 놀이를 해요. 제가 사장님이에요!', "Aujourd'hui, on joue au snack coréen. Je suis la patronne !"], ['어서 오세요! 여기는 하나 분식이에요. 뭐 드릴까요?', "Bienvenue au snack de Hana ! Qu'est-ce que je vous sers ?"]],
+    start: 'order',
+    nodes: {
+      order: { step: 0, choices: [
+        { ko: '떡볶이 하나 주세요.', fr: "Un tteokbokki, s'il vous plaît.", set: { food: '떡볶이' }, say: [['네, 떡볶이 하나요!', 'Oui, un tteokbokki !'], SPICY_Q], go: 'spicy' },
+        { ko: '김밥 한 줄 주세요.', fr: "Un rouleau de kimbap, s'il vous plaît.", set: { food: '김밥' }, say: [['네, 김밥 한 줄이요!', 'Oui, un rouleau de kimbap !'], HERE_Q], go: 'here' },
+        { ko: '메뉴판 있어요?', fr: 'Vous avez la carte ?', say: [['네, 여기 있어요.', 'Oui, voilà.']], menu: true, go: 'menu' }
+      ] },
+      menu: { step: 0, enter: [['떡볶이가 제일 인기 있어요! 조금 매워요.', 'Le tteokbokki est le plus populaire ! Un peu épicé.']], choices: [
+        { ko: '그럼 떡볶이 주세요.', fr: "Alors un tteokbokki, s'il vous plaît.", set: { food: '떡볶이' }, say: [['네, 떡볶이 하나요!', 'Oui, un tteokbokki !'], SPICY_Q], go: 'spicy' },
+        { ko: '라면 하나 주세요.', fr: "Un ramyeon, s'il vous plaît.", set: { food: '라면' }, say: [['네, 라면 하나요!', 'Oui, un ramyeon !'], HERE_Q], go: 'here' }
+      ] },
+      spicy: { step: 1, choices: [
+        { ko: '네, 맵게 해 주세요.', fr: "Oui, épicé, s'il vous plaît.", say: [['네, 맵게 해 드릴게요!', 'Oui, je le fais épicé !'], HERE_Q], go: 'here' },
+        { ko: '조금만 맵게 해 주세요.', fr: "Un peu épicé, s'il vous plaît.", say: [['네, 조금만 맵게요.', 'Oui, juste un peu épicé.'], HERE_Q], go: 'here' },
+        { ko: '아니요, 안 맵게 해 주세요.', fr: "Non, pas épicé, s'il vous plaît.", say: [['네, 안 맵게 해 드릴게요.', 'Oui, pas épicé.'], HERE_Q], go: 'here' }
+      ] },
+      here: { step: 2, choices: [
+        here('여기서 먹을게요.', 'Je mange ici.', '네, 자리에 앉으세요.', 'D’accord, asseyez-vous.'),
+        here('포장해 주세요.', "À emporter, s'il vous plaît.", '네, 포장해 드릴게요.', 'Oui, je vous le prépare à emporter.')
+      ] },
+      eomuk: { step: 2, choices: [...eomuk,
+        { ko: '어묵이 뭐예요?', fr: "C'est quoi, l'eomuk ?", say: [['어묵은 생선으로 만들어요. 국물이 따뜻해요.', "L'eomuk est fait avec du poisson. Le bouillon est chaud."], ['어묵도 드릴까요?', 'Vous en voulez aussi ?']], go: 'eomuk2' }
+      ] },
+      eomuk2: { step: 2, choices: eomuk },
+      pay: { step: 3, choices: [...pay,
+        { ko: '얼마예요?', fr: "C'est combien ?", say: [TOTAL, ['카드로 하세요?', 'Par carte ?']], go: 'pay2' }
+      ] },
+      pay2: { step: 3, choices: pay },
+      serve: { step: 4, enter: [['{food} 나왔어요. 맛있게 드세요!', 'Voilà votre {foodFr}. Bon appétit !']], choices: [
+        { ko: '잘 먹겠습니다!', fr: 'Bon appétit ! (avant de manger)', say: [['네, 맛있게 드세요!', 'Oui, bon appétit !']], go: 'after' },
+        { ko: '와, 맛있겠다!', fr: "Ça a l'air délicieux !", say: [['맛있게 드세요!', 'Bon appétit !']], go: 'after' }
+      ] },
+      after: { step: 4, enter: [['맛있었어요?', "C'était bon ?"]], choices: [
+        { ko: '잘 먹었습니다!', fr: 'Merci pour le repas ! (après)', say: [['감사합니다. 안녕히 가세요!', 'Merci. Au revoir !']], go: 'end' },
+        { ko: '네, 정말 맛있었어요!', fr: "Oui, c'était vraiment bon !", say: [['고마워요! 또 오세요!', 'Merci ! Revenez bientôt !']], go: 'end' },
+        { ko: '배불러요!', fr: "J'ai bien mangé, je n'ai plus faim !", say: [['하하, 많이 드셨어요! 또 오세요!', 'Haha, vous avez bien mangé ! Revenez bientôt !']], go: 'end' }
+      ] }
+    }
+  };
+})();
+</script>
+<script>/* 미리 쓴 대화 '지하철' (2026-11-18) — 놀러 가요 「지하철을 타요」와 같은 장면(가상 노선): 하나역에서 1호선 → 공원역에서 2호선으로 갈아타기 → 바다역 3번 출구.
+   하나는 역무원. 꼴은 cafe.js 머리 설명.                                                                                   */
+(() => {
+  const CARD_Q = ['교통카드 있어요?', 'Vous avez une carte de transport ?'];
+  const ROUTE = ['1호선을 타고 공원역에서 2호선으로 갈아타요.', 'Prenez la ligne 1, puis changez pour la ligne 2 à la station Parc.'];
+  const LINE_Q = ['그럼 여기서 몇 호선 타요?', 'Alors, ici, vous prenez quelle ligne ?'];
+  const WHERE_Q = ['어디에서 갈아타요?', 'Où changez-vous ?'];
+  const EXIT_Q = ['또 궁금한 거 있어요?', 'Autre chose ?'];
+  const GATE = ['이제 개찰구에 교통카드를 대고 지나가세요.', 'Maintenant, passez le portillon avec votre carte.'];
+  const charge = (ko, fr, a, b) => ({ ko, fr, say: [[a, b], ROUTE, LINE_Q], go: 'line' });
+  const where = [
+    { ko: '바다역에 가고 싶어요.', fr: 'Je voudrais aller à la station Mer.', say: [['바다역이요? 좋아요!', 'La station Mer ? Très bien !'], CARD_Q], go: 'card' },
+    { ko: '바다에 어떻게 가요?', fr: 'Comment aller à la mer ?', say: [['바다역에서 내리면 돼요.', 'Il faut descendre à la station Mer.'], CARD_Q], go: 'card' }
+  ];
+  window.HANA_SCRIPTS.subway = {
+    steps: [
+      { title: '교통카드 충전', fr: 'Recharger la carte' },
+      { title: '몇 호선', fr: 'Quelle ligne' },
+      { title: '갈아타기', fr: 'Changer de ligne' },
+      { title: '출구 묻기', fr: 'Demander la sortie' },
+      { title: '인사하기', fr: 'Dire au revoir' }
+    ],
+    open: [['오늘은 지하철 놀이를 해요. 제가 역무원이에요!', "Aujourd'hui, on joue au métro. Je suis l'agente de station !"], ['안녕하세요! 여기는 하나역이에요. 어디 가세요?', "Bonjour ! Ici, c'est la station Hana. Où allez-vous ?"]],
+    start: 'where',
+    nodes: {
+      where: { step: 0, choices: [...where,
+        { ko: '여기가 어디예요?', fr: 'On est où, ici ?', say: [['여기는 하나역이에요. 1호선이 있어요.', "Ici, c'est la station Hana. Il y a la ligne 1."], ['어디 가세요?', 'Où allez-vous ?']], go: 'where2' }
+      ] },
+      where2: { step: 0, choices: where },
+      card: { step: 0, choices: [
+        { ko: '네, 있어요. 충전하고 싶어요.', fr: 'Oui. Je voudrais la recharger.', say: [['저기 기계에서 충전해요. 얼마 충전할까요?', 'On recharge à la machine là-bas. Combien voulez-vous mettre ?']], go: 'charge' },
+        { ko: '아니요, 없어요.', fr: "Non, je n'en ai pas.", say: [['교통카드는 저기 기계에서 사요. 얼마 충전할까요?', 'La carte s’achète à la machine là-bas. Combien voulez-vous mettre ?']], go: 'charge' }
+      ] },
+      charge: { step: 0, choices: [
+        charge('오천 원이요.', '5 000 wons.', '오천 원 충전했어요!', 'Vous avez rechargé 5 000 wons !'),
+        charge('만 원이요.', '10 000 wons.', '만 원 충전했어요!', 'Vous avez rechargé 10 000 wons !')
+      ] },
+      line: { step: 1, choices: [
+        { ko: '1호선이요.', fr: 'La ligne 1.', say: [['맞아요! 1호선을 타요.', 'Exact ! La ligne 1.'], WHERE_Q], go: 'transfer' },
+        { ko: '2호선이요.', fr: 'La ligne 2.', say: [['아니에요. 여기서는 1호선을 타요.', 'Non. Ici, on prend la ligne 1.'], WHERE_Q], go: 'transfer' }
+      ] },
+      transfer: { step: 2, choices: [
+        { ko: '공원역에서요.', fr: 'À la station Parc.', say: [['맞아요! 공원역에서 2호선으로 갈아타요.', 'Exact ! À la station Parc, on change pour la ligne 2.'], EXIT_Q], go: 'exit' },
+        { ko: '시장역에서요.', fr: 'À la station Marché.', say: [['아니에요. 공원역에서 갈아타요.', 'Non. On change à la station Parc.'], EXIT_Q], go: 'exit' }
+      ] },
+      exit: { step: 3, choices: [
+        { ko: '바다는 몇 번 출구예요?', fr: 'Pour la mer, quelle sortie ?', say: [['바다는 3번 출구예요.', "Pour la mer, c'est la sortie 3."], GATE], go: 'bye' },
+        { ko: '시장은 몇 번 출구예요?', fr: 'Pour le marché, quelle sortie ?', say: [['시장은 2번 출구예요. 바다는 3번 출구예요.', "Pour le marché, c'est la sortie 2. Pour la mer, la sortie 3."], GATE], go: 'bye' },
+        { ko: '화장실 어디 있어요?', fr: 'Où sont les toilettes ?', say: [['화장실은 저기 왼쪽에 있어요.', 'Les toilettes sont là-bas, à gauche.'], ['바다는 3번 출구예요.', "Pour la mer, c'est la sortie 3."], GATE], go: 'bye' }
+      ] },
+      bye: { step: 4, choices: [
+        { ko: '감사합니다!', fr: 'Merci !', say: [['조심히 가세요!', 'Bon voyage !']], go: 'end' },
+        { ko: '안녕히 계세요!', fr: 'Au revoir ! (à qui reste)', say: [['네, 조심히 가세요!', 'Au revoir, bon voyage !']], go: 'end' }
+      ] }
+    }
+  };
+})();
+</script>
+<script>/* 미리 쓴 대화 '약국' (2026-11-18) — 놀러 가요 「약국에 가요」와 같은 장면 · 낱말(머리 · 배 · 목 · 열 · 기침 · 약).
+   한국어 연습용이라 의학 정보가 아니다(놀러 가요와 같은 안내를 맨 앞에). 약 이름 · 먹는 법은 지어내지 않고 '이 약'으로만. 꼴은 cafe.js 머리 설명. */
+(() => {
+  const WHEN_Q = ['언제부터 아팠어요?', 'Depuis quand avez-vous mal ?'];
+  const FEVER_Q = ['열이 나요?', 'Vous avez de la fièvre ?'];
+  const COUGH_Q = ['기침도 해요?', 'Vous toussez aussi ?'];
+  const MED = [['알겠어요. 이 약을 드세요.', "D'accord. Prenez ce médicament."], ['하루에 세 번 드세요.', 'Prenez-le trois fois par jour.']];
+  const PRICE = ['모두 5,000원이에요.', 'Ça fait 5 000 wons en tout.'];
+  const part = (ko, fr, a, b) => ({ ko, fr, say: [[a, b], WHEN_Q], go: 'when' });
+  const when = (ko, fr, a, b) => ({ ko, fr, say: [[a, b], FEVER_Q], go: 'fever' });
+  const pay = [
+    { ko: '카드로 할게요.', fr: 'Par carte.', say: [['네, 됐어요. 빨리 나으세요!', "C'est bon. Rétablissez-vous vite !"]], go: 'bye' },
+    { ko: '현금으로 할게요.', fr: 'En espèces.', say: [['네, 받았어요. 빨리 나으세요!', "Merci, c'est reçu. Rétablissez-vous vite !"]], go: 'bye' }
+  ];
+  window.HANA_SCRIPTS.pharmacy = {
+    note: ['한국어 연습 대화예요. 진짜로 아프면 어른께 말해요.', "C'est un exercice de coréen. Si tu as vraiment mal, dis-le à un adulte."],
+    steps: [
+      { title: '아픈 곳 말하기', fr: 'Dire où on a mal' },
+      { title: '언제부터', fr: 'Depuis quand' },
+      { title: '열 · 기침', fr: 'Fièvre et toux' },
+      { title: '약 먹는 법', fr: 'Comment prendre le médicament' },
+      { title: '계산하고 인사하기', fr: 'Payer et dire au revoir' }
+    ],
+    open: [['오늘은 약국 놀이를 해요. 제가 약사예요!', "Aujourd'hui, on joue à la pharmacie. Je suis la pharmacienne !"], ['어서 오세요! 어디가 아프세요?', 'Bienvenue ! Où avez-vous mal ?']],
+    start: 'part',
+    nodes: {
+      part: { step: 0, choices: [
+        part('머리가 아파요.', "J'ai mal à la tête.", '머리가 아파요? 저런.', 'Vous avez mal à la tête ? Oh là là.'),
+        part('배가 아파요.', "J'ai mal au ventre.", '배가 아파요? 저런.', 'Vous avez mal au ventre ? Oh là là.'),
+        part('목이 아파요.', "J'ai mal à la gorge.", '목이 아파요? 저런.', 'Vous avez mal à la gorge ? Oh là là.')
+      ] },
+      when: { step: 1, choices: [
+        when('어제부터요.', 'Depuis hier.', '어제부터요?', 'Depuis hier ?'),
+        when('오늘 아침부터요.', 'Depuis ce matin.', '오늘 아침부터요?', 'Depuis ce matin ?'),
+        when('사흘 됐어요.', 'Ça fait trois jours.', '사흘이요? 그럼 병원에도 꼭 가 보세요.', 'Trois jours ? Alors allez aussi voir un médecin.')
+      ] },
+      fever: { step: 2, choices: [
+        { ko: '네, 열이 나요.', fr: "Oui, j'ai de la fièvre.", say: [['열도 나요?', 'Vous avez aussi de la fièvre ?'], COUGH_Q], go: 'cough' },
+        { ko: '아니요, 열은 안 나요.', fr: "Non, je n'ai pas de fièvre.", say: [['다행이에요.', 'Tant mieux.'], COUGH_Q], go: 'cough' }
+      ] },
+      cough: { step: 2, choices: [
+        { ko: '네, 기침을 해요.', fr: 'Oui, je tousse.', say: MED, go: 'take' },
+        { ko: '아니요, 기침은 안 해요.', fr: 'Non, je ne tousse pas.', say: MED, go: 'take' }
+      ] },
+      take: { step: 3, choices: [
+        { ko: '네, 알겠습니다.', fr: "D'accord, j'ai compris.", say: [['밥 먹고 드세요.', 'Prenez-le après le repas.'], PRICE], go: 'pay' },
+        { ko: '하루에 몇 번 먹어요?', fr: 'Combien de fois par jour ?', say: [['하루에 세 번이요. 아침, 점심, 저녁에 드세요.', 'Trois fois par jour. Le matin, le midi et le soir.'], PRICE], go: 'pay' },
+        { ko: '물하고 먹어요?', fr: "Je le prends avec de l'eau ?", say: [['네, 물하고 드세요.', "Oui, avec de l'eau."], PRICE], go: 'pay' }
+      ] },
+      pay: { step: 4, choices: pay },
+      bye: { step: 4, choices: [
+        { ko: '감사합니다.', fr: 'Merci.', say: [['안녕히 가세요!', 'Au revoir !']], go: 'end' },
+        { ko: '안녕히 계세요.', fr: 'Au revoir. (à qui reste)', say: [['네, 안녕히 가세요!', 'Au revoir !']], go: 'end' }
+      ] }
+    }
+  };
+})();
+</script>
+<script>/* 미리 쓴 대화 '식당' (2026-11-18) — 한국 식당: 몇 명 · 주문 · 맵기 · 반찬과 물(그냥 드림) · 계산.
+   메뉴와 값은 공개판 하나(10-21 식당 주제)와 같은 가상 값. 꼴은 cafe.js 머리 설명.                         */
+(() => {
+  const { won, wonFr } = window.HANA_UTIL;
+  const M = { '비빔밥': [12000, 'bibimbap'], '불고기': [15000, 'bulgogi'], '김치찌개': [11000, 'ragoût de kimchi'] };
+  const SPICY_Q = ['고추장 넣어 드릴까요? 조금 매워요.', 'Je mets du gochujang ? C’est un peu épicé.'];
+  const SIDE = ['물하고 반찬은 그냥 드려요. 더 필요하면 말씀하세요.', "L'eau et les accompagnements sont offerts. Dites-moi s'il vous en faut plus."];
+  const PAY_Q = ['맛있게 드셨어요? 계산은 카드로 하세요?', 'Ça vous a plu ? Vous payez par carte ?'];
+  const order = [
+    { ko: '비빔밥 주세요.', fr: "Un bibimbap, s'il vous plaît.", set: { food: '비빔밥' }, say: [['네, 비빔밥이요!', 'Oui, un bibimbap !'], SPICY_Q], go: 'spicy' },
+    { ko: '불고기 하나 주세요.', fr: "Un bulgogi, s'il vous plaît.", set: { food: '불고기' }, say: [['네, 불고기요!', 'Oui, un bulgogi !'], SIDE], go: 'side' }
+  ];
+  const pay = [
+    { ko: '네, 카드로 할게요.', fr: 'Oui, par carte.', say: [['{price}이에요. 네, 됐어요.', "Ça fait {priceFr}. C'est bon."], ['감사합니다. 안녕히 가세요!', 'Merci. Au revoir !']], go: 'bye' },
+    { ko: '아니요, 현금으로 할게요.', fr: 'Non, en espèces.', say: [['{price}이에요. 네, 받았어요.', "Ça fait {priceFr}. Merci, c'est reçu."], ['감사합니다. 안녕히 가세요!', 'Merci. Au revoir !']], go: 'bye' }
+  ];
+  const people = (ko, fr) => ({ ko, fr, say: [['이쪽으로 앉으세요. 여기 메뉴판이에요.', 'Asseyez-vous ici. Voici la carte.']], menu: true, go: 'order' });
+  window.HANA_SCRIPTS.restaurant = {
+    menu: Object.entries(M).map(([ko, d]) => ({ ko, fr: d[1], price: d[0] })),
+    vars: (m) => { const a = M[m.food] || [0, '']; return { foodFr: a[1], price: won(a[0]), priceFr: wonFr(a[0]) }; },
+    steps: [
+      { title: '몇 명', fr: 'Combien de personnes' },
+      { title: '주문하기', fr: 'Commander' },
+      { title: '맵기', fr: 'Épicé ou pas' },
+      { title: '반찬 · 물', fr: 'Accompagnements et eau' },
+      { title: '계산하고 인사하기', fr: 'Payer et dire au revoir' }
+    ],
+    open: [['오늘은 식당 놀이를 해요. 제가 직원이에요!', "Aujourd'hui, on joue au restaurant. Je suis la serveuse !"], ['어서 오세요! 몇 분이세요?', 'Bienvenue ! Vous êtes combien ?']],
+    start: 'people',
+    nodes: {
+      people: { step: 0, choices: [people('한 명이에요.', 'Une personne.'), people('두 명이에요.', 'Deux personnes.'), people('네 명이에요.', 'Quatre personnes.')] },
+      order: { step: 1, enter: [['뭐 드릴까요?', "Qu'est-ce que je vous sers ?"]], choices: [...order,
+        { ko: '뭐가 맛있어요?', fr: "Qu'est-ce qui est bon ?", say: [['비빔밥이 맛있어요! 채소가 많아요.', 'Le bibimbap est bon ! Il y a beaucoup de légumes.']], go: 'order2' }
+      ] },
+      order2: { step: 1, choices: order },
+      spicy: { step: 2, choices: [
+        { ko: '네, 넣어 주세요.', fr: "Oui, s'il vous plaît.", say: [['네, 고추장 넣어 드릴게요.', 'Oui, je mets du gochujang.'], SIDE], go: 'side' },
+        { ko: '조금만 넣어 주세요.', fr: "Juste un peu, s'il vous plaît.", say: [['네, 조금만 넣을게요.', 'Oui, juste un peu.'], SIDE], go: 'side' },
+        { ko: '아니요, 안 맵게 해 주세요.', fr: "Non, pas épicé, s'il vous plaît.", say: [['네, 안 맵게 해 드릴게요.', 'Oui, pas épicé.'], SIDE], go: 'side' }
+      ] },
+      side: { step: 3, choices: [
+        { ko: '김치 더 주세요.', fr: "Encore du kimchi, s'il vous plaît.", say: [['네, 김치 여기 있어요!', 'Voilà du kimchi !']], go: 'serve' },
+        { ko: '물 좀 주세요.', fr: "De l'eau, s'il vous plaît.", say: [['네, 물 여기 있어요.', "Voilà de l'eau."]], go: 'serve' },
+        { ko: '반찬이 뭐예요?', fr: "C'est quoi, les accompagnements ?", say: [['밥하고 같이 먹는 작은 음식이에요. 김치도 반찬이에요.', 'Ce sont des petits plats qu’on mange avec le riz. Le kimchi en est un.']], go: 'serve' }
+      ] },
+      serve: { step: 3, enter: [['{food} 나왔어요. 맛있게 드세요!', 'Voilà votre {foodFr}. Bon appétit !']], choices: [
+        { ko: '잘 먹겠습니다!', fr: 'Bon appétit ! (avant de manger)', say: [PAY_Q], go: 'pay' },
+        { ko: '와, 맛있겠다!', fr: "Ça a l'air délicieux !", say: [PAY_Q], go: 'pay' }
+      ] },
+      pay: { step: 4, choices: [...pay,
+        { ko: '얼마예요?', fr: "C'est combien ?", say: [['{food} {price}이에요.', '{foodFr} : {priceFr}.'], ['카드로 하세요?', 'Par carte ?']], go: 'pay2' }
+      ] },
+      pay2: { step: 4, choices: pay },
+      bye: { step: 4, choices: [
+        { ko: '잘 먹었습니다!', fr: 'Merci pour le repas ! (après)', say: [['또 오세요!', 'Revenez bientôt !']], go: 'end' },
+        { ko: '안녕히 계세요!', fr: 'Au revoir ! (à qui reste)', say: [['또 오세요!', 'Revenez bientôt !']], go: 'end' }
+      ] }
+    }
+  };
+})();
+</script>
+<script>/* 미리 쓴 대화 '처음 만남' (2026-11-18) — 이름 · 나라 · 나이 · 좋아하는 것 · 끝인사.
+   이름 칸이 없으므로(아이 정보를 받지 않음) 이름은 보기 셋에서 고른다. 꼴은 cafe.js 머리 설명.          */
+(() => {
+  const { jo } = window.HANA_UTIL;
+  const COUNTRY_Q = ['어느 나라 사람이에요?', 'Tu viens de quel pays ?'];
+  const AGE_Q = ['몇 살이에요?', 'Tu as quel âge ?'];
+  const LIKE_Q = ['{name} 씨는 뭘 좋아해요?', "Et toi, {name}, qu'est-ce que tu aimes ?"];
+  const GLAD = ['오늘 만나서 반가웠어요.', "J'étais contente de te rencontrer aujourd'hui."];
+  const name = (n, ko, fr) => ({ ko, fr, set: { name: n }, say: [['{name} 씨, 반가워요!', 'Enchantée, {name} !'], COUNTRY_Q], go: 'country' });
+  const age = (ko, fr) => ({ ko, fr, say: [['그렇군요! 저는 한국어를 좋아해요.', "D'accord ! Moi, j'aime le coréen."], LIKE_Q], go: 'like' });
+  window.HANA_SCRIPTS.intro = {
+    vars: (m) => ({ nameI: m.name ? jo(m.name, '이', '가') : '' }),
+    steps: [
+      { title: '이름 말하기', fr: 'Dire son prénom' },
+      { title: '나라 말하기', fr: 'Dire son pays' },
+      { title: '나이 말하기', fr: 'Dire son âge' },
+      { title: '좋아하는 것', fr: "Ce qu'on aime" },
+      { title: '끝인사', fr: 'Se dire au revoir' }
+    ],
+    open: [['오늘은 처음 만난 친구처럼 이야기해요.', "Aujourd'hui, on parle comme si on se rencontrait pour la première fois."], ['안녕하세요! 저는 하나예요. 이름이 뭐예요?', "Bonjour ! Je m'appelle Hana. Comment tu t'appelles ?"]],
+    start: 'name',
+    nodes: {
+      name: { step: 0, choices: [name('민준', '저는 민준이에요.', "Je m'appelle Minjun."), name('마리', '제 이름은 마리예요.', "Mon prénom, c'est Marie."), name('레오', '저는 레오라고 해요.', "Je m'appelle Léo.")] },
+      country: { step: 1, choices: [
+        { ko: '프랑스 사람이에요.', fr: 'Je suis français(e).', say: [['아, 프랑스에서 왔어요? 반가워요!', 'Ah, tu viens de France ? Enchantée !'], AGE_Q], go: 'age' },
+        { ko: '한국 사람이에요.', fr: 'Je suis coréen(ne).', say: [['아, 한국 사람이에요? 반가워요!', 'Ah, tu es coréen(ne) ? Enchantée !'], AGE_Q], go: 'age' },
+        { ko: '엄마는 한국 사람, 아빠는 프랑스 사람이에요.', fr: 'Ma mère est coréenne, mon père est français.', say: [['와, 한국어도 프랑스어도 할 수 있겠어요!', 'Waouh, tu peux parler coréen et français !'], AGE_Q], go: 'age' }
+      ] },
+      age: { step: 2, choices: [age('여덟 살이에요.', "J'ai huit ans."), age('열 살이에요.', "J'ai dix ans."), age('열두 살이에요.', "J'ai douze ans.")] },
+      like: { step: 3, choices: [
+        { ko: '케이팝을 좋아해요.', fr: "J'aime la K-pop.", say: [['와, 저도 케이팝 좋아해요!', "Waouh, moi aussi j'aime la K-pop !"], GLAD], go: 'bye' },
+        { ko: '축구를 좋아해요.', fr: "J'aime le football.", say: [['축구요? 멋져요!', 'Le football ? Génial !'], GLAD], go: 'bye' },
+        { ko: '그림 그리기를 좋아해요.', fr: "J'aime dessiner.", say: [['그림이요? 다음에 보여 주세요!', 'Le dessin ? Montre-moi la prochaine fois !'], GLAD], go: 'bye' }
+      ] },
+      bye: { step: 4, choices: [
+        { ko: '저도 반가웠어요.', fr: "Moi aussi, j'étais content(e).", say: [['다음에 또 만나요! 안녕!', 'À la prochaine ! Salut !']], go: 'end' },
+        { ko: '다음에 또 만나요!', fr: 'À la prochaine !', say: [['네, 또 만나요! 안녕!', 'Oui, à bientôt ! Salut !']], go: 'end' },
+        { ko: '안녕히 가세요.', fr: 'Au revoir.', say: [['{name} 씨도 안녕히 가세요!', 'Au revoir, {name} !']], go: 'end' }
+      ] }
+    }
+  };
+})();
+</script>
+<script>/* 하나랑 이야기해요 — 미리 쓴 대화 시안 (2026-11-17)
+   공개판 talk.js(v17)의 3D 하나 · 목소리 · 체크 목록 · 끝 카드를 그대로 두고, 서버(/api/chat · 반 코드)를 뺐다.
+   하나의 말은 HANA_SCRIPTS(cafe.js 등)에 미리 쓴 것만 나온다. 서버로 보내는 것 없음.
+   하나 목소리: 미리 만든 목소리(HANA_ASSETS.voice)가 있는 말은 그 소리, 없으면 기기의 한국어 목소리.   */
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const VER = '시안 20261117';
+  const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+  const A = window.HANA_ASSETS || { voice: {} };
+  const SCRIPTS = window.HANA_SCRIPTS || {};
+  // 한글원샷 안(…/hana/)에서 열리면 자료실은 바로 위 폴더, 따로 열리면 한글원샷 공개 주소. 놀러 가요(3D) · 활동지는 휴먼버스
+  const ONESHOT = /\/hana\/?$/.test(location.pathname) ? '../' : 'https://hangeul-oneshot.human-teacher.com/';
+  const XR_BASE = 'https://world.human-teacher.com/';
+
+  // ───────────── 3D: 하나(공개판과 같은 자리 · 빛) ─────────────
+  const stage = $('stage');
+  let renderer = null, hana = null;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.96;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    stage.prepend(renderer.domElement);
+  } catch { $('loading').textContent = '하나 그림을 그릴 수 없어요'; }
+  const scene3 = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 50);
+  scene3.add(new THREE.HemisphereLight('#fff6ea', '#9a8a75', 1.0));
+  const key = new THREE.DirectionalLight('#fff0dc', 0.75);
+  key.position.set(-0.8, 2.6, 3.2); key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+  key.shadow.camera.left = -2; key.shadow.camera.right = 2; key.shadow.camera.top = 2.5; key.shadow.camera.bottom = -0.5;
+  scene3.add(key);
+  const fillLight = new THREE.DirectionalLight('#e6eeff', 0.3); fillLight.position.set(2, 1.6, 2.4); scene3.add(fillLight);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.ShadowMaterial({ opacity: 0.16 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene3.add(floor);
+  function onModel(gltf) {
+    const model = gltf.scene;
+    model.traverse((x) => {
+      if (!x.isMesh) return;
+      x.castShadow = true; x.receiveShadow = false; if (x.isSkinnedMesh) x.frustumCulled = false;
+      (Array.isArray(x.material) ? x.material : [x.material]).forEach((m) => {
+        m.metalness = 0; m.metalnessMap = null;
+        if (m.map) { m.emissive = new THREE.Color('#ffffff'); m.emissiveMap = m.map; m.emissiveIntensity = 0.18; }
+        m.needsUpdate = true;
+      });
+    });
+    const mixer = new THREE.AnimationMixer(model), actions = {};
+    for (const k of ['idle', 'talk']) { const c = gltf.animations.find((a) => a.name.toLowerCase().includes(k)); if (c) actions[k] = mixer.clipAction(c); }
+    if (actions.idle) actions.idle.play();
+    mixer.update(0.01);
+    const box = new THREE.Box3().setFromObject(model), h = box.max.y - box.min.y || 1.7;
+    const inner = new THREE.Group(); inner.scale.setScalar(1.58 / h);
+    model.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2);
+    inner.add(model); scene3.add(inner);
+    let talkTimer = 0;
+    hana = { mixer, cur: actions.idle,
+      play(name) { const a = actions[name]; if (!a || a === this.cur) return; a.reset(); a.play(); if (this.cur) this.cur.crossFadeTo(a, 0.45, false); this.cur = a; },
+      setTalking(on) { clearTimeout(talkTimer); this.play(on ? 'talk' : 'idle'); },
+      talkFor(ms) { this.setTalking(true); talkTimer = setTimeout(() => this.play('idle'), ms); } };
+    $('loading').style.display = 'none';
+  }
+  if (A.glb) {   // 한 파일 판: 하나 모형을 글자로 품어 둠
+    const bin = atob(A.glb), buf = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    new THREE.GLTFLoader().parse(buf.buffer, '', onModel, () => { $('loading').textContent = '하나를 불러오지 못했어요'; });
+  } else new THREE.GLTFLoader().load(A.glbUrl || 'host.glb', onModel, undefined, () => { $('loading').textContent = '하나를 불러오지 못했어요'; });
+  const look = new THREE.Vector3(0, 1.0, 0), clock = new THREE.Clock();
+  function resize() {
+    const w = stage.clientWidth, hgt = stage.clientHeight;
+    if (!w || !hgt || !renderer) return;
+    renderer.setSize(w, hgt, false); camera.aspect = w / hgt;
+    if (camera.aspect >= 1) { camera.fov = 30; camera.position.set(0, 1.25, 3.6); look.set(0, 0.86, 0); }
+    else { camera.fov = 42; camera.position.set(0, 1.3, 3.0); look.set(0, 0.9, 0); }
+    const half = camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
+    const panel = Math.min(1, ($('quest').offsetWidth + 16) / w);
+    const shift = Math.max(0, Math.min(0.75, (panel + 0.22 - 0.5) * 2)) * half;
+    camera.position.x = -shift; look.x = -shift;
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(stage); resize();
+  if (renderer) renderer.setAnimationLoop(() => {
+    if (!stage.clientHeight) return;
+    const dt = Math.min(0.05, clock.getDelta());
+    if (hana) hana.mixer.update(dt);
+    camera.lookAt(look);
+    renderer.render(scene3, camera);
+  });
+
+  // ───────────── 목소리 ─────────────
+  let voice = null;
+  function pickVoice() {
+    const ko = (window.speechSynthesis ? speechSynthesis.getVoices() : []).filter((v) => /^ko/i.test(v.lang));
+    voice = ko.find((v) => /natural|online|neural/i.test(v.name)) || ko.find((v) => /google|yuna|유나/i.test(v.name)) || ko[0] || null;
+  }
+  if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  const player = new Audio(); player.preload = 'auto';
+  const splitSent = (t) => String(t).split(/(?<=[.!?…~])\s+/).map((s) => s.trim()).filter((s) => /[가-힣]/.test(s));
+  let gen = 0, curFin = null;
+  function stopVoice() { gen++; try { player.pause(); } catch {} try { speechSynthesis.cancel(); } catch {} if (curFin) curFin(); document.querySelectorAll('.say.playing').forEach((b) => b.classList.remove('playing')); }
+  function playOne(s, slow) {
+    return new Promise((res) => {
+      let done = false; const fin = () => { if (done) return; done = true; curFin = null; hana && hana.setTalking(false); res(); };
+      curFin = fin;
+      const url = A.voice[s];
+      if (url) {
+        player.onended = fin; player.onerror = fin; player.src = url; player.playbackRate = slow ? 0.85 : 1; hana && hana.setTalking(true);
+        player.play().catch(fin); setTimeout(fin, 15000); return;
+      }
+      if (!('speechSynthesis' in window) || !voice) { hana && hana.talkFor(600 + s.length * 90); setTimeout(fin, 300); return; }
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(s); u.voice = voice; u.lang = voice.lang; u.rate = slow ? 0.7 : 0.92; u.pitch = 1.05;
+      u.onstart = () => hana && hana.setTalking(true); u.onend = fin; u.onerror = fin;
+      setTimeout(fin, 2000 + s.length * (slow ? 400 : 260));
+      speechSynthesis.speak(u);
+    });
+  }
+  async function speak(text, btn, slow) {
+    const g = gen; btn && btn.classList.add('playing');
+    for (const s of splitSent(text)) { if (g !== gen) break; await playOne(s, slow); }
+    btn && btn.classList.remove('playing');
+  }
+  let voiceOn = store.get('hana-voice') !== '0';
+  let queue = Promise.resolve();
+  const sayBtn = (text) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'say'; b.textContent = '🔊'; b.title = '다시 듣기';
+    b.onclick = () => { stopVoice(); queue = Promise.resolve(); speak(text, b); };
+    return b;
+  };
+
+  // ───────────── 대화 화면 ─────────────
+  let S = null, node = null, mem = {}, used = [], lastAsk = null, stepNow = 0;
+  const { won } = window.HANA_UTIL;
+  function fill(s) {   // {이름} → 대화가 기억한 값(set) · 주제가 계산한 값(vars)
+    const v = S.vars ? S.vars(mem) : {};
+    return String(s || '').replace(/\{(\w+)\}/g, (_, k) => (v[k] != null ? v[k] : mem[k] != null ? mem[k] : ''));
+  }
+  const scrollDown = () => { const log = $('log'); requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; }); };
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  function addHana([ko, fr], slow) {
+    const say = fill(ko), gloss = fill(fr);
+    const row = document.createElement('div'); row.className = 'msg hana';
+    row.innerHTML = '<div class="face">하나</div><div class="bubble"><div class="ko"></div><div class="gl"></div></div>';
+    row.querySelector('.ko').textContent = say; row.querySelector('.gl').textContent = gloss;
+    const btn = sayBtn(say); row.querySelector('.bubble').appendChild(btn);
+    $('log').appendChild(row); scrollDown();
+    if (voiceOn) { const g = gen; queue = queue.then(() => (g === gen ? speak(say, btn, slow) : null)); }
+    else hana && hana.talkFor(700 + say.length * 90);
+    return queue;
+  }
+  function addMe(text) {
+    const row = document.createElement('div'); row.className = 'msg me';
+    row.innerHTML = '<div class="bubble"><div class="ko"></div></div>';
+    row.querySelector('.ko').textContent = text;
+    $('log').appendChild(row); scrollDown();
+  }
+  function addDots() { const row = document.createElement('div'); row.className = 'msg hana dots'; row.innerHTML = '<div class="face">하나</div><div class="bubble"></div>'; $('log').appendChild(row); scrollDown(); return row; }
+  function addMenu() {
+    const c = document.createElement('div'); c.className = 'menucard';
+    c.innerHTML = '<h4>MENU · 메뉴</h4>' + S.menu.map((m) => `<p><span>${m.ko}<small>${m.fr}</small></span><b>${won(m.price)}</b></p>`).join('');
+    $('log').appendChild(c); scrollDown();
+  }
+  async function hanaSays(lines, slow) {   // 하나가 한 줄씩(사이에 '···')
+    for (let i = 0; i < lines.length; i++) {
+      const d = addDots(); await wait(i ? 650 : 500); d.remove();
+      addHana(lines[i], slow);
+    }
+    if (lines.length) lastAsk = lines[lines.length - 1];
+  }
+  function lock(on) { $('dock').classList.toggle('busy', on); }
+  function setChoices(list) {
+    const box = $('choices'); box.innerHTML = '';
+    for (const c of list) {
+      const b = document.createElement('button'); b.type = 'button';
+      const ko = document.createElement('b'); ko.textContent = fill(c.ko);
+      const gl = document.createElement('span'); gl.textContent = fill(c.fr);
+      b.append(ko, gl); b.onclick = () => pick(c); box.appendChild(b);
+    }
+  }
+
+  // ───────────── 체크 목록 ─────────────
+  function renderSteps(justDone) {
+    const ol = $('qlist'); ol.innerHTML = '';
+    S.steps.forEach((s, i) => {
+      const li = document.createElement('li');
+      li.className = i < stepNow ? 'done' : i === stepNow ? 'cur' : '';
+      if (i === justDone) li.classList.add('just');
+      li.innerHTML = '<span class="box"></span><span><span class="t"></span><small></small></span>';
+      li.querySelector('.box').textContent = i < stepNow ? '✓' : i + 1;
+      li.querySelector('.t').textContent = s.title;
+      li.querySelector('small').textContent = (used.find((u) => u.step === i) || {}).ko || s.fr;
+      ol.appendChild(li);
+    });
+    const n = Math.min(stepNow, S.steps.length);
+    $('qprog').textContent = `${n}/${S.steps.length}`;
+    $('qbar').style.width = (100 * n / S.steps.length) + '%';
+    $('topic').textContent = `${S.icon} ${S.title} ${n}/${S.steps.length}`;
+  }
+  $('qhead').onclick = () => { const q = $('quest'); q.classList.toggle('collapsed'); $('qarrow').textContent = q.classList.contains('collapsed') ? '▾' : '▴'; };
+  if (window.innerWidth >= 700) { $('quest').classList.remove('collapsed'); $('qarrow').textContent = '▴'; }
+
+  // ───────────── 진행 ─────────────
+  async function start(sc) {
+    S = sc; mem = {}; used = []; stepNow = 0; lastAsk = null; stopVoice(); queue = Promise.resolve();
+    $('log').innerHTML = ''; $('dock').classList.remove('done'); setChoices([]); lock(true); renderSteps();
+    if (S.note) { const n = document.createElement('div'); n.className = 'sysnote'; n.innerHTML = '<b></b><span></span>'; n.querySelector('b').textContent = S.note[0]; n.querySelector('span').textContent = S.note[1]; $('log').appendChild(n); }
+    await hanaSays([...(S.id === 'intro' ? [] : [['안녕하세요! 저는 하나예요.', 'Bonjour ! Je suis Hana.']]), ...S.open]);
+    await goNode(S.start);
+  }
+  async function goNode(id) {
+    if (id === 'end') return finish();
+    node = S.nodes[id];
+    if (node.step > stepNow) { const j = stepNow; stepNow = node.step; renderSteps(j); } else renderSteps();
+    if (node.enter) { await wait(900); await hanaSays(node.enter); }
+    setChoices(node.choices); lock(false);
+  }
+  async function pick(c) {
+    lock(true); setChoices([]); stopVoice(); queue = Promise.resolve();
+    Object.assign(mem, c.set || {});
+    const ko = fill(c.ko);
+    addMe(ko);
+    if (!used.some((u) => u.ko === ko)) used.push({ ko, fr: fill(c.fr), step: node.step });
+    await hanaSays(c.say || []);
+    if (c.menu) { await wait(300); addMenu(); }
+    await goNode(c.go);
+  }
+  $('again').onclick = async () => {   // 모르면 '다시 말해 주세요.' → 하나가 천천히 다시(이 말도 배우는 말)
+    if (!lastAsk) return;
+    lock(true); stopVoice(); queue = Promise.resolve();
+    addMe('다시 말해 주세요.');
+    await hanaSays([['천천히 다시 말할게요.', 'Je répète lentement.'], lastAsk], true);
+    lock(false);
+  };
+  function finish() {
+    stepNow = S.steps.length; renderSteps(S.steps.length - 1);
+    setChoices([]); $('dock').classList.add('done');
+    const card = document.createElement('div'); card.className = 'endcard';
+    card.innerHTML = '<h3></h3><ul></ul><div class="row"><button type="button" class="sub" data-a="again">다시 하기</button><button type="button" data-a="other">다른 주제</button></div>';
+    card.querySelector('h3').textContent = `🎉 '${S.title}' 끝! 오늘 쓴 말`;
+    const ul = card.querySelector('ul');
+    for (const u of used) {
+      const li = document.createElement('li'); const sp = document.createElement('span'); sp.textContent = u.ko;
+      const sm = document.createElement('small'); sm.textContent = u.fr; sp.appendChild(sm);
+      li.append(sayBtn(u.ko), sp); ul.appendChild(li);
+    }
+    card.querySelector('[data-a=again]').onclick = () => start(S);
+    card.querySelector('[data-a=other]').onclick = openCover;
+    // 이어서 해 보기(11-18): 같은 주제의 놀러 가요(3D) · 활동지 · 한글원샷 자료실 — 활동지 → XR → 대화가 서로 이어지게
+    const next = document.createElement('div'); next.className = 'nextgo';
+    const go = (href, ko, fr) => { const a = document.createElement('a'); a.href = href; if (/^https?:/.test(href)) { a.target = '_blank'; a.rel = 'noopener'; } a.innerHTML = '<b></b><span></span>'; a.querySelector('b').textContent = ko; a.querySelector('span').textContent = fr; next.appendChild(a); };
+    const meta = (window.HANA_TOPICS || []).find((x) => x.id === S.id) || {};
+    if (meta.xr) { go(XR_BASE + S.id + '/', '🎮 3D', '놀러 가요'); go(XR_BASE + 'korean/sheets/' + S.id + '.pdf', '📄 활동지', 'Fiche PDF'); }
+    if (meta.lib) go(ONESHOT + '#/t/' + encodeURIComponent(meta.lib), '📚 자료실', meta.lib);
+    if (next.children.length) { const h = document.createElement('p'); h.className = 'nexth'; h.textContent = '이어서 해 보기 · Continuer'; card.insertBefore(h, card.querySelector('.row')); card.insertBefore(next, card.querySelector('.row')); }
+    $('log').appendChild(card); scrollDown();
+  }
+
+  // ───────────── 위 막대 ─────────────
+  let showGloss = store.get('hana-gloss') !== '0';
+  const applyGloss = () => { document.body.classList.toggle('nogloss', !showGloss); $('glossBtn').classList.toggle('on', showGloss); };
+  $('glossBtn').onclick = () => { showGloss = !showGloss; store.set('hana-gloss', showGloss ? '1' : '0'); applyGloss(); };
+  const applyVoice = () => { $('voiceBtn').textContent = voiceOn ? '🔊' : '🔇'; $('voiceBtn').classList.toggle('on', voiceOn); };
+  $('voiceBtn').onclick = () => { voiceOn = !voiceOn; store.set('hana-voice', voiceOn ? '1' : '0'); if (!voiceOn) stopVoice(); applyVoice(); };
+  applyVoice(); applyGloss();
+  function openCover() {
+    if (S && stepNow > 0 && !$('log').querySelector('.endcard') && !confirm('처음 화면으로 가면 지금 대화가 지워져요. 갈까요?')) return;
+    stopVoice(); queue = Promise.resolve();
+    $('cover').style.display = 'block';
+  }
+  $('menuBtn').onclick = openCover;
+
+  // ───────────── 시작 화면: 주제 ─────────────
+  // 주제: 대화를 다 쓴 것(지금 해 볼 수 있어요)과 준비 중(11-18 1차 8 · 2차 9, common.js)
+  const unlock = () => { try { player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='; player.play().catch(() => {}); } catch {} };
+  const TOPICS = window.HANA_TOPICS || [];
+  const card = (t, ready) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = ready ? 'ready' : 'soon'; b.dataset.id = t.id;
+    b.innerHTML = '<span class="ic"></span><span class="tx"><b></b><span></span></span>' + (ready && t.xr ? '<i class="xr" title="놀러 가요에도 있어요">🎮</i>' : '');
+    b.querySelector('.ic').textContent = t.icon; b.querySelector('b').textContent = t.title;
+    b.querySelector('.tx span').textContent = ready ? t.fr : '준비 중 · ' + t.fr;
+    if (ready) b.onclick = () => { $('cover').style.display = 'none'; unlock(); start(Object.assign({ id: t.id, icon: t.icon, title: t.title, fr: t.fr }, SCRIPTS[t.id])); };
+    return b;
+  };
+  for (const [ready, box] of [[true, 'readyTopics'], [false, 'topics']]) {
+    const grid = document.createElement('div'); grid.className = 'tgrid';
+    for (const t of TOPICS) if (!!SCRIPTS[t.id] === ready) grid.appendChild(card(t, ready));
+    $(box).appendChild(grid);
+  }
+  $('toOneshot').href = ONESHOT;
+  // ?topic=카페처럼 한글원샷 주제 화면 · 하나랑 탭에서 바로 그 주제로(11-18)
+  const qt = new URLSearchParams(location.search).get('topic');
+  if (qt && SCRIPTS[qt]) { const b = document.querySelector(`#readyTopics button[data-id="${qt}"]`); if (b) b.click(); }
+  window.__talk = { state: () => ({ node: node && Object.keys(S.nodes).find((k) => S.nodes[k] === node), stepNow, mem, used: used.map((u) => u.ko) }), ver: VER };
+})();
+</script>
+</body>
+</html>
