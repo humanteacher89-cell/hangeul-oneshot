@@ -8,12 +8,13 @@ window.ONESHOT_CONFIG = {
   TITLE: "한글원샷",
   SUBTITLE: "프랑스 한글학교 레벨별 자료",
   SUBTITLE_FR: "Ressources de coréen par niveau pour les écoles coréennes de France",   // 프랑스어 화면 부제(서버 설정 subtitle_fr가 먼저, 2026-10-31)
+  SUBTITLE_EN: "Korean learning resources by level",   // 영어 화면 부제(2026-11-18, 사람 확인 전)
 
   // 레벨은 시트에 적는 글자(하·중·상) 그대로. 설명은 화면에만 보인다.
   LEVELS: [
-    { key: "하", ko: "처음 배워요", fr: "Débutant" },
-    { key: "중", ko: "문장을 읽고 써요", fr: "Intermédiaire" },
-    { key: "상", ko: "긴 글과 이야기", fr: "Avancé" }
+    { key: "하", ko: "처음 배워요", fr: "Débutant", en: "Beginner" },
+    { key: "중", ko: "문장을 읽고 써요", fr: "Intermédiaire", en: "Intermediate" },
+    { key: "상", ko: "긴 글과 이야기", fr: "Avancé", en: "Advanced" }
   ],
 
   // 자료 유형(올리기 화면의 선택지). 시트에 다른 말을 적어도 그대로 보여 준다.

@@ -130,7 +130,7 @@
     <button id="menuBtn" type="button" title="처음 화면으로">← 처음</button>
     <b>하나랑 이야기해요</b><span id="topic"></span><span class="sp"></span>
     <button id="voiceBtn" class="on" type="button" title="하나 말 읽어 주기">🔊</button>
-    <button id="glossBtn" class="on" type="button" title="뜻 보기">🇫🇷 뜻</button>
+    <button id="glossBtn" class="on" type="button" title="뜻 보기"><span data-en="🇬🇧">🇫🇷</span> 뜻</button>
   </header>
   <div id="stage">
     <div id="loading">하나 불러오는 중…</div>
@@ -142,23 +142,23 @@
   </div>
   <main id="log" aria-live="polite"></main>
   <div id="dock" class="busy">
-    <p class="hint">골라서 대답해요 · Choisis ta réponse</p>
+    <p class="hint">골라서 대답해요 · <span data-en="Choose your answer">Choisis ta réponse</span></p>
     <div id="choices"></div>
-    <button id="again" type="button">🔁 <b>다시 말해 주세요.</b> · Vous pouvez répéter ?</button>
+    <button id="again" type="button">🔁 <b>다시 말해 주세요.</b> · <span data-en="Can you say it again?">Vous pouvez répéter ?</span></button>
   </div>
 </div>
 
 <div id="cover"><div class="card">
   <a id="toOneshot" class="back" href="https://hangeul-oneshot.human-teacher.com/">← 한글원샷 · Hangeul Oneshot</a>
-  <div class="kicker">한국어 배우기 · Apprendre le coréen</div>
+  <div class="kicker">한국어 배우기 · <span data-en="Learn Korean">Apprendre le coréen</span></div>
   <h1>하나랑 이야기해요</h1>
-  <p class="lead">하나와 한국어로 대화 연습을 해요. 하나가 묻고, 나는 보기에서 골라 대답해요.<br><span style="font-size:13px">Hana vous pose des questions, vous choisissez la réponse.</span></p>
-  <div class="how"><div><b>👂</b>하나 말 듣기<br>Écouter</div><div><b>👆</b>보기 고르기<br>Choisir</div><div><b>🔁</b>모르면 다시<br>Répéter</div></div>
-  <div class="safe">코드도 이름도 필요 없어요. 고른 말은 이 기기 밖으로 나가지 않아요.<br><span>Pas de code, pas de prénom. Rien n'est envoyé.</span></div>
-  <div class="lbl">지금 해 볼 수 있어요 <small>· Disponible</small></div>
+  <p class="lead">하나와 한국어로 대화 연습을 해요. 하나가 묻고, 나는 보기에서 골라 대답해요.<br><span style="font-size:13px" data-en="Hana asks a question, and you choose your answer.">Hana vous pose des questions, vous choisissez la réponse.</span></p>
+  <div class="how"><div><b>👂</b>하나 말 듣기<br><span data-en="Listen">Écouter</span></div><div><b>👆</b>보기 고르기<br><span data-en="Choose">Choisir</span></div><div><b>🔁</b>모르면 다시<br><span data-en="Repeat">Répéter</span></div></div>
+  <div class="safe">코드도 이름도 필요 없어요. 고른 말은 이 기기 밖으로 나가지 않아요.<br><span data-en="No code, no name. Nothing is sent.">Pas de code, pas de prénom. Rien n'est envoyé.</span></div>
+  <div class="lbl">지금 해 볼 수 있어요 <small data-en="· Ready to play">· Disponible</small></div>
   <p class="xrnote">🎮 표시는 한글원샷 '놀러 가요'에서 3D로도 가 볼 수 있는 곳이에요.</p>
   <div id="readyTopics"></div>
-  <div class="lbl" style="margin-top:14px">준비 중 <small>· Bientôt</small></div>
+  <div class="lbl" style="margin-top:14px">준비 중 <small data-en="· Coming soon">· Bientôt</small></div>
   <div id="topics"></div>
   <small class="fine">한국어 연습용 대화예요. 하나 목소리: AI 음성 합성(Qwen3-TTS). 캐릭터: Tripo로 제작 · 만든 사람: 휴먼쌤.</small>
 </div></div>
@@ -1063,6 +1063,364 @@ window.HANA_UTIL = {
   };
 })();
 </script>
+<script>/* 하나 미리 쓴 대화 — 영어 뜻(2026-11-18, 휴먼쌤 "전부다 진행해줘"의 영어 화면)
+   대화 파일(cafe.js 등)의 줄 꼴 [한국어, 프랑스어]는 그대로 두고, 프랑스어 뜻 → 영어 뜻 표를 여기에 따로 둔다.
+   (대화 파일 열두 개를 고치지 않아 프랑스어 화면이 바뀔 일이 없다. 같은 프랑스어 뜻은 같은 영어 뜻.)
+   talk.js가 ?lang=en일 때만 쓴다. {이름Fr}이 든 줄은 영어에서 {이름En}을 쓰고, 값은 아래 vars가 프랑스어 값에서 만든다
+   (원 값 '4 000 wons' → '4,000 won', 낱말은 nouns 표). check-paths.mjs가 빈 칸 · 못 채운 {이름}을 잡는다.
+   쉬운 말(아이 · 학부모가 읽음). 사람(원어민) 확인 전.                                                        */
+window.HANA_EN = (() => {
+  const T = [
+    // ── 주제 이름 · 공통 ──
+    ['Au café', 'At the café'], ['Chez Hana', "At Hana's house"], ['À la supérette', 'At the corner shop'], ['Au snack coréen', 'At the snack bar'],
+    ['Dans le métro', 'On the subway'], ['À la pharmacie', 'At the pharmacy'], ['Au restaurant', 'At the restaurant'], ['Première rencontre', 'Meeting someone new'],
+    ['Au marché', 'At the market'], ['Magasin de vêtements', 'At the clothes shop'], ['Faire les courses', 'Grocery shopping'], ['Demander son chemin', 'Asking the way'],
+    ['En taxi', 'In a taxi'], ["L'heure", 'Telling the time'], ['Les couleurs', 'Colors'], ['Règles de la classe', 'Classroom rules'], ['Une invitation', 'An invitation'],
+    ['Bonjour ! Je suis Hana.', "Hello! I'm Hana."], ['Je répète lentement.', "I'll say it again slowly."],
+    // ── cafe ──
+    ['Commander', 'Order'], ['Chaud ou froid', 'Hot or cold'], ['Sur place ou à emporter', 'For here or to go'], ['Payer', 'Pay'], ['Recevoir et dire au revoir', 'Get your drink and say goodbye'],
+    ['americano', 'americano'], ['café latte', 'café latte'], ['thé vert', 'green tea'], ["jus d'orange", 'orange juice'],
+    ["Aujourd'hui, on joue au café. Je suis la serveuse !", "Today we're playing café. I work here!"],
+    ["Bienvenue ! Qu'est-ce que je vous sers ?", 'Welcome! What would you like?'],
+    ["Un americano, s'il vous plaît.", 'An americano, please.'], ['Oui, un americano !', 'Sure, an americano!'], ['Chaud ou froid ?', 'Hot or cold?'],
+    ["Un café latte, s'il vous plaît.", 'A café latte, please.'], ['Oui, un café latte !', 'Sure, a café latte!'],
+    ['Vous avez du thé vert ?', 'Do you have green tea?'], ['Oui, on a du thé vert. Je vous en sers un ?', 'Yes, we have green tea. Would you like one?'],
+    ["Oui, un thé vert, s'il vous plaît.", 'Yes, a green tea, please.'], ['Oui, un thé vert !', 'Sure, a green tea!'],
+    ["Non, montrez-moi le menu, s'il vous plaît.", 'No, can I see the menu, please?'], ['Voilà.', 'Here you are.'],
+    ["Qu'est-ce que je vous sers ?", 'What would you like?'], ["Un jus d'orange, s'il vous plaît.", 'An orange juice, please.'], ["Oui, un jus d'orange !", 'Sure, an orange juice!'],
+    ['Je mets des glaçons ?', 'Would you like ice?'], ["Chaud, s'il vous plaît.", 'Hot, please.'], ["Un {drinkFr} chaud, d'accord !", 'A hot {drinkEn}, okay!'],
+    ['Sur place ou à emporter ?', 'For here or to go?'], ["Froid, s'il vous plaît.", 'Cold, please.'], ["Un {drinkFr} glacé, d'accord !", 'An iced {drinkEn}, okay!'],
+    ["Peu de glaçons, s'il vous plaît.", 'Just a little ice, please.'], ['Oui, je mets juste un peu de glaçons.', "Okay, I'll add just a little ice."],
+    ["Oui, s'il vous plaît.", 'Yes, please.'], ['Oui, avec des glaçons !', 'Okay, with ice!'], ["Non, sans glaçons, s'il vous plaît.", 'No ice, please.'],
+    ['Oui, sans glaçons.', 'Okay, no ice.'], ["Juste un peu, s'il vous plaît.", 'Just a little, please.'], ['Oui, juste un peu.', 'Okay, just a little.'],
+    ['Sur place.', 'For here.'], ['Oui, je vous le sers dans une tasse.', "Okay, I'll put it in a cup."], ['Vous payez par carte ?', 'Are you paying by card?'],
+    ['À emporter.', 'To go.'], ['Oui, dans un gobelet en carton.', "Okay, I'll put it in a paper cup."], ['Je vais boire dehors.', "I'll drink it outside."],
+    ['Donc à emporter ? Je vous le mets dans un gobelet.', "So it's to go? I'll put it in a paper cup."],
+    ['Oui, par carte.', 'Yes, by card.'], ['Ça fait {priceFr}. Insérez votre carte ici.', "That's {priceEn}. Please put your card in here."],
+    ["C'est bon ! Patientez un instant.", 'All done! Please wait a moment.'], ['Non, en espèces.', "No, I'll pay cash."], ['Ça fait {priceFr}.', "That's {priceEn}."],
+    ["Merci, c'est reçu. Patientez un instant.", 'Thank you, got it. Please wait a moment.'], ["C'est combien ?", 'How much is it?'],
+    ['{drinkFr} : {priceFr}.', 'The {drinkEn} is {priceEn}.'], ['Par carte ?', 'By card?'],
+    ['Votre {drinkFr} est prêt. Bonne dégustation !', 'Your {drinkEn} is ready. Enjoy!'], ['Merci.', 'Thank you.'],
+    ['Revenez quand vous voulez ! Au revoir.', 'Come again! Goodbye.'], ['Merci, je vais en profiter !', 'Thanks, I will enjoy it!'],
+    ['Au revoir.', 'Goodbye.'], ['Au revoir ! Revenez bientôt.', 'Goodbye! Come again soon.'],
+    // ── hanok ──
+    ['Saluer et entrer', 'Say hello and come in'], ['Mettre la table', 'Set the table'], ['Manger ensemble', 'Eat together'], ['Se resservir', 'Have some more'], ['Dire au revoir', 'Say goodbye'],
+    ["Aujourd'hui, on va chez Hana.", "Today we're visiting Hana's house."], ['Bienvenue ! Voici ma maison.', 'Welcome! This is my house.'], ['Bonjour !', 'Hello!'],
+    ['Bonjour ! Entrez.', 'Hello! Come in.'], ['On enlève ses chaussures ici.', 'We take off our shoes here.'], ['Votre maison est jolie !', 'Your house is pretty!'],
+    ['Merci ! Entrez.', 'Thank you! Come in.'], ['Excusez-moi de vous déranger.', 'Excuse me for coming in.'], ['Pas de souci ! Entrez.', 'No problem! Come in.'],
+    ['Oui, je les enlève.', "Okay, I'll take them off."], ['Merci. Dans une maison coréenne, on enlève ses chaussures.', 'Thank you. In a Korean house, we take off our shoes.'],
+    ["Aujourd'hui, on met la table ensemble. Tu veux faire quoi ?", "Today we'll set the table together. What do you want to do?"],
+    ['Pourquoi on enlève ses chaussures ?', 'Why do we take off our shoes?'],
+    ['Dans une maison coréenne, on mange assis par terre. Alors le sol doit être propre.', 'In a Korean house, we sit on the floor to eat. So the floor must be clean.'],
+    ['Je mets les cuillères et les baguettes.', "I'll put out the spoons and chopsticks."], ['Merci ! Moi, je mets le riz et la soupe.', "Thank you! I'll put out the rice and soup."],
+    ["Je vais chercher de l'eau.", "I'll get some water."], ["Merci ! Pose l'eau à côté des bols.", 'Thank you! Put the water next to the bowls.'],
+    ["On mange quoi aujourd'hui ?", 'What are we eating today?'], ['Il y a du riz, de la soupe, du kimchi et du bibimbap.', "There's rice, soup, kimchi and bibimbap."],
+    ['Ça a l\'air délicieux !', 'Wow, that looks yummy!'], ['Alors mettons la table ensemble !', "Then let's set the table together!"],
+    ["C'est quoi, le bibimbap ?", 'What is bibimbap?'], ['On mélange du riz avec des légumes et du gochujang.', 'You mix rice with vegetables and gochujang (red pepper paste).'],
+    ['Allez, mangeons ensemble !', "Come on, let's eat together!"], ['Bon appétit ! (avant de manger)', 'Thank you for the food! (before eating)'],
+    ['Oui, mange bien !', 'Yes, enjoy your meal!'], ["C'est bon ?", 'Is it good?'],
+    ['Avant de manger, on dit « 잘 먹겠습니다 ! ».', 'Before eating, we say "잘 먹겠습니다!"'], ['Bravo ! Mange bien.', 'Well done! Enjoy your meal.'],
+    ["Oui, c'est bon !", "Yes, it's good!"], ['Tant mieux !', "I'm glad!"], ['Reprenez-en.', 'Have some more.'], ["C'est un peu épicé.", "It's a little spicy."],
+    ["Le kimchi est épicé ? Bois de l'eau.", 'Is the kimchi spicy? Drink some water.'], ["Qu'est-ce que c'est ?", 'What is this?'],
+    ["C'est du kimchi. On le fait avec du chou.", "It's kimchi. It's made with cabbage."], ["Oui, encore, s'il te plaît.", 'Yes, more please.'], ['Voilà !', 'Here you are!'],
+    ['Tu as fini ?', 'Are you finished?'], ['Non, ça va, merci.', "No, I'm fine, thank you."], ["D'accord.", 'Okay.'],
+    ["J'ai bien mangé, je n'ai plus faim !", "I'm full!"], ['Haha, tu as bien mangé !', 'Haha, you ate a lot!'], ['Merci pour le repas ! (après)', 'Thank you for the meal! (after eating)'],
+    ['Reviens quand tu veux !', 'Come visit again!'], ["Oui, j'ai fini.", "Yes, I'm finished."], ['Après le repas, on dit « 잘 먹었습니다 ! ».', 'After the meal, we say "잘 먹었습니다!"'],
+    ['Bravo ! Reviens quand tu veux !', 'Well done! Come visit again!'], ['Oui, je reviendrai !', "Yes, I'll come again!"], ['Au revoir !', 'Goodbye!'],
+    ['Au revoir ! (à qui reste)', 'Goodbye! (to someone staying)'], ['Au revoir ! Rentre bien.', 'Goodbye! Get home safe.'],
+    // ── store ──
+    ['Saluer', 'Say hello'], ['Trouver un article', 'Find something'], ['Acheter autre chose', 'Buy something else'],
+    ["Aujourd'hui, on joue à la supérette. Je suis la vendeuse !", "Today we're playing shop. I work here!"], ['Bienvenue !', 'Welcome!'],
+    ['Bonjour ! Ici, c’est la supérette de Hana. Prenez votre temps.', "Hello! This is Hana's shop. Take your time."],
+    ['Vous avez du lait ?', 'Do you have milk?'], ['Oui, le lait est dans le frigo là-bas.', "Yes, the milk is in the fridge over there."],
+    ['Vous avez trouvé {itemFr} ?', 'Did you find the {itemEn}?'], ['Où sont les kimbap ?', 'Where is the kimbap?'], ['Les kimbap sont ici.', 'The kimbap is here.'],
+    ["Où est l'eau ?", 'Where is the water?'], ["L'eau est dans le frigo là-bas.", 'The water is in the fridge over there.'],
+    ['Vous avez des ramyeon ?', 'Do you have ramyeon?'], ['Oui, les ramyeon sont par là.', 'Yes, the ramyeon is over there.'],
+    ['Vous avez des glaces ?', 'Do you have ice cream?'], ['Oui, les glaces sont dans ce congélateur.', 'Yes, the ice cream is in this freezer.'],
+    ["Oui, j'ai trouvé !", 'Yes, I found it!'], ['Mettez-le dans le panier.', 'Put it in the basket.'], ['Il vous faut autre chose ?', 'Do you need anything else?'],
+    ['Combien ça coûte ?', 'How much is this?'], ['Ça fait {priceFr}. Mettez-le dans le panier.', "It's {priceEn}. Put it in the basket."],
+    ["Un pain aussi, s'il vous plaît.", 'One bread too, please.'], ['Oui, le pain fait 2 000 wons.', 'Okay, the bread is 2,000 won.'], ['Non, ça suffit.', "No, that's all."],
+    ['Où sont les biscuits ?', 'Where are the snacks?'], ['Les biscuits sont près de la porte. Vous en prenez aussi ?', 'The snacks are by the door. Will you buy some too?'],
+    ["Oui, celui-ci, s'il vous plaît.", 'Yes, this one, please.'], ['D’accord !', 'Okay!'], ['Non, ça va.', "No, I'm fine."],
+    ['Venez à la caisse. Ça fait {totalFr} en tout.', "Come to the counter. That's {totalEn} in total."], ['Il vous faut un sac ?', 'Do you need a bag?'],
+    ['Voilà un sac.', "Here's a bag."], ["J'ai un sac.", 'I have a bag.'], ['Très bien !', 'Great!'], ["C'est bon.", 'All done.'],
+    ['Je vous donne le ticket ?', 'Would you like the receipt?'], ['En espèces.', "I'll pay cash."], ["Merci, c'est reçu.", 'Thank you, got it.'],
+    ['Non, merci.', 'No, thank you.'], ['Merci. Au revoir !', 'Thank you. Goodbye!'], ['Voilà. Merci. Au revoir !', 'Here you are. Thank you. Goodbye!'],
+    ['À bientôt !', 'See you soon!'], ['Merci !', 'Thank you!'],
+    // ── bunsik ──
+    ['Épicé ou pas', 'Spicy or not'], ['Manger et dire au revoir', 'Eat and say goodbye'],
+    ['tteokbokki', 'tteokbokki'], ['kimbap', 'kimbap'], ['ramyeon', 'ramyeon'], ['eomuk', 'eomuk (fish cake)'],
+    ["Aujourd'hui, on joue au snack coréen. Je suis la patronne !", "Today we're playing snack bar. I'm the owner!"],
+    ["Bienvenue au snack de Hana ! Qu'est-ce que je vous sers ?", "Welcome to Hana's snack bar! What would you like?"],
+    ["Un tteokbokki, s'il vous plaît.", 'One tteokbokki, please.'], ['Oui, un tteokbokki !', 'Sure, one tteokbokki!'], ['Je fais le tteokbokki épicé ?', 'Do you want the tteokbokki spicy?'],
+    ["Un rouleau de kimbap, s'il vous plaît.", 'One roll of kimbap, please.'], ['Oui, un rouleau de kimbap !', 'Sure, one roll of kimbap!'],
+    ['Vous avez la carte ?', 'Do you have a menu?'], ['Oui, voilà.', "Yes, here it is."], ['Le tteokbokki est le plus populaire ! Un peu épicé.', 'Tteokbokki is the most popular! A little spicy.'],
+    ["Alors un tteokbokki, s'il vous plaît.", 'Then one tteokbokki, please.'], ["Un ramyeon, s'il vous plaît.", 'One ramyeon, please.'], ['Oui, un ramyeon !', 'Sure, one ramyeon!'],
+    ["Oui, épicé, s'il vous plaît.", 'Yes, spicy, please.'], ['Oui, je le fais épicé !', "Okay, I'll make it spicy!"],
+    ["Un peu épicé, s'il vous plaît.", 'Just a little spicy, please.'], ['Oui, juste un peu épicé.', 'Okay, just a little spicy.'],
+    ["Non, pas épicé, s'il vous plaît.", 'No, not spicy, please.'], ['Oui, pas épicé.', 'Okay, not spicy.'], ['Je mange ici.', "I'll eat here."],
+    ['D’accord, asseyez-vous.', 'Okay, have a seat.'], ['Vous voulez aussi des eomuk ? Le bouillon est offert.', 'Would you like eomuk too? The soup is free.'],
+    ["À emporter, s'il vous plaît.", 'To go, please.'], ['Oui, je vous le prépare à emporter.', "Okay, I'll pack it to go."],
+    ["Oui, un eomuk aussi, s'il vous plaît.", 'Yes, one eomuk too, please.'], ["D'accord !", 'Okay!'], ['Ça fait {totalFr} en tout.', "That's {totalEn} in total."],
+    ["C'est quoi, l'eomuk ?", 'What is eomuk?'], ["L'eomuk est fait avec du poisson. Le bouillon est chaud.", "Eomuk is made from fish. The soup is hot."],
+    ['Vous en voulez aussi ?', 'Would you like some too?'], ['Par carte.', 'By card.'], ['Voilà votre {foodFr}. Bon appétit !', "Here's your {foodEn}. Enjoy!"],
+    ['Oui, bon appétit !', 'Okay, enjoy!'], ['Bon appétit !', 'Enjoy your meal!'], ["C'était bon ?", 'Was it good?'], ["Oui, c'était vraiment bon !", 'Yes, it was really good!'],
+    ['Merci ! Revenez bientôt !', 'Thank you! Come again soon!'], ['Haha, vous avez bien mangé ! Revenez bientôt !', 'Haha, you ate a lot! Come again soon!'],
+    // ── subway ──
+    ['Recharger la carte', 'Top up the card'], ['Quelle ligne', 'Which line'], ['Changer de ligne', 'Change lines'], ['Demander la sortie', 'Ask for the exit'],
+    ["Aujourd'hui, on joue au métro. Je suis l'agente de station !", "Today we're playing subway. I work at the station!"],
+    ["Bonjour ! Ici, c'est la station Hana. Où allez-vous ?", 'Hello! This is Hana Station. Where are you going?'],
+    ['Je voudrais aller à la station Mer.', "I'd like to go to Sea Station."], ['La station Mer ? Très bien !', 'Sea Station? Okay!'],
+    ['Vous avez une carte de transport ?', 'Do you have a transit card?'], ['Comment aller à la mer ?', 'How do I get to the sea?'],
+    ['Il faut descendre à la station Mer.', 'Get off at Sea Station.'], ['On est où, ici ?', 'Where are we?'],
+    ["Ici, c'est la station Hana. Il y a la ligne 1.", 'This is Hana Station. Line 1 stops here.'], ['Où allez-vous ?', 'Where are you going?'],
+    ['Oui. Je voudrais la recharger.', "Yes. I'd like to top it up."], ['On recharge à la machine là-bas. Combien voulez-vous mettre ?', 'You top it up at the machine over there. How much would you like?'],
+    ["Non, je n'en ai pas.", "No, I don't."], ['La carte s’achète à la machine là-bas. Combien voulez-vous mettre ?', 'You buy the card at the machine over there. How much would you like?'],
+    ['5 000 wons.', '5,000 won.'], ['Vous avez rechargé 5 000 wons !', 'You added 5,000 won!'],
+    ['Prenez la ligne 1, puis changez pour la ligne 2 à la station Parc.', 'Take Line 1, then change to Line 2 at Park Station.'],
+    ['Alors, ici, vous prenez quelle ligne ?', 'So which line do you take here?'], ['10 000 wons.', '10,000 won.'], ['Vous avez rechargé 10 000 wons !', 'You added 10,000 won!'],
+    ['La ligne 1.', 'Line 1.'], ['Exact ! La ligne 1.', "That's right! Line 1."], ['Où changez-vous ?', 'Where do you change?'], ['La ligne 2.', 'Line 2.'],
+    ['Non. Ici, on prend la ligne 1.', 'No. Here you take Line 1.'], ['À la station Parc.', 'At Park Station.'],
+    ['Exact ! À la station Parc, on change pour la ligne 2.', "That's right! At Park Station, you change to Line 2."], ['Autre chose ?', 'Anything else?'],
+    ['À la station Marché.', 'At Market Station.'], ['Non. On change à la station Parc.', 'No. You change at Park Station.'],
+    ['Pour la mer, quelle sortie ?', 'Which exit for the sea?'], ["Pour la mer, c'est la sortie 3.", "For the sea, it's Exit 3."],
+    ['Maintenant, passez le portillon avec votre carte.', 'Now tap your card at the gate and go through.'], ['Pour le marché, quelle sortie ?', 'Which exit for the market?'],
+    ["Pour le marché, c'est la sortie 2. Pour la mer, la sortie 3.", "For the market, it's Exit 2. For the sea, Exit 3."],
+    ['Où sont les toilettes ?', 'Where is the restroom?'], ['Les toilettes sont là-bas, à gauche.', 'The restroom is over there, on the left.'],
+    ['Bon voyage !', 'Have a safe trip!'], ['Au revoir, bon voyage !', 'Goodbye, have a safe trip!'],
+    // ── pharmacy ──
+    ['Dire où on a mal', 'Say where it hurts'], ['Depuis quand', 'Since when'], ['Fièvre et toux', 'Fever and cough'], ['Comment prendre le médicament', 'How to take the medicine'],
+    ['Payer et dire au revoir', 'Pay and say goodbye'], ["C'est un exercice de coréen. Si tu as vraiment mal, dis-le à un adulte.", "This is Korean practice. If you really feel sick, tell a grown-up."],
+    ["Aujourd'hui, on joue à la pharmacie. Je suis la pharmacienne !", "Today we're playing pharmacy. I'm the pharmacist!"],
+    ['Bienvenue ! Où avez-vous mal ?', 'Welcome! Where does it hurt?'], ["J'ai mal à la tête.", 'I have a headache.'],
+    ['Vous avez mal à la tête ? Oh là là.', 'You have a headache? Oh dear.'], ['Depuis quand avez-vous mal ?', 'Since when has it hurt?'],
+    ["J'ai mal au ventre.", 'I have a stomachache.'], ['Vous avez mal au ventre ? Oh là là.', 'You have a stomachache? Oh dear.'],
+    ["J'ai mal à la gorge.", 'I have a sore throat.'], ['Vous avez mal à la gorge ? Oh là là.', 'You have a sore throat? Oh dear.'],
+    ['Depuis hier.', 'Since yesterday.'], ['Depuis hier ?', 'Since yesterday?'], ['Vous avez de la fièvre ?', 'Do you have a fever?'],
+    ['Depuis ce matin.', 'Since this morning.'], ['Depuis ce matin ?', 'Since this morning?'], ['Ça fait trois jours.', "It's been three days."],
+    ['Trois jours ? Alors allez aussi voir un médecin.', 'Three days? Then please see a doctor too.'], ["Oui, j'ai de la fièvre.", 'Yes, I have a fever.'],
+    ['Vous avez aussi de la fièvre ?', 'Do you have a fever too?'], ['Vous toussez aussi ?', 'Do you have a cough too?'],
+    ["Non, je n'ai pas de fièvre.", "No, I don't have a fever."], ['Tant mieux.', "That's good."], ['Oui, je tousse.', 'Yes, I have a cough.'],
+    ["D'accord. Prenez ce médicament.", 'Okay. Take this medicine.'], ['Prenez-le trois fois par jour.', 'Take it three times a day.'],
+    ['Non, je ne tousse pas.', "No, I don't have a cough."], ["D'accord, j'ai compris.", 'Okay, I understand.'], ['Prenez-le après le repas.', 'Take it after meals.'],
+    ['Ça fait 5 000 wons en tout.', "That's 5,000 won in total."], ['Combien de fois par jour ?', 'How many times a day?'],
+    ['Trois fois par jour. Le matin, le midi et le soir.', 'Three times a day. Morning, noon and evening.'], ["Je le prends avec de l'eau ?", 'Do I take it with water?'],
+    ["Oui, avec de l'eau.", 'Yes, with water.'], ["C'est bon. Rétablissez-vous vite !", 'All done. Get well soon!'],
+    ["Merci, c'est reçu. Rétablissez-vous vite !", 'Thank you, got it. Get well soon!'], ['Au revoir. (à qui reste)', 'Goodbye. (to someone staying)'],
+    // ── restaurant ──
+    ['Combien de personnes', 'How many people'], ['Accompagnements et eau', 'Side dishes and water'],
+    ['bibimbap', 'bibimbap'], ['bulgogi', 'bulgogi'], ['ragoût de kimchi', 'kimchi stew'],
+    ["Aujourd'hui, on joue au restaurant. Je suis la serveuse !", "Today we're playing restaurant. I work here!"],
+    ['Bienvenue ! Vous êtes combien ?', 'Welcome! How many people?'], ['Une personne.', 'One person.'],
+    ['Asseyez-vous ici. Voici la carte.', "Please sit here. Here's the menu."], ['Deux personnes.', 'Two people.'], ['Quatre personnes.', 'Four people.'],
+    ["Un bibimbap, s'il vous plaît.", 'One bibimbap, please.'], ['Oui, un bibimbap !', 'Sure, one bibimbap!'],
+    ['Je mets du gochujang ? C’est un peu épicé.', "Would you like gochujang? It's a little spicy."],
+    ["Un bulgogi, s'il vous plaît.", 'One bulgogi, please.'], ['Oui, un bulgogi !', 'Sure, one bulgogi!'],
+    ["L'eau et les accompagnements sont offerts. Dites-moi s'il vous en faut plus.", 'Water and side dishes are free. Tell me if you need more.'],
+    ["Qu'est-ce qui est bon ?", "What's good here?"], ['Le bibimbap est bon ! Il y a beaucoup de légumes.', 'The bibimbap is good! It has lots of vegetables.'],
+    ['Oui, je mets du gochujang.', "Okay, I'll add gochujang."], ["Encore du kimchi, s'il vous plaît.", 'More kimchi, please.'],
+    ['Voilà du kimchi !', "Here's some kimchi!"], ["De l'eau, s'il vous plaît.", 'Some water, please.'], ["Voilà de l'eau.", "Here's some water."],
+    ["C'est quoi, les accompagnements ?", 'What are side dishes?'],
+    ['Ce sont des petits plats qu’on mange avec le riz. Le kimchi en est un.', 'They are small dishes you eat with rice. Kimchi is one of them.'],
+    ['Ça vous a plu ? Vous payez par carte ?', 'Did you enjoy it? Are you paying by card?'], ["Ça fait {priceFr}. C'est bon.", "That's {priceEn}. All done."],
+    ["Ça fait {priceFr}. Merci, c'est reçu.", "That's {priceEn}. Thank you, got it."], ['{foodFr} : {priceFr}.', 'The {foodEn} is {priceEn}.'],
+    ['Revenez bientôt !', 'Come again soon!'],
+    // ── intro ──
+    ['Dire son prénom', 'Say your name'], ['Dire son pays', 'Say your country'], ["Dire son âge", 'Say your age'], ["Ce qu'on aime", 'What you like'], ['Se dire au revoir', 'Say goodbye'],
+    ["Aujourd'hui, on parle comme si on se rencontrait pour la première fois.", "Today let's talk like we're meeting for the first time."],
+    ["Bonjour ! Je m'appelle Hana. Comment tu t'appelles ?", "Hello! My name is Hana. What's your name?"],
+    ["Je m'appelle Minjun.", 'My name is Minjun.'], ['Enchantée, {name} !', 'Nice to meet you, {name}!'], ['Tu viens de quel pays ?', 'Where are you from?'],
+    ["Mon prénom, c'est Marie.", 'My name is Marie.'], ["Je m'appelle Léo.", "I'm called Léo."], ['Je suis français(e).', "I'm French."],
+    ['Ah, tu viens de France ? Enchantée !', 'Oh, you are from France? Nice to meet you!'], ['Tu as quel âge ?', 'How old are you?'],
+    ['Je suis coréen(ne).', "I'm Korean."], ['Ah, tu es coréen(ne) ? Enchantée !', 'Oh, you are Korean? Nice to meet you!'],
+    ['Ma mère est coréenne, mon père est français.', 'My mom is Korean, and my dad is French.'], ['Waouh, tu peux parler coréen et français !', 'Wow, you can speak Korean and French!'],
+    ["J'ai huit ans.", "I'm eight years old."], ["D'accord ! Moi, j'aime le coréen.", 'I see! I like Korean.'],
+    ["Et toi, {name}, qu'est-ce que tu aimes ?", 'And you, {name}, what do you like?'], ["J'ai dix ans.", "I'm ten years old."], ["J'ai douze ans.", "I'm twelve years old."],
+    ["J'aime la K-pop.", 'I like K-pop.'], ["Waouh, moi aussi j'aime la K-pop !", 'Wow, I like K-pop too!'],
+    ["J'étais contente de te rencontrer aujourd'hui.", 'It was nice meeting you today.'], ["J'aime le football.", 'I like soccer.'],
+    ['Le football ? Génial !', 'Soccer? Cool!'], ["J'aime dessiner.", 'I like drawing.'], ['Le dessin ? Montre-moi la prochaine fois !', 'Drawing? Show me next time!'],
+    ["Moi aussi, j'étais content(e).", 'It was nice meeting you too.'], ['À la prochaine ! Salut !', 'See you next time! Bye!'], ['À la prochaine !', 'See you next time!'],
+    ['Oui, à bientôt ! Salut !', 'Yes, see you soon! Bye!'], ['Au revoir, {name} !', 'Goodbye, {name}!'],
+    // ── market ──
+    ['Choisir des fruits', 'Choose fruit'], ['Demander le prix', 'Ask the price'], ['Marchander', 'Ask for a deal'],
+    ["Aujourd'hui, on joue au marché. Je tiens un stand de fruits !", "Today we're playing market. I run a fruit stand!"],
+    ['Bienvenue ! Achetez des fruits !', 'Welcome! Buy some fruit!'], ["Des pommes, s'il vous plaît.", 'Apples, please.'],
+    ['Oui, des pommes ! Elles sont très sucrées.', "Sure, apples! They're very sweet."], ['Vous avez des mandarines ?', 'Do you have tangerines?'],
+    ["Oui, on a des mandarines. Elles sont bonnes aujourd'hui.", "Yes, we have tangerines. They're good today."],
+    ["Les fraises sont bonnes ! C'est la saison.", "The strawberries are good! It's strawberry season."],
+    ['{priceFr} pour {unitFr}.', "It's {priceEn} for {unitEn}."], ['Je peux en prendre un peu seulement ?', 'Can I buy just a few?'],
+    ["Bien sûr ! Mais {unitFr} à {priceFr}, c'est le moins cher.", 'Of course! But {unitEn} for {priceEn} is the best deal.'],
+    ['Vous pouvez baisser un peu le prix ?', 'Can you make it a little cheaper?'], ['Hmm… alors je vous le fais à {discFr} !', "Hmm… okay, I'll give it to you for {discEn}!"],
+    ["D'accord, je les prends.", "Okay, I'll take them."], ["C'est un peu cher.", "It's a little expensive."],
+    ["Alors je vous en donne un de plus ! C'est cadeau.", "Then I'll give you one more! It's free."],
+    ['Je vous les mets dans un sac. Ça fait {payFr}.', "I'll put them in a bag. That's {payEn}."], ["Merci, c'est reçu !", 'Thank you, got it!'],
+    ['Vous prenez la carte ?', 'Can I pay by card?'], ['Désolée, ici on prend seulement les espèces.', "Sorry, we only take cash here."],
+    ['Vous avez des espèces ?', 'Do you have cash?'], ['Je vais vite à la banque, là-bas.', "I'll go to the bank over there."],
+    ['D’accord, je vous attends ! … Vous revoilà ? Merci !', "Okay, I'll wait! … You're back? Thank you!"], ['Merci ! Je reviendrai.', "Thank you! I'll come again."],
+    ['Revenez bientôt ! Au revoir.', 'Come again soon! Goodbye.'],
+    // ── clothes ──
+    ['Le vêtement cherché', 'What you are looking for'], ['Choisir la couleur', 'Choose a color'], ['Essayer', 'Try it on'], ['La taille', 'The size'], ['Acheter', 'Buy'],
+    ["Aujourd'hui, on joue au magasin de vêtements. Je suis la vendeuse !", "Today we're playing clothes shop. I work here!"],
+    ['Bienvenue ! Vous cherchez quelque chose ?', 'Welcome! Are you looking for something?'], ['Vous avez des t-shirts ?', 'Do you have T-shirts?'],
+    ['Oui, les t-shirts sont ici. Quelle couleur aimez-vous ?', 'Yes, the T-shirts are here. What color do you like?'],
+    ['Je voudrais voir des pantalons.', "I'd like to see some pants."], ['Oui, les pantalons sont ici. Quelle couleur aimez-vous ?', 'Yes, the pants are here. What color do you like?'],
+    ['Vous avez des robes ?', 'Do you have dresses?'], ['Oui, les robes sont ici. Quelle couleur aimez-vous ?', 'Yes, the dresses are here. What color do you like?'],
+    ['Bleu.', 'Blue.'], ['Voilà, {colorFr}.', 'Here it is, {colorEn}.'], ["Vous voulez l'essayer ?", 'Would you like to try it on?'], ['Rouge.', 'Red.'],
+    ['Vous l’avez en noir ?', 'Do you have it in black?'], ['Oui, on l’a aussi en noir. Voilà.', 'Yes, we have it in black too. Here you are.'],
+    ["Je peux l'essayer ?", 'Can I try it on?'], ['Oui, la cabine est par là.', 'Yes, the fitting room is over there.'], ["Oui, je vais l'essayer.", "Yes, I'll try it on."],
+    ['Alors ? Ça vous va ?', 'So? Does it fit?'], ['Oui, ça me va parfaitement.', 'Yes, it fits perfectly.'], ['Ça vous va bien !', 'It looks good on you!'],
+    ["C'est un peu grand.", "It's a little big."], ['Alors je vous donne la taille en dessous. … Et celle-ci ? Parfait !', "Then I'll give you a smaller size. … How about this one? Perfect!"],
+    ["C'est un peu petit.", "It's a little small."], ['Alors je vous donne la taille au-dessus. … Et celle-ci ? Parfait !', "Then I'll give you a bigger size. … How about this one? Perfect!"],
+    ['{itemFr} fait {priceFr}. Vous le prenez ?', "It's {priceEn} for the {itemEn}. Will you take it?"], ['Oui, je le prends.', "Yes, I'll take it."],
+    ['Merci ! Je vous le mets dans un sac. Revenez bientôt !', "Thank you! I'll put it in a bag. Come again soon!"],
+    ['Il y a une réduction ?', 'Is there a discount?'], ["Aujourd'hui, il y a 10 % de réduction ! Ça fait {saleFr}.", "Today there's 10% off! That's {saleEn}."],
+    ['Je vais regarder encore un peu.', "I'll look around a little more."], ['Oui, prenez votre temps !', 'Sure, take your time!'], ['Alors je le prends.', "Then I'll take it."],
+    ['Je reviendrai une autre fois.', "I'll come back another time."], ['Oui, revenez ! Au revoir.', 'Sure, come again! Goodbye.'],
+    // ── groceries ──
+    ['La liste de courses', 'The shopping list'], ['Chercher au supermarché', 'Look in the supermarket'], ['Combien', 'How many'], ['Vérifier la liste', 'Check the list'],
+    ["Aujourd'hui, on fait les courses ensemble. Ce soir, on fait du bibimbap !", "Today we're shopping together. Tonight we're making bibimbap!"],
+    ['Écrivons la liste. Il nous faut quoi ?', "Let's write the list. What do we need?"], ['Il faut des carottes.', 'We need carrots.'],
+    ['Très bien ! Je l’écris sur la liste.', "Great! I'll write it on the list."], ['Il faut quoi d’autre ?', 'What else do we need?'],
+    ['Il faut des concombres.', 'We need cucumbers.'], ['Il faut des oignons.', 'We need onions.'], ['Achetons aussi des œufs.', "Let's buy eggs too."],
+    ['Oui ! Il faut un œuf dans le bibimbap.', 'Yes! Bibimbap needs an egg.'], ['Il faut aussi du gochujang.', 'We need gochujang too.'],
+    ['On a déjà du gochujang à la maison ! Ça va.', "We already have gochujang at home! It's okay."], ["C'est bon, c'est tout.", "Okay, that's all."],
+    ['Très bien. Allons au supermarché !', "Great. Let's go to the supermarket!"],
+    ['On est au supermarché ! Cherchons {aFr} d’abord. Où sont-ils ?', "We're at the supermarket! Let's find the {aEn} first. Where are they?"],
+    ['Au rayon légumes.', 'In the vegetable section.'], ['Exact ! On les a trouvés.', 'Right! We found them.'], ['On en prend combien ?', 'How many should we buy?'],
+    ['Ils sont là-bas !', "They're over there!"], ['Waouh, tu as de bons yeux ! On les a trouvés.', 'Wow, you have good eyes! We found them.'],
+    ['On demande à un employé ?', 'Should we ask someone who works here?'], ['« 채소는 어디 있어요 ? » … C’est par là ! On les a trouvés.', '"채소는 어디 있어요?" … Over there! We found them.'],
+    ['Un.', 'One.'], ['Un seul suffit ? D’accord, je le mets dans le panier.', "Just one? Okay, I'll put it in the basket."],
+    ['On a tout ce qui est sur la liste ?', 'Did we get everything on the list?'], ['Deux.', 'Two.'], ['D’accord, j’en mets deux dans le panier.', "Okay, I'll put two in the basket."],
+    ['Trois.', 'Three.'], ['On en prend beaucoup ! J’en mets trois.', "That's a lot! I'll put in three."], ['Oui, on a tout.', 'Yes, we got everything.'],
+    ['Super ! Allons à la caisse.', "Great! Let's go to the checkout."], ['Ah, il nous manque une chose !', 'Oh, we forgot one thing!'],
+    ['Retournons-y ! … Trouvé. Maintenant, on a tout.', "Let's go back! … Found it. Now we have everything."], ['Allons à la caisse.', "Let's go to the checkout."],
+    ['Ça fait 12 000 wons en tout. Qui paie ?', "That's 12,000 won in total. Who will pay?"], ['Je paie.', "I'll pay."],
+    ['Merci ! Rentrons faire le bibimbap.', "Thank you! Let's go home and make bibimbap."], ['On partage.', "Let's split it."],
+    ["D'accord, 6 000 wons chacun. Rentrons faire le bibimbap !", "Okay, 6,000 won each. Let's go home and make bibimbap!"],
+    ['Avec la carte de maman.', "With Mom's card."], ['D’accord ! On donnera le ticket à maman. Faisons le bibimbap !', "Okay! We'll give the receipt to Mom. Let's make bibimbap!"],
+    // ── directions ──
+    ['Aborder quelqu’un', 'Talk to someone'], ['Demander où c’est', 'Ask where it is'], ['Vérifier', 'Check'], ['Combien de temps', 'How long'], ['Remercier', 'Say thank you'],
+    ["Aujourd'hui, on joue à demander son chemin. Je suis une passante.", "Today we're playing \"asking the way\". I'm someone on the street."],
+    ['(Tu croises Hana dans la rue. Parle-lui.)', '(You meet Hana on the street. Talk to her.)'], ['Excusez-moi…', 'Excuse me…'],
+    ['Oui ? Je peux vous aider ?', 'Yes? Can I help you?'], ['Bonjour ! Je peux vous demander mon chemin ?', 'Hello! Can I ask you the way?'],
+    ['Bien sûr ! Vous allez où ?', 'Of course! Where are you going?'], ['Où est la station de métro ?', 'Where is the subway station?'],
+    ['La station de métro ? Allez tout droit, puis tournez à droite.', 'The subway station? Go straight, then turn right.'],
+    ['Où est la banque ?', 'Where is the bank?'], ['La banque ? Elle est là-bas, à côté du fleuriste.', "The bank? It's over there, next to the flower shop."],
+    ['Au rez-de-chaussée de ce bâtiment.', "It's on the first floor of that building."], ['C\'est par ce chemin ?', 'Is it this way?'], ["Oui, c'est ça !", "Yes, that's right!"],
+    ['Vous pouvez me montrer sur la carte ?', 'Can you show me on the map?'], ['Oui, regardez. On est ici. Il faut aller par là.', 'Sure, look. We are here. Go this way.'],
+    ["C'est loin d'ici ?", 'Is it far from here?'], ["Non, c'est tout près. Environ 5 minutes à pied.", "No, it's very close. About 5 minutes on foot."],
+    ['Il faut combien de temps ?', 'How long does it take?'], ['Environ 5 minutes à pied.', 'About 5 minutes on foot.'], ['De rien ! Bonne route.', "You're welcome! Take care."],
+    ['Merci. Bonne journée !', 'Thank you. Have a nice day!'], ['Vous aussi, bonne journée !', 'You too, have a nice day!'],
+    // ── taxi ──
+    ['La destination', 'Where to'], ['La ceinture', 'Seat belt'], ['Sur la route', 'On the road'], ['Descendre', 'Get out'],
+    ["Aujourd'hui, on joue au taxi. Je suis la chauffeuse !", "Today we're playing taxi. I'm the driver!"], ['Bonjour ! Où allons-nous ?', 'Hello! Where are we going?'],
+    ["À Myeongdong, s'il vous plaît.", 'To Myeongdong, please.'], ["D'accord, je vous emmène à {destFr}. Attachez votre ceinture.", "Okay, I'll take you to {destEn}. Please put on your seat belt."],
+    ["À la gare de Séoul, s'il vous plaît.", 'To Seoul Station, please.'], ["À cette adresse, s'il vous plaît.", 'To this address, please.'],
+    ["Oui, c'est fait.", "Okay, it's on."], ['Très bien. On y va !', "Great. Let's go!"], ['Ça prend combien de temps ?', 'How long will it take?'],
+    ['Environ 20 minutes. Et attachez votre ceinture !', 'About 20 minutes. And put on your seat belt!'], ["Vite, s'il vous plaît.", 'Please hurry.'],
+    ['D’accord, mais prudemment !', "Okay, but I'll drive safely!"], ['Il y a un peu de bouchons.', "There's a little traffic."], ['Ce n’est pas grave.', "That's okay."],
+    ['Merci. Ça va bientôt se dégager.', 'Thanks. It will clear up soon.'], ['Je peux ouvrir la fenêtre ?', 'Can I open the window?'], ['Oui, bien sûr.', 'Yes, of course.'],
+    ["Vous pouvez allumer la radio, s'il vous plaît ?", 'Can you turn on the radio, please?'], ['Oui, écoutons de la musique !', "Sure, let's listen to music!"],
+    ['On est arrivés. Où voulez-vous descendre ?', "We're here. Where would you like to get out?"], ["Arrêtez-vous ici, s'il vous plaît.", 'Please stop here.'],
+    ['D’accord. Ça fait {fareFr}.', "Okay. That's {fareEn}."], ["Déposez-moi un peu plus loin, s'il vous plaît.", 'Please drop me off a little further up.'],
+    ["C'est bon. Au revoir !", 'All done. Goodbye!'], ["Merci, c'est reçu. Au revoir !", 'Thank you, got it. Goodbye!'], ["Un reçu, s'il vous plaît.", 'A receipt, please.'],
+    ['Voilà. Au revoir !', 'Here you are. Goodbye!'],
+    // ── time ──
+    ['Quelle heure est-il', 'What time is it'], ['Et demie, minutes', 'Half past, minutes'], ["L'heure du lever", 'Wake-up time'], ["L'heure de l'école", 'School time'], ['Fixer une heure', 'Pick a time to meet'],
+    ["Aujourd'hui, on joue avec l'heure. Regarde l'horloge et dis l'heure !", "Today we're playing with time. Look at the clock and say the time!"],
+    ['Quelle heure est-il ? (🕒 3 h)', 'What time is it? (🕒 3:00)'], ['Il est trois heures.', "It's three o'clock."], ['Exact ! Il est trois heures.', "Right! It's three o'clock."],
+    ['Et là, quelle heure est-il ? (🕤 9 h 30)', 'And what time is this? (🕤 9:30)'], ['Il est deux heures.', "It's two o'clock."],
+    ['Non. La petite aiguille est sur le 3. Il est trois heures.', "No. The short hand is on the 3. It's three o'clock."], ['Il est « 삼 » heures.', 'It\'s "삼" o\'clock.'],
+    ['Ah, pour l’heure on dit « 세 시 » : 한 시, 두 시, 세 시, 네 시 !', 'Ah, for hours we say "세 시": 한 시, 두 시, 세 시, 네 시!'],
+    ['Il est neuf heures et demie.', "It's half past nine."], ['Exact ! Neuf heures et demie.', 'Right! Half past nine.'],
+    ['À quelle heure tu te lèves, d’habitude ?', 'What time do you usually get up?'], ['Il est neuf heures trente.', "It's nine thirty."],
+    ['Exact ! On peut aussi dire « 반 » pour trente.', 'Right! For thirty minutes you can also say "반" (half).'], ['Il est « 구 » heures et demie.', 'It\'s half past "구".'],
+    ['Presque ! L’heure : « 아홉 시 », les minutes : « 삼십 분 ». 아홉 시 반 !', 'Almost! The hour is "아홉 시", the minutes are "삼십 분". 아홉 시 반!'],
+    ['Je me lève à sept heures.', "I get up at seven o'clock."], ['Sept heures ? Tu es matinal(e) !', 'Seven? You get up early!'],
+    ["Tu vas à l'école de coréen quand ?", 'When do you go to Korean school?'], ['Je me lève à six heures et demie.', 'I get up at half past six.'],
+    ['Waouh, tu te lèves très tôt !', 'Wow, you get up really early!'], ['Le week-end, je me lève à dix heures.', "On weekends, I get up at ten o'clock."],
+    ['Haha, le week-end, on fait la grasse matinée !', 'Haha, on weekends we sleep in!'], ['Le samedi matin.', 'On Saturday mornings.'],
+    ['Le samedi matin ? Ça commence à quelle heure ?', 'Saturday morning? What time does it start?'], ['Le mercredi après-midi.', 'On Wednesday afternoons.'],
+    ['Le mercredi après-midi ? Ça commence à quelle heure ?', 'Wednesday afternoon? What time does it start?'], ['Ça commence à dix heures.', "It starts at ten o'clock."],
+    ['Dix heures ! Bien dit.', 'Ten o\'clock! Well said.'], ['Alors, on se voit à quelle heure ?', 'So what time shall we meet?'],
+    ['Ça commence à deux heures.', "It starts at two o'clock."], ['Deux heures ! Bien dit.', "Two o'clock! Well said."], ['On se voit à quatre heures.', "Let's meet at four o'clock."],
+    ['D’accord ! À quatre heures. Salut !', 'Okay! See you at four. Bye!'], ['Cinq heures, ça te va ?', 'How about five o\'clock?'],
+    ['Parfait ! À cinq heures. Salut !', 'Perfect! See you at five. Bye!'], ['On se voit à onze heures et demie.', "Let's meet at half past eleven."],
+    ['D’accord ! À onze heures et demie. Salut !', 'Okay! See you at half past eleven. Bye!'],
+    // ── colors ──
+    ['Sa couleur préférée', 'Your favorite color'], ['Colorier le ciel', 'Color the sky'], ["Colorier l'arbre", 'Color the tree'], ['Mélanger les couleurs', 'Mix colors'], ['Le dessin est fini', 'The picture is done'],
+    ["Aujourd'hui, on joue avec les couleurs. Dessinons ensemble !", "Today we're playing with colors. Let's draw together!"],
+    ['Quelle couleur aimes-tu ?', 'What color do you like?'], ["J'aime le rouge.", 'I like red.'], ["C'est une jolie couleur ! Moi, j'aime le rose.", "That's a pretty color! I like pink."],
+    ['On colorie le ciel de quelle couleur ?', 'What color should we make the sky?'], ["J'aime le bleu.", 'I like blue.'], ["J'aime le jaune.", 'I like yellow.'],
+    ['En bleu.', 'Blue.'], ['Super ! Un ciel bleu.', 'Great! A blue sky.'], ['Et l’arbre, il est de quelle couleur ?', 'And what color is the tree?'],
+    ['En bleu ciel.', 'Sky blue.'], ['Super ! Le bleu ciel, c’est un bleu clair.', 'Great! Sky blue is a light blue.'], ["C'est la nuit. En noir !", "It's night. Black!"],
+    ['Waouh, un ciel de nuit ! Dessinons les étoiles en jaune.', "Wow, a night sky! Let's draw the stars in yellow."], ['Vert.', 'Green.'],
+    ['Oui ! Les feuilles sont vertes, le tronc est marron.', 'Yes! The leaves are green, and the trunk is brown.'],
+    ['Si on mélange du bleu et du jaune, ça donne quelle couleur ?', 'If we mix blue and yellow, what color do we get?'], ['Marron.', 'Brown.'],
+    ['Le tronc est marron. Les feuilles, on les colorie en vert.', "The trunk is brown. Let's color the leaves green."], ["C'est l'automne, alors rouge !", "It's fall, so red!"],
+    ['Génial ! En automne, les arbres sont rouges et jaunes.', 'Cool! In the fall, trees are red and yellow.'], ['Ça donne du vert.', 'We get green.'],
+    ['Exact ! Ça donne du vert.', 'Right! We get green.'], ['Le dessin est fini ! Qu’en penses-tu ?', 'The picture is done! What do you think?'], ['Ça donne du violet.', 'We get purple.'],
+    ['Non. Le violet, c’est rouge + bleu. Bleu + jaune, ça donne du vert.', 'No. Purple is red + blue. Blue + yellow makes green.'], ['Je ne sais pas.', "I don't know."],
+    ['Mélangeons ensemble… Et voilà, du vert !', "Let's mix them together… Ta-da, green!"], ["C'est vraiment joli !", "It's really pretty!"],
+    ['Merci ! On dessinera encore une autre fois.', "Thank you! Let's draw again another time."], ["C'est plein de couleurs !", "It's so colorful!"],
+    ['Oui, c’est plein de couleurs ! On dessinera encore.', "Yes, it's so colorful! Let's draw again."], ['Dessinons encore !', "Let's draw again!"],
+    ['D’accord ! La prochaine fois, on dessine la mer.', "Okay! Next time, let's draw the sea."],
+    // ── classroom ──
+    ['Début du cours', 'Class begins'], ['Ouvrir le livre', 'Open the book'], ['Poser une question', 'Ask a question'], ['Demander la permission', 'Ask for permission'],
+    ["Aujourd'hui, on joue à la classe. Je suis la maîtresse !", "Today we're playing school. I'm the teacher!"],
+    ['Allez, le cours commence. Asseyez-vous tous.', "Okay, class is starting. Everyone, please sit down."], ['Oui, maîtresse !', 'Yes, teacher!'], ['Très bien.', 'Very good.'],
+    ['Ouvrez le livre à la page 23.', 'Open your book to page 23.'], ['Bonjour, maîtresse !', 'Hello, teacher!'], ['Bonjour ! Contente de vous voir.', 'Hello! Nice to see you.'],
+    ['Pardon pour le retard.', "Sorry I'm late."], ['Ce n’est pas grave. Asseyez-vous vite.', "That's okay. Sit down quickly."], ["Oui, c'est ouvert.", "Yes, it's open."],
+    ['Bravo.', 'Well done.'], ['Qui a une question ?', 'Does anyone have a question?'], ["J'ai oublié mon livre.", 'I forgot my book.'],
+    ['Ce n’est pas grave. Regarde avec ton voisin.', "That's okay. Share with your neighbor."], ['Quelle page ?', 'Which page?'],
+    ["C'est la page 23. 이십삼 쪽.", "It's page 23. 이십삼 쪽."], ["J'ai une question !", 'I have a question!'], ['Oui, je vous écoute.', "Yes, I'm listening."],
+    ["Je n'en ai pas.", "I don't have one."], ['Que veut dire ce mot ?', 'What does this word mean?'], ['« 교실 », c’est la salle où on étudie.', '"교실" is the room where we study.'],
+    ["Parlez lentement, s'il vous plaît.", 'Please speak slowly.'], ['D’accord, je vais parler lentement.', "Okay, I'll speak slowly."],
+    ["Maintenant, on s'entraîne à écrire. Écrivez dans votre cahier.", "Now let's practice writing. Write in your notebook."],
+    ['Je peux aller aux toilettes ?', 'May I go to the restroom?'], ['Oui, vas-y.', 'Yes, go ahead.'], ['Le cours est fini ! À la semaine prochaine.', 'Class is over! See you next week.'],
+    ['Vous pouvez me prêter un crayon ?', 'Can you lend me a pencil?'], ['Oui, tiens.', 'Yes, here you are.'], ["J'ai fini !", "I'm done!"], ['Déjà ? Bravo !', 'Already? Well done!'],
+    ['Merci, maîtresse !', 'Thank you, teacher!'], ["Au revoir ! N'oubliez pas les devoirs.", "Goodbye! Don't forget your homework."],
+    ['Au revoir ! À la semaine prochaine.', 'Goodbye! See you next week.'], ['À la semaine prochaine !', 'See you next week!'], ['Oui, à la semaine prochaine !', 'Yes, see you next week!'],
+    // ── invite ──
+    ['Recevoir une invitation', 'Get an invitation'], ['Où', 'Where'], ['Préparer la fête', 'Plan the party'], ['À la fête', 'At the party'], ['Se quitter', 'Say goodbye'],
+    ["Aujourd'hui, on joue à l'invitation.", "Today we're playing \"invitations\"."], ['Samedi, je fais ma fête d’anniversaire. Tu peux venir ?', "I'm having my birthday party on Saturday. Can you come?"],
+    ['Oui, je peux venir !', 'Yes, I can come!'], ['Super ! C’est à deux heures de l’après-midi.', "Great! It's at two in the afternoon."],
+    ["J'habite devant la sortie 2 de la station Hana.", 'My house is in front of Exit 2 of Hana Station.'], ['À quelle heure ?', 'What time?'],
+    ['À deux heures de l’après-midi. Tu peux venir ?', 'At two in the afternoon. Can you come?'], ["Désolé(e), le samedi je vais à l'école de coréen.", "Sorry, on Saturdays I go to Korean school."],
+    ['Ah, pas grave ! Alors, on se voit dimanche ?', "Oh, that's okay! Then shall we meet on Sunday?"], ['Oui, je viendrai !', "Yes, I'll come!"], ['Super !', 'Great!'],
+    ['Désolé(e), je suis occupé(e) ce jour-là.', "Sorry, I'm busy that day."], ['Oui, dimanche, c’est bien !', 'Yes, Sunday is good!'], ['Super ! Dimanche à deux heures.', 'Great! Sunday at two.'],
+    ["D'accord. Je viendrai, c'est sûr !", "Okay. I'll be there for sure!"], ['Tu veux faire quoi à la fête ?', 'What do you want to do at the party?'],
+    ["J'apporte quelque chose ?", 'Should I bring something?'], ['Viens juste ! On mangera du gâteau ensemble.', "Just come! We'll eat cake together."],
+    ['Je peux venir avec un ami ?', 'Can I bring a friend?'], ['Bien sûr ! Venez ensemble.', 'Of course! Come together.'], ['Manger du gâteau ensemble !', 'Eat cake together!'],
+    ['D’accord ! Je prépare un gâteau aux fraises.', "Okay! I'll make a strawberry cake."], ['Jouer à des jeux !', 'Play games!'], ['D’accord ! Ça va être amusant.', "Okay! That'll be fun."],
+    ['Chanter !', 'Sing songs!'], ['D’accord ! On chantera aussi « joyeux anniversaire ».', 'Okay! We\'ll sing "Happy Birthday" too.'],
+    ['(Le jour de la fête) Bienvenue ! Merci d’être venu(e).', '(On the party day) Welcome! Thanks for coming.'], ['Joyeux anniversaire !', 'Happy birthday!'],
+    ["C'est un cadeau pour toi.", 'This is a present for you.'], ['Oh, merci ! Je peux l’ouvrir ?', 'Oh, thank you! Can I open it?'], ["Merci de m'avoir invité(e).", 'Thanks for inviting me.'],
+    ["C'est moi qui te remercie d'être venu(e) !", 'Thank YOU for coming!'], ["C'est déjà le soir. Tu t'es bien amusé(e) ?", "It's already evening. Did you have fun?"],
+    ['Oui, je me suis bien amusé(e) !', 'Yes, I had a lot of fun!'], ['Moi aussi ! Rentre bien. Salut !', 'Me too! Get home safe. Bye!'], ['Le gâteau était délicieux.', 'The cake was delicious.'],
+    ['Merci ! Rentre bien. Salut !', 'Thank you! Get home safe. Bye!'], ['On rejoue une autre fois !', "Let's play again another time!"], ['D’accord ! À la prochaine. Salut !', 'Okay! See you next time. Bye!']
+  ];
+  // {이름Fr}에 들어가는 프랑스어 낱말 → 영어(원 값은 아래 won이 바꾼다)
+  const nouns = {
+    'americano': 'americano', 'café latte': 'café latte', 'thé vert': 'green tea', "jus d'orange": 'orange juice',
+    "de l'eau": 'water', 'du lait': 'milk', 'des kimbap': 'kimbap', 'des ramyeon': 'ramyeon', 'des glaces': 'ice cream', 'du pain': 'bread', 'des biscuits': 'snacks',
+    'tteokbokki': 'tteokbokki', 'kimbap': 'kimbap', 'ramyeon': 'ramyeon', 'eomuk': 'eomuk',
+    'bibimbap': 'bibimbap', 'bulgogi': 'bulgogi', 'ragoût de kimchi': 'kimchi stew',
+    'pommes': 'apples', 'mandarines': 'tangerines', 'fraises': 'strawberries', 'les trois': 'three', 'le sachet': 'a bag', 'la barquette': 'a box',
+    'le t-shirt': 'T-shirt', 'le pantalon': 'pants', 'la robe': 'dress', 'en bleu': 'in blue', 'en rouge': 'in red', 'en noir': 'in black',
+    'des carottes': 'carrots', 'des concombres': 'cucumbers', 'des oignons': 'onions',
+    'Myeongdong': 'Myeongdong', 'la gare de Séoul': 'Seoul Station', 'cette adresse': 'this address'
+  };
+  const won = (s) => { const m = /^([\d\s  ]+) wons$/.exec(String(s)); return m ? Number(m[1].replace(/\D/g, '')).toLocaleString('en-US') + ' won' : null; };
+  return {
+    t: Object.fromEntries(T), nouns,
+    // 프랑스어 값({이름Fr})으로 영어 값({이름En})을 만든다. 없는 낱말은 null → 화면은 빈칸, check-paths는 문제로 잡는다
+    vars: (v) => { const o = {}; for (const [k, x] of Object.entries(v || {})) if (/Fr$/.test(k)) { const e = x === '' ? '' : (won(x) ?? nouns[x] ?? null); o[k.slice(0, -2) + 'En'] = e; } return o; },
+    // 화면 글: 시작 화면 · 아래 칸의 프랑스어는 index.html의 data-en, 끝 카드는 아래 둘
+    ui: { sheet: 'Worksheet PDF', cont: '이어서 해 보기 · Keep going', soon: 'Coming soon · ' }
+  };
+})();
+</script>
 <script>/* 하나랑 이야기해요 — 미리 쓴 대화 시안 (2026-11-17)
    공개판 talk.js(v17)의 3D 하나 · 목소리 · 체크 목록 · 끝 카드를 그대로 두고, 서버(/api/chat · 반 코드)를 뺐다.
    하나의 말은 HANA_SCRIPTS(cafe.js 등)에 미리 쓴 것만 나온다. 서버로 보내는 것 없음.
@@ -1073,6 +1431,10 @@ window.HANA_UTIL = {
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
   const A = window.HANA_ASSETS || { voice: {} };
   const SCRIPTS = window.HANA_SCRIPTS || {};
+  // 뜻 언어(11-18): 기본은 프랑스어, ?lang=en이면 영어(한글원샷이 EN 화면일 때 붙여 보냄). 영어 뜻은 en.js의 '프랑스어 뜻 → 영어' 표
+  const EN = new URLSearchParams(location.search).get('lang') === 'en' && window.HANA_EN ? window.HANA_EN : null;
+  const G = (fr) => (EN && fr && EN.t[fr] != null ? EN.t[fr] : fr);
+  if (EN) document.querySelectorAll('[data-en]').forEach((e) => { e.textContent = e.dataset.en; });
   // 한글원샷 안(…/hana/)에서 열리면 자료실은 바로 위 폴더, 따로 열리면 한글원샷 공개 주소. 놀러 가요(3D) · 활동지는 휴먼버스
   const ONESHOT = /\/hana\/?$/.test(location.pathname) ? '../' : 'https://hangeul-oneshot.human-teacher.com/';
   const XR_BASE = 'https://world.human-teacher.com/';
@@ -1196,13 +1558,13 @@ window.HANA_UTIL = {
   let S = null, node = null, mem = {}, used = [], lastAsk = null, stepNow = 0;
   const { won } = window.HANA_UTIL;
   function fill(s) {   // {이름} → 대화가 기억한 값(set) · 주제가 계산한 값(vars)
-    const v = S.vars ? S.vars(mem) : {};
+    const v0 = S.vars ? S.vars(mem) : {}, v = EN ? Object.assign({}, v0, EN.vars(v0)) : v0;
     return String(s || '').replace(/\{(\w+)\}/g, (_, k) => (v[k] != null ? v[k] : mem[k] != null ? mem[k] : ''));
   }
   const scrollDown = () => { const log = $('log'); requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; }); };
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   function addHana([ko, fr], slow) {
-    const say = fill(ko), gloss = fill(fr);
+    const say = fill(ko), gloss = fill(G(fr));
     const row = document.createElement('div'); row.className = 'msg hana';
     row.innerHTML = '<div class="face">하나</div><div class="bubble"><div class="ko"></div><div class="gl"></div></div>';
     row.querySelector('.ko').textContent = say; row.querySelector('.gl').textContent = gloss;
@@ -1221,7 +1583,7 @@ window.HANA_UTIL = {
   function addDots() { const row = document.createElement('div'); row.className = 'msg hana dots'; row.innerHTML = '<div class="face">하나</div><div class="bubble"></div>'; $('log').appendChild(row); scrollDown(); return row; }
   function addMenu() {
     const c = document.createElement('div'); c.className = 'menucard';
-    c.innerHTML = '<h4>MENU · 메뉴</h4>' + S.menu.map((m) => `<p><span>${m.ko}<small>${m.fr}</small></span><b>${won(m.price)}</b></p>`).join('');
+    c.innerHTML = '<h4>MENU · 메뉴</h4>' + S.menu.map((m) => `<p><span>${m.ko}<small>${G(m.fr)}</small></span><b>${won(m.price)}</b></p>`).join('');
     $('log').appendChild(c); scrollDown();
   }
   async function hanaSays(lines, slow) {   // 하나가 한 줄씩(사이에 '···')
@@ -1237,7 +1599,7 @@ window.HANA_UTIL = {
     for (const c of list) {
       const b = document.createElement('button'); b.type = 'button';
       const ko = document.createElement('b'); ko.textContent = fill(c.ko);
-      const gl = document.createElement('span'); gl.textContent = fill(c.fr);
+      const gl = document.createElement('span'); gl.textContent = fill(G(c.fr));
       b.append(ko, gl); b.onclick = () => pick(c); box.appendChild(b);
     }
   }
@@ -1252,7 +1614,7 @@ window.HANA_UTIL = {
       li.innerHTML = '<span class="box"></span><span><span class="t"></span><small></small></span>';
       li.querySelector('.box').textContent = i < stepNow ? '✓' : i + 1;
       li.querySelector('.t').textContent = s.title;
-      li.querySelector('small').textContent = (used.find((u) => u.step === i) || {}).ko || s.fr;
+      li.querySelector('small').textContent = (used.find((u) => u.step === i) || {}).ko || G(s.fr);
       ol.appendChild(li);
     });
     const n = Math.min(stepNow, S.steps.length);
@@ -1267,7 +1629,7 @@ window.HANA_UTIL = {
   async function start(sc) {
     S = sc; mem = {}; used = []; stepNow = 0; lastAsk = null; stopVoice(); queue = Promise.resolve();
     $('log').innerHTML = ''; $('dock').classList.remove('done'); setChoices([]); lock(true); renderSteps();
-    if (S.note) { const n = document.createElement('div'); n.className = 'sysnote'; n.innerHTML = '<b></b><span></span>'; n.querySelector('b').textContent = S.note[0]; n.querySelector('span').textContent = S.note[1]; $('log').appendChild(n); }
+    if (S.note) { const n = document.createElement('div'); n.className = 'sysnote'; n.innerHTML = '<b></b><span></span>'; n.querySelector('b').textContent = S.note[0]; n.querySelector('span').textContent = G(S.note[1]); $('log').appendChild(n); }
     await hanaSays([...(S.id === 'intro' ? [] : [['안녕하세요! 저는 하나예요.', 'Bonjour ! Je suis Hana.']]), ...S.open]);
     await goNode(S.start);
   }
@@ -1283,7 +1645,7 @@ window.HANA_UTIL = {
     Object.assign(mem, c.set || {});
     const ko = fill(c.ko);
     addMe(ko);
-    if (!used.some((u) => u.ko === ko)) used.push({ ko, fr: fill(c.fr), step: node.step });
+    if (!used.some((u) => u.ko === ko)) used.push({ ko, fr: fill(G(c.fr)), step: node.step });
     await hanaSays(c.say || []);
     if (c.menu) { await wait(300); addMenu(); }
     await goNode(c.go);
@@ -1313,9 +1675,9 @@ window.HANA_UTIL = {
     const next = document.createElement('div'); next.className = 'nextgo';
     const go = (href, ko, fr) => { const a = document.createElement('a'); a.href = href; if (/^https?:/.test(href)) { a.target = '_blank'; a.rel = 'noopener'; } a.innerHTML = '<b></b><span></span>'; a.querySelector('b').textContent = ko; a.querySelector('span').textContent = fr; next.appendChild(a); };
     const meta = (window.HANA_TOPICS || []).find((x) => x.id === S.id) || {};
-    if (meta.xr) { go(XR_BASE + S.id + '/', '🎮 3D', '놀러 가요'); go(XR_BASE + 'korean/sheets/' + S.id + '.pdf', '📄 활동지', 'Fiche PDF'); }
+    if (meta.xr) { go(XR_BASE + S.id + '/', '🎮 3D', '놀러 가요'); go(XR_BASE + 'korean/sheets/' + S.id + '.pdf', '📄 활동지', EN ? EN.ui.sheet : 'Fiche PDF'); }
     if (meta.lib) go(ONESHOT + '#/t/' + encodeURIComponent(meta.lib), '📚 자료실', meta.lib);
-    if (next.children.length) { const h = document.createElement('p'); h.className = 'nexth'; h.textContent = '이어서 해 보기 · Continuer'; card.insertBefore(h, card.querySelector('.row')); card.insertBefore(next, card.querySelector('.row')); }
+    if (next.children.length) { const h = document.createElement('p'); h.className = 'nexth'; h.textContent = EN ? EN.ui.cont : '이어서 해 보기 · Continuer'; card.insertBefore(h, card.querySelector('.row')); card.insertBefore(next, card.querySelector('.row')); }
     $('log').appendChild(card); scrollDown();
   }
 
@@ -1341,7 +1703,7 @@ window.HANA_UTIL = {
     const b = document.createElement('button'); b.type = 'button'; b.className = ready ? 'ready' : 'soon'; b.dataset.id = t.id;
     b.innerHTML = '<span class="ic"></span><span class="tx"><b></b><span></span></span>' + (ready && t.xr ? '<i class="xr" title="놀러 가요에도 있어요">🎮</i>' : '');
     b.querySelector('.ic').textContent = t.icon; b.querySelector('b').textContent = t.title;
-    b.querySelector('.tx span').textContent = ready ? t.fr : '준비 중 · ' + t.fr;
+    b.querySelector('.tx span').textContent = ready ? G(t.fr) : (EN ? EN.ui.soon : '준비 중 · ') + G(t.fr);
     if (ready) b.onclick = () => { $('cover').style.display = 'none'; unlock(); start(Object.assign({ id: t.id, icon: t.icon, title: t.title, fr: t.fr }, SCRIPTS[t.id])); };
     return b;
   };

@@ -985,8 +985,94 @@
       teacherName: n => n
     }
   };
+  // 영어 화면(2026-11-18 휴먼쌤 "전부다 진행해줘" — 기획 3 '누구나'). 빠진 글은 한국어로 보인다(T.ko 위에 덮음). 'other' 줄은 한국어. 쉬운 말, 사람(원어민) 확인 전.
+  T.en = Object.assign({}, T.ko, {
+    hi: 'Hello!', hero: 'What shall we<br>learn today?', heroOther: '오늘은 무엇을 배워 볼까요?',
+    all: 'All', nTopics: n => `${n} topic${n === 1 ? '' : 's'}`, nItems: n => String(n), cnt: n => String(n), waiting: 'Coming soon',
+    fromQr: 'Opened from a QR code', hand: 'Stuck? Raise your hand and ask your teacher!', handOther: '막히면 손을 들어 선생님을 불러요',
+    mats: n => `${n} resource${n === 1 ? '' : 's'}`, empty: 'No resources yet', emptyHint: 'Try the other levels', emptyTeacher: 'Add a resource and it will show up here',
+    min: ' min', newtab: 'Resources open in a new tab', noTopic: 'Topic not found',
+    tabHome: 'Library', tabFav: 'Favorites', tabTeacher: 'Teacher', back: 'Back', close: 'Close',
+    tabWorld: 'World', newMats: 'New resources', today: 'Today', yday: 'Yesterday', dmy: (y, m, d) => `${m}/${d}`,
+    wHero: 'Shall we meet online?<br>Korean school metaverse',
+    wEu: 'Metaverse of Korean schools in Europe', wEuOther: '유럽 한글학교 메타버스', wEuDs: '70 Korean schools in France, Germany and the UK on one map. Pick a country to enter its lobby.', wEuCnt: '70 schools',
+    wCanT: 'What you can do there',
+    wCan: [['🗺️', 'Pick a country on the map of Europe and walk around with your character to find the schools.'], ['🏫', 'In a classroom, answer the principal’s quiz and look around the school: book, photo album, TV, notice board.'], ['💬', 'Meet people who are online at the same time and say hello with Korean speech bubbles (20 set phrases).']],
+    tabHana: 'With Hana', hwPlay: 'Let’s go!', hwPlayDs: '5 places · no AI', hwTalk: 'Talk with Hana', hwTalkDs: 'Practice talking · start now',
+    hHero: 'Play and talk<br>in Korean with Hana',
+    plT: 'Let’s go!', plN: '5 places', plIntro: 'Hana plays the host, the shop clerk, the station staff and the pharmacist. Learn the phrases for each place and 10 words. No sign-up needed.',
+    plSheet: 'Worksheet PDF', plTalk: 'Talk with Hana', plLib: n => `Library · ${n}`, plMeta: m => `about ${m} min · 10 words`,
+    hkT: 'Talk with Hana', hkN: '17 topics', hkBadge: 'Practice', hkAi: 'Hana asks a question, and you choose your answer.',
+    hkRules: [['🔁', 'If you don’t understand, tap "다시 말해 주세요." and Hana says it again slowly.'], ['🎮', 'You’ll hear the same phrases as in "Let’s go!". When you finish, keep going in 3D, with the worksheet or in the library.'], ['🔒', 'No code, no name. Nothing you choose leaves your device.']],
+    hkOpen: 'Open "Talk with Hana"',
+    tmT: 'More on this topic', tmPlay: m => `Let’s go! · no AI · about ${m} min`, tmTalk: 'Talk with Hana', tmTalkDs: 'Practice talking · choose your answer',
+    favOn: 'Add to favorites', favOff: 'Remove from favorites', favAdded: 'Added to favorites', favRemoved: 'Removed from favorites',
+    favCount: n => `${n} favorite${n === 1 ? '' : 's'}`, favFound: n => `${n} result${n === 1 ? '' : 's'}`, libSearch: 'Search resources (title, topic, description)', clearQ: 'Clear',
+    sortK: 'Sort', sortAdded: 'Recently added', sortTitle: 'Title', sortTopic: 'Topic', reset: 'Reset',
+    favEmpty: 'No favorites yet', favEmptyHint: 'Tap ☆ in the library to add one', toLib: 'Go to the library',
+    favNone: 'No results', favNeedLogin: 'Please log in (teachers)', favNeedLoginP: 'Favorites are for teachers: save resources here, then show them to students with a QR code in class.',
+    favLoginBtn: 'Go to teacher login', backLib: 'Back to the library', homeQrBtn: 'Home page QR',
+    qrTitle: 'QR codes', print: 'Print', qrByTopic: 'QR by topic', homeQr: 'Home page', topicQr: 'Whole topic · choose a level', qrByMat: 'QR by resource', noMat: 'Resource not found', openMat: 'Open this resource',
+    qrIntro: 'Put one QR code on each sheet of paper. If several are close together, the camera gets confused. When you print, each QR gets its own page.',
+    scan: 'Scan with your phone camera', scanOther: '휴대폰 카메라로 찍으세요',
+    teacherLogin: 'Teacher login', loginHint: 'Enter the code from your association or school.', codePh: 'Code', login: 'Log in', loggedIn: 'Logged in',
+    loginForgot: 'Forgot your code? Ask the association (Humanssaem) for a new one.',
+    loginWhy: 'When you log in, you can add resources and remove the ones you added.',
+    mockCodes: 'Test codes: 1234 (Paris), 5678 (Bordeaux)', badCode: 'Wrong code', netErr: 'Can’t connect. Please try again later.',
+    loadErr: 'Could not load the resources.', retry: 'Try again',
+    logout: 'Log out', upload: 'Add a resource', myMats: 'My resources', noMine: 'You haven’t added any resources yet', uploaded: 'Added!',
+    del: 'Delete', deleted: 'Deleted', delAsk: s => `Delete "${s}"?\nIt will also disappear from the library and favorites.`, lvDate: (lv, d) => `Level ${lv}${d ? ' · ' + d : ''}`,
+    notOwner: 'You can only delete resources you added',
+    privacyLink: 'Privacy policy', termsLink: 'Terms of use', termsAgree: 'I have read and agree to the terms of use before adding a resource.', needTerms: 'Please read the terms of use and tick the box',
+    rpBtn: 'Report', rpTitle: 'Report a resource', rpWhy: 'What is the problem?',
+    rpR: { inappropriate: 'Inappropriate content (violence, hate, sexual content…)', privacy: 'Personal information shown (a student’s name, photo…)', copyright: 'Copyright problem', person: 'The uploader’s behavior', other: 'Other' },
+    rpText: 'Details', rpPh: 'e.g. There is a student’s photo on page 3', rpHint: 'Don’t write personal information like names or contact details. Reports go to the administrator without your name.',
+    rpSend: 'Send report', rpNeed: 'Please choose a reason', rpDone: 'Report sent. Thank you.',
+    leaveHint: 'If you delete your account, your name, school, favorites and all the resources you added are erased for good.', leaveBtn: 'Delete account',
+    leaveAsk: n => `Delete your account?\nYour name, school, favorites${n ? ` and your ${n} resource${n === 1 ? '' : 's'}` : ''} will be erased. Printed QR codes for those resources will open the home page.`,
+    leaveAsk2: 'This can’t be undone. Delete for sure?', leaveDone: 'Account deleted', leaveAdmin: 'The administrator account can’t be deleted here',
+    joinAsk: 'First time here?', joinLink: 'Sign up', joinTitle: 'Teacher sign-up', joinHint: 'Sign up right away with the sign-up code from your association.',
+    fName: 'Name', phName: 'e.g. Kim Suhyeon', nameHint: 'Shown as the author of your resources. If the name is taken, add your city (e.g. Kim Jiyoung Bordeaux).',
+    fJoin: 'Sign-up code', phJoin: 'Code from your association',
+    privacy: 'Your name, school and resources are kept on the Hangeul Oneshot server (Cloudflare). Resource cards show your name and school. Anyone with the link can see the files you upload. Don’t upload files with students’ names, photos or grades.',
+    agree: 'I have read the information above and the terms of use, and I agree', joinBtn: 'Sign up', joining: 'Signing up…',
+    needName: 'Please enter your name', needJoin: 'Please enter the sign-up code', needAgree: 'Please read the information and tick the box',
+    badJoin: 'Wrong sign-up code', joinClosed: 'Sign-up is closed right now. Please ask your association.',
+    dupName: 'This name is already taken. Add your city after it (e.g. Kim Jiyoung Bordeaux).', tooMany: 'Too many tries. Please try again in 10 minutes.',
+    joinedTitle: 'You’re signed up!', joinedCode: 'Your login code', joinedKeep: 'Write this code down. You need it to log in on another device. If you forget it, ask the association (Humanssaem).',
+    copyCode: 'Copy code', codeCopied: 'Copied', copySel: 'Text selected · press and hold to copy', start: 'Start', mockJoin: 'Test sign-up code: HANGEUL',
+    fTopic: 'Topic', fGroup: 'Main theme', fGroupHint: 'This is a new topic. Which main theme should it go in?', fLevel: 'Level', fTitle: 'Title', fType: 'Type',
+    cbOpen: 'Open the list', cbNone: 'Nothing to choose', cbNewTopic: s => `New topic: "${s}"`, cbNewGroup: s => `New main theme: "${s}"`,
+    fUrl: 'Link', fMin: 'Time needed', fDesc: 'One-line description', optional: '(optional)', fSchool: 'Your school', phSchool: 'Choose your school', needSchool: 'Please choose your school',
+    phTopic: 'Choose a topic or type a new one', phTitle: 'e.g. Family word picture cards', phDesc: 'e.g. Look at the pictures and repeat',
+    paste: 'Paste', previewCap: 'What learners will see', submit: 'Add', required: 'Topic, level, title and link are required',
+    needTopic: 'Please choose or type a topic', needLevel: 'Please choose a level (하·중·상)', needTitle: 'Please enter a title', needUrl: 'Please paste a link',
+    srcFile: 'File (PDF/image/HTML)', srcLink: 'Link', fSrc: 'Resource', pickFile: 'Choose a file', fileWhat: n => `PDF, image or HTML · up to ${n} MB`,
+    fileKeep: 'The file is kept in the Hangeul Oneshot storage. It stays even if you delete it from your device.',
+    fileHtml: 'HTML opens right away at its own address. Single-file pages only. Anything it saves is gone when you reopen it.',
+    fileHtmlAsset: 'This HTML loads separate files (pictures, sounds…), which won’t show. Put everything in one file or use a public address.',
+    fileBig: n => `The file is too big. Up to ${n} MB. For videos, paste an "unlisted" YouTube link.`,
+    fileBad: 'This file type can’t be uploaded. PDF, image or HTML only.', needFile: 'Please choose a file to upload',
+    uploading: 'Uploading…', fileReadErr: 'Could not read the file. Please choose it again.',
+    lkAny: 'Paste a link (web app, YouTube…)', lkBad: 'Please paste a link that starts with https://',
+    lkLocal: 'This address only works on your computer. Please use a public address', lkDrive: 'Google Drive file · set sharing to "Anyone with the link"',
+    lkFolder: 'Drive folder · a link to a single file is easier for learners', lkDocs: 'Google Docs/Slides · set sharing to "Anyone with the link" (viewer)',
+    lkForm: 'Google Forms · learners can answer right away', lkCopy: '"Make a copy" link · learners need a Google account', lkYoutube: 'YouTube video',
+    lkSite: 'Website · your own site works if it is public', lkHttp: 'http links may be blocked on phones · https is better',
+    dupLink: (s, w) => `This link is already here: "${s}" (${w})`, dupAsk: 'This link is already in the library.\nAdd it anyway?',
+    mineTip: 'To change it, delete it and add it again', total: n => `${n} resource${n === 1 ? '' : 's'}`, updated: 'updated', loading: 'Loading…',
+    mockNote: 'Sample data · what you add stays on this device only',
+    teacherName: n => n
+  });
 
-  let lang = /^fr\b/i.test(navigator.language || '') ? 'fr' : 'ko';   // 기기 언어가 프랑스어면 FR로 시작(저장하지 않음, 2026-10-31)
+  // 영어 기기면 EN, 프랑스어 기기면 FR로 시작(저장하지 않음 — fr 2026-10-31, en 2026-11-18)
+  let lang = /^fr\b/i.test(navigator.language || '') ? 'fr' : /^en\b/i.test(navigator.language || '') ? 'en' : 'ko';
+  // 영어 이름: 자료실 소주제 26 · 대주제(서버 설정에는 프랑스어만 있어 여기에 둠). 없는 이름은 한국어 그대로(관리자가 새 소주제를 만들면 여기에 더한다)
+  const TOPIC_EN = { '처음 만남': 'Meeting someone new', '하나네 집': 'At Hana’s house', '카페': 'Café', '식당': 'Restaurant', '분식집': 'Snack bar', '편의점': 'Corner shop',
+    '시장': 'Market', '옷가게': 'Clothes shop', '길 묻기': 'Asking the way', '지하철': 'Subway', '택시': 'Taxi', '약국': 'Pharmacy', '호텔': 'Hotel', '장보기': 'Grocery shopping',
+    '여행': 'Travel', '시간': 'Time and dates', '색깔': 'Colors', '교실 규칙': 'Classroom rules', '초대': 'Invitations', '자음·모음': 'Consonants and vowels', '낱말': 'Vocabulary',
+    '문법': 'Grammar', '읽기': 'Reading', '말하기': 'Speaking', '한자': 'Hanja (Chinese characters)', '수업 계획': 'Lesson planning' };
+  const GROUP_EN = { '만남': 'Meeting people', '음식': 'Food', '쇼핑': 'Shopping', '교통': 'Getting around', '생활': 'Daily life', '기초': 'Basics', '일상': 'Everyday', '기타': 'Other' };
   let data = { settings: {}, topics: [], groups: [], materials: [], groupFr: {}, updatedAt: '' };
   let teacher = loadTeacher();
   let loadError = false;
@@ -1002,8 +1088,10 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const t = k => T[lang][k];
   const levelInfo = k => LEVELS.find(l => l.key === k) || { key: k, ko: '', fr: '' };
-  const levelDesc = k => { const l = levelInfo(k); return lang === 'fr' ? (l.fr || l.ko) : l.ko; };
-  const levelDescOther = k => { const l = levelInfo(k); return lang === 'fr' ? l.ko : l.fr; };
+  const levelDesc = k => { const l = levelInfo(k); return lang === 'fr' ? (l.fr || l.ko) : lang === 'en' ? (l.en || l.ko) : l.ko; };
+  const levelDescOther = k => { const l = levelInfo(k); return lang === 'ko' ? l.fr : l.ko; };
+  // 고르는 글: 한 · 프 · 영 셋 가운데 지금 화면 말(영어가 없으면 한국어)
+  const pickL = (ko, fr, en) => (lang === 'fr' ? fr : lang === 'en' ? (en || ko) : ko);
 
   // ---------- 자료 정리 ----------
   function normLevel(s) {
@@ -1045,7 +1133,7 @@
     data = { settings: raw.settings || {}, topics, groups, materials: mats, groupFr, updatedAt: raw.updatedAt || '' };
   }
   // 화면에 보이는 대주제 이름(프랑스어 화면이면 프랑스어). 값(고르기·거르기)은 늘 한국어 이름
-  const gName = n => (lang === 'fr' && data.groupFr && data.groupFr[n]) || n;
+  const gName = n => (lang === 'fr' && data.groupFr && data.groupFr[n]) || (lang === 'en' && GROUP_EN[n]) || n;
   const topicByQid = q => data.topics.find(x => x.qid && String(x.qid) === String(q));
 
   // ---------- 서버(Cloudflare /api, 2026-10-30 새 판) 또는 시험 모드 ----------
@@ -1133,14 +1221,17 @@
   // 자료 QR은 /go/<자료 id>를 담는다: 서버가 지금 링크로 넘기므로 관리자 화면에서 링크를 고쳐도 인쇄한 QR은 그대로(시험 모드는 링크 그대로)
   const goUrl = m => MOCK ? m.url : new URL('go/' + encodeURIComponent(m.id), location.href.split('#')[0]).href;
   function fullUrl(hash) { return location.href.split('#')[0] + hash; }
-  function topicLabel(tp) { return lang === 'fr' && tp.fr ? { big: tp.fr, small: tp.name } : { big: tp.name, small: tp.fr }; }
+  function topicLabel(tp) {
+    if (lang === 'en') return TOPIC_EN[tp.name] ? { big: TOPIC_EN[tp.name], small: tp.name } : { big: tp.name, small: '' };
+    return lang === 'fr' && tp.fr ? { big: tp.fr, small: tp.name } : { big: tp.name, small: tp.fr };
+  }
   function topicIcon(tp) {
     if (tp.icon) return { v: tp.icon, txt: !/\p{Extended_Pictographic}/u.test(tp.icon) };
     for (const [re, v] of TOPIC_ICONS) if (re.test(tp.name)) return v.indexOf('txt:') === 0 ? { v: v.slice(4), txt: true } : { v, txt: false };
     return { v: tp.name.replace(/\s/g, '').slice(0, 1), txt: true };
   }
   function langToggle(small) {
-    return `<div class="lang${small ? ' sm' : ''}"><button type="button" data-lang="ko" class="${lang === 'ko' ? 'on' : ''}">${small ? '한' : '한국어'}</button><button type="button" data-lang="fr" class="${lang === 'fr' ? 'on' : ''}">FR</button></div>`;
+    return `<div class="lang${small ? ' sm' : ''}"><button type="button" data-lang="ko" class="${lang === 'ko' ? 'on' : ''}">${small ? '한' : '한국어'}</button><button type="button" data-lang="fr" class="${lang === 'fr' ? 'on' : ''}">FR</button><button type="button" data-lang="en" class="${lang === 'en' ? 'on' : ''}">EN</button></div>`;
   }
   function appTitle() { return data.settings.title || CFG.TITLE || '한글원샷'; }
   // 자료실 위: 첫 화면 QR 단추(QR 탭을 없애며 옮김, 2026-10-24)
@@ -1172,7 +1263,7 @@
 
   // 소속 학교 선택지(config.js SCHOOLS). 값은 한국어 이름, 보이는 글은 언어에 따라. 이름에 도시가 없으면 도시를 붙인다.
   function schoolOptions(cur) {
-    const fr = lang === 'fr';
+    const fr = lang !== 'ko';   // 영어 화면도 학교 이름은 프랑스어(로마자) 이름으로
     const label = s => { const n = fr ? s.fr : s.ko, c = fr ? s.cityFr : s.city; return c && n.indexOf(c) < 0 ? `${n} (${c})` : n; };
     const key = s => fr ? `${s.cityFr} ${s.fr}` : s.ko;
     const list = SCHOOLS.slice().sort((a, b) => key(a).localeCompare(key(b), fr ? 'fr' : 'ko'));
@@ -1243,7 +1334,7 @@
     const sel = data.groups.some(g => g.name === groupFilter) ? groupFilter : '';
     return data.materials.filter(m => {
       const tp = data.topics.find(x => x.name === m.topic);
-      return (!sel || groupOf(m) === sel) && [m.title, m.topic, tp && tp.fr, m.desc, m.descFr, m.type, groupOf(m)].join('').replace(/\s+/g, '').toLowerCase().includes(q);
+      return (!sel || groupOf(m) === sel) && [m.title, m.topic, tp && tp.fr, TOPIC_EN[m.topic], m.desc, m.descFr, m.type, groupOf(m)].join('').replace(/\s+/g, '').toLowerCase().includes(q);
     });
   }
   function libBody(shown) {
@@ -1275,7 +1366,7 @@
   function footLine() {
     const upd = data.updatedAt ? new Date(data.updatedAt) : null;
     const updS = upd && !isNaN(upd) ? `${t('updated')} ${upd.getMonth() + 1}/${upd.getDate()} ${String(upd.getHours()).padStart(2, '0')}:${String(upd.getMinutes()).padStart(2, '0')}` : '';
-    const sub = (lang === 'fr' && (data.settings.subtitle_fr || CFG.SUBTITLE_FR)) || data.settings.subtitle || CFG.SUBTITLE || '';
+    const sub = (lang === 'fr' && (data.settings.subtitle_fr || CFG.SUBTITLE_FR)) || (lang === 'en' && CFG.SUBTITLE_EN) || data.settings.subtitle || CFG.SUBTITLE || '';
     return `<p class="foot">${sub ? esc(sub) + '<br>' : ''}${esc(t('total')(data.materials.length))}${updS ? ' · ' + esc(updS) : ''}<br>${policyLinks()}${MOCK ? `<br><span class="mock">${esc(t('mockNote'))}</span>` : ''}</p>`;
   }
 
@@ -1554,27 +1645,33 @@
   // 놀러 가요 글은 world.human-teacher.com/korean/ 소개 글, 하나 주제는 hana.human-teacher.com /api/topics(2026-11-17)에서 옮겼다. 거기가 바뀌면 여기도 맞춘다.
   const XR_BASE = 'https://world.human-teacher.com/';
   const PLAY = [
-    { id: 'hanok', topic: '하나네 집', emo: '🏠', bg: '#FFE9D6', min: 8, ko: '하나네 집에 놀러 가요', fr: 'Visite chez Hana',
-      dKo: '한옥 부엌에서 물건 이름을 듣고, 하나가 말하는 대로 밥상을 차려 같이 먹어요.', dFr: 'Dans une cuisine coréenne traditionnelle, écoute le nom des objets et mets la table comme Hana le demande.' },
-    { id: 'store', topic: '편의점', emo: '🏪', bg: '#E0ECFF', min: 10, ko: '편의점에 가요', fr: 'À la supérette',
-      dKo: '물건 이름과 값을 듣고 “어디 있어요?” 물어 바구니에 담은 뒤 계산까지 해 봐요.', dFr: 'Écoute le nom et le prix des produits, demande « 어디 있어요? », remplis ton panier et passe à la caisse.' },
-    { id: 'bunsik', topic: '분식집', emo: '🍢', bg: '#FFE4DC', min: 10, ko: '분식집에 가요', fr: 'Au snack coréen',
-      dKo: '떡볶이 · 김밥 · 라면 이름과 값을 듣고 “떡볶이 하나 주세요” 하고 주문해 먹어 봐요.', dFr: 'Écoute le nom et le prix du tteokbokki, du kimbap et des ramyeon, puis commande : « 떡볶이 하나 주세요 ».' },
-    { id: 'subway', topic: '지하철', emo: '🚇', bg: '#DCF5E8', min: 12, ko: '지하철을 타요', fr: 'Prendre le métro',
-      dKo: '교통카드를 충전하고 “바다역 어떻게 가요?” 물어 1호선에서 2호선으로 갈아타요.', dFr: 'Recharge ta carte de transport, demande « 바다역 어떻게 가요? » et change de la ligne 1 à la ligne 2.' },
-    { id: 'pharmacy', topic: '약국', emo: '💊', bg: '#EDE5FF', min: 10, ko: '약국에 가요', fr: 'À la pharmacie',
-      dKo: '“머리가 아파요” · “열이 나요”처럼 아픈 곳을 말하고 약을 받아 봐요. 한국어 연습용이라 의학 정보가 아니에요.', dFr: 'Dis où tu as mal (« 머리가 아파요 », « 열이 나요 ») et reçois un médicament. C’est pour pratiquer le coréen, pas une information médicale.' }
+    { id: 'hanok', topic: '하나네 집', emo: '🏠', bg: '#FFE9D6', min: 8, ko: '하나네 집에 놀러 가요', fr: 'Visite chez Hana', en: 'Visit Hana’s house',
+      dKo: '한옥 부엌에서 물건 이름을 듣고, 하나가 말하는 대로 밥상을 차려 같이 먹어요.', dFr: 'Dans une cuisine coréenne traditionnelle, écoute le nom des objets et mets la table comme Hana le demande.',
+      dEn: 'In a traditional Korean kitchen, listen to the names of things and set the table the way Hana asks. Then eat together.' },
+    { id: 'store', topic: '편의점', emo: '🏪', bg: '#E0ECFF', min: 10, ko: '편의점에 가요', fr: 'À la supérette', en: 'Go to the corner shop',
+      dKo: '물건 이름과 값을 듣고 “어디 있어요?” 물어 바구니에 담은 뒤 계산까지 해 봐요.', dFr: 'Écoute le nom et le prix des produits, demande « 어디 있어요? », remplis ton panier et passe à la caisse.',
+      dEn: 'Listen to the names and prices, ask "어디 있어요?", fill your basket and pay at the counter.' },
+    { id: 'bunsik', topic: '분식집', emo: '🍢', bg: '#FFE4DC', min: 10, ko: '분식집에 가요', fr: 'Au snack coréen', en: 'Go to the snack bar',
+      dKo: '떡볶이 · 김밥 · 라면 이름과 값을 듣고 “떡볶이 하나 주세요” 하고 주문해 먹어 봐요.', dFr: 'Écoute le nom et le prix du tteokbokki, du kimbap et des ramyeon, puis commande : « 떡볶이 하나 주세요 ».',
+      dEn: 'Listen to the names and prices of tteokbokki, kimbap and ramyeon, then order: "떡볶이 하나 주세요".' },
+    { id: 'subway', topic: '지하철', emo: '🚇', bg: '#DCF5E8', min: 12, ko: '지하철을 타요', fr: 'Prendre le métro', en: 'Take the subway',
+      dKo: '교통카드를 충전하고 “바다역 어떻게 가요?” 물어 1호선에서 2호선으로 갈아타요.', dFr: 'Recharge ta carte de transport, demande « 바다역 어떻게 가요? » et change de la ligne 1 à la ligne 2.',
+      dEn: 'Top up your transit card, ask "바다역 어떻게 가요?" and change from Line 1 to Line 2.' },
+    { id: 'pharmacy', topic: '약국', emo: '💊', bg: '#EDE5FF', min: 10, ko: '약국에 가요', fr: 'À la pharmacie', en: 'Go to the pharmacy',
+      dKo: '“머리가 아파요” · “열이 나요”처럼 아픈 곳을 말하고 약을 받아 봐요. 한국어 연습용이라 의학 정보가 아니에요.', dFr: 'Dis où tu as mal (« 머리가 아파요 », « 열이 나요 ») et reçois un médicament. C’est pour pratiquer le coréen, pas une information médicale.',
+      dEn: 'Say where it hurts ("머리가 아파요", "열이 나요") and get some medicine. This is Korean practice, not medical advice.' }
   ];
   const HANA_URL = 'hana/';   // 11-18 미리 쓴 대화(같은 사이트, AI · 반 코드 없음)
-  const HANA_T = [['cafe', '☕', '카페', 'Au café'], ['hanok', '🏠', '하나네 집', 'Chez Hana'], ['store', '🏪', '편의점', 'À la supérette'], ['bunsik', '🍢', '분식집', 'Au snack coréen'],
-    ['subway', '🚇', '지하철', 'Dans le métro'], ['pharmacy', '💊', '약국', 'À la pharmacie'], ['restaurant', '🍽️', '식당', 'Au restaurant'], ['intro', '👋', '처음 만남', 'Première rencontre'],
-    ['market', '🧺', '시장', 'Au marché'], ['clothes', '👕', '옷가게', 'Magasin de vêtements'], ['groceries', '🛒', '장보기', 'Faire les courses'], ['directions', '🗺️', '길 묻기', 'Demander son chemin'],
-    ['taxi', '🚕', '택시', 'En taxi'], ['time', '⏰', '시간', "L'heure"], ['colors', '🎨', '색깔', 'Les couleurs'], ['classroom', '🏫', '교실 규칙', 'Règles de la classe'], ['invite', '💌', '초대', 'Une invitation']]
-    .map(([id, emo, ko, fr]) => ({ id, emo, ko, fr }));
+  const HANA_T = [['cafe', '☕', '카페', 'Au café', 'At the café'], ['hanok', '🏠', '하나네 집', 'Chez Hana', 'At Hana’s house'], ['store', '🏪', '편의점', 'À la supérette', 'At the corner shop'], ['bunsik', '🍢', '분식집', 'Au snack coréen', 'At the snack bar'],
+    ['subway', '🚇', '지하철', 'Dans le métro', 'On the subway'], ['pharmacy', '💊', '약국', 'À la pharmacie', 'At the pharmacy'], ['restaurant', '🍽️', '식당', 'Au restaurant', 'At the restaurant'], ['intro', '👋', '처음 만남', 'Première rencontre', 'Meeting someone new'],
+    ['market', '🧺', '시장', 'Au marché', 'At the market'], ['clothes', '👕', '옷가게', 'Magasin de vêtements', 'At the clothes shop'], ['groceries', '🛒', '장보기', 'Faire les courses', 'Grocery shopping'], ['directions', '🗺️', '길 묻기', 'Demander son chemin', 'Asking the way'],
+    ['taxi', '🚕', '택시', 'En taxi', 'In a taxi'], ['time', '⏰', '시간', "L'heure", 'Telling the time'], ['colors', '🎨', '색깔', 'Les couleurs', 'Colors'], ['classroom', '🏫', '교실 규칙', 'Règles de la classe', 'Classroom rules'], ['invite', '💌', '초대', 'Une invitation', 'An invitation']]
+    .map(([id, emo, ko, fr, en]) => ({ id, emo, ko, fr, en }));
   // 자료실 소주제 → 하나 주제(기획 3의 겹치는 주제 표)
   const HANA_OF = { '처음 만남': ['intro'], '하나네 집': ['hanok'], '카페': ['cafe'], '식당': ['restaurant'], '분식집': ['bunsik'], '편의점': ['store'], '지하철': ['subway'], '약국': ['pharmacy'],
     '시장': ['market'], '옷가게': ['clothes'], '장보기': ['groceries'], '길 묻기': ['directions'], '택시': ['taxi'], '시간': ['time'], '색깔': ['colors'], '교실 규칙': ['classroom'], '초대': ['invite'] };   // 11-18 2차 9주제
-  const hanaHref = id => HANA_URL + (id ? '?topic=' + encodeURIComponent(id) : '');
+  // 영어 화면이면 하나 대화도 영어 뜻으로(?lang=en, 11-18). 한국어 · 프랑스어 화면은 예전 주소 그대로
+  const hanaHref = id => { const q = [id ? 'topic=' + encodeURIComponent(id) : '', lang === 'en' ? 'lang=en' : ''].filter(Boolean).join('&'); return HANA_URL + (q ? '?' + q : ''); };
   const playOf = name => PLAY.find(p => p.topic === name);
   const hanaOf = name => (HANA_OF[name] || []).map(id => HANA_T.find(h => h.id === id)).filter(Boolean);
   // 첫 화면 두 길(자료실 인사 카드 아래)
@@ -1584,25 +1681,24 @@
   }
   // 주제 화면 아래 '이 주제로 더 해 봐요'(자료 목록 다음, 손 들기 안내 앞) — 자료실 동선은 그대로 두고 아래에만 더한다
   function topicMore(name) {
-    const p = playOf(name), hs = hanaOf(name), fr = lang === 'fr';
+    const p = playOf(name), hs = hanaOf(name);
     if (!p && !hs.length) return '';
-    const rows = (p ? [`<a class="item way" href="${XR_BASE + p.id}/" target="_blank" rel="noopener"><span class="ti" style="background:var(--g-l)">🎮</span><span class="tx"><span class="tt">${esc(fr ? p.fr : p.ko)}</span><span class="meta">${esc(t('tmPlay')(p.min))}</span></span><span class="go">${ICON.out}</span></a>`] : [])
-      .concat(hs.map(h => `<a class="item way" href="${hanaHref(h.id)}"><span class="ti" style="background:#FFE4EC">💬</span><span class="tx"><span class="tt">${esc(t('tmTalk'))} · ${esc(fr ? h.fr : h.ko)}</span><span class="meta">${esc(t('tmTalkDs'))}</span></span><span class="go h">${ICON.out}</span></a>`));
+    const rows = (p ? [`<a class="item way" href="${XR_BASE + p.id}/" target="_blank" rel="noopener"><span class="ti" style="background:var(--g-l)">🎮</span><span class="tx"><span class="tt">${esc(pickL(p.ko, p.fr, p.en))}</span><span class="meta">${esc(t('tmPlay')(p.min))}</span></span><span class="go">${ICON.out}</span></a>`] : [])
+      .concat(hs.map(h => `<a class="item way" href="${hanaHref(h.id)}"><span class="ti" style="background:#FFE4EC">💬</span><span class="tx"><span class="tt">${esc(t('tmTalk'))} · ${esc(pickL(h.ko, h.fr, h.en))}</span><span class="meta">${esc(t('tmTalkDs'))}</span></span><span class="go h">${ICON.out}</span></a>`));
     return `<section class="tmore"><h3>${esc(t('tmT'))}</h3>${rows.join('')}</section>`;
   }
   function viewHana() {
-    const fr = lang === 'fr';
     const head = `<header class="appbar"><b class="atitle">${esc(t('tabHana'))}</b>${langToggle(true)}</header>`;
     const hero = `<section class="whero hh"><h1>${t('hHero')}</h1><div class="mascot">👋</div></section>`;
     const lib = p => { const tp = data.topics.find(x => x.name === p.topic); return tp ? `<a href="${topicHref(tp.name)}">📚 ${esc(t('plLib')(topicLabel(tp).big))}</a>` : ''; };
     const card = (p, i) => `<div class="pcard"><a class="pmain" href="${XR_BASE + p.id}/" target="_blank" rel="noopener"><span class="pn" style="background:${p.bg}">${p.emo}<i>${String(i + 1).padStart(2, '0')}</i></span>`
-      + `<span class="tx"><b>${esc(fr ? p.fr : p.ko)}</b><small>${esc(fr ? p.ko : p.fr)}</small><span class="pds">${esc(fr ? p.dFr : p.dKo)}</span><span class="pm">${esc(t('plMeta')(p.min))}</span></span><span class="go">${ICON.out}</span></a>`
+      + `<span class="tx"><b>${esc(pickL(p.ko, p.fr, p.en))}</b><small>${esc(lang === 'ko' ? p.fr : p.ko)}</small><span class="pds">${esc(pickL(p.dKo, p.dFr, p.dEn))}</span><span class="pm">${esc(t('plMeta')(p.min))}</span></span><span class="go">${ICON.out}</span></a>`
       + `<div class="pfoot"><a href="${XR_BASE}korean/sheets/${p.id}.pdf" target="_blank" rel="noopener">📄 ${esc(t('plSheet'))}</a>${lib(p)}<a href="${hanaHref(p.id)}">💬 ${esc(t('plTalk'))}</a></div></div>`;
     const play = `<div class="sec"><h2>🎮 ${esc(t('plT'))}</h2><span>${esc(t('plN'))}</span></div><p class="hintro">${esc(t('plIntro'))}</p><div class="plist">${PLAY.map(card).join('')}</div>`;
     const talk = `<div class="sec" id="hanaTalk"><h2>💬 ${esc(t('hkT'))}</h2><span>${esc(t('hkN'))}</span></div><section class="hcard"><p class="hai"><b>${esc(t('hkBadge'))}</b><span>${esc(t('hkAi'))}</span></p>`
       + `<ul>${t('hkRules').map(([e, x]) => `<li><span class="e">${e}</span><span>${esc(x)}</span></li>`).join('')}</ul>`
-      + `<div class="htop">${HANA_T.map(h => `<a href="${hanaHref(h.id)}">${h.emo} ${esc(fr ? h.fr : h.ko)}</a>`).join('')}</div>`
-      + `<a class="btn hbtn" href="${HANA_URL}">${esc(t('hkOpen'))}${ICON.out}</a></section>`;
+      + `<div class="htop">${HANA_T.map(h => `<a href="${hanaHref(h.id)}">${h.emo} ${esc(pickL(h.ko, h.fr, h.en))}</a>`).join('')}</div>`
+      + `<a class="btn hbtn" href="${hanaHref('')}">${esc(t('hkOpen'))}${ICON.out}</a></section>`;
     return head + `<div class="pad">${hero}${play}${talk}</div>`;
   }
 
