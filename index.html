@@ -805,7 +805,7 @@
       hHero: '하나랑 한국어로<br>놀고 이야기해요',
       plT: '놀러 가요', plN: '5곳', plIntro: '하나가 집주인 · 점원 · 역무원 · 약사로 나와요. 그 장소에서 쓰는 말과 낱말 10개를 배워요. 가입 없이 바로 열려요.',
       plSheet: '활동지 PDF', plTalk: '하나랑 대화', plLib: n => `자료실 · ${n}`, plMeta: m => `약 ${m}분 · 낱말 10개`,
-      hkT: '하나랑 이야기', hkN: '주제 8가지', hkBadge: '연습', hkAi: '하나가 묻고, 나는 보기에서 골라 대답해요.',
+      hkT: '하나랑 이야기', hkN: '주제 17가지', hkBadge: '연습', hkAi: '하나가 묻고, 나는 보기에서 골라 대답해요.',
       hkRules: [['🔁', '모르면 "다시 말해 주세요."를 눌러요. 하나가 천천히 다시 말해요.'], ['🎮', '놀러 가요 장소와 같은 말이 나와요. 끝나면 3D · 활동지 · 자료실로 이어서 해 봐요.'], ['🔒', '코드도 이름도 필요 없어요. 고른 말은 기기 밖으로 나가지 않아요.']],
       hkOpen: '하나랑 이야기 열기',
       tmT: '이 주제로 더 해 봐요', tmPlay: m => `놀러 가요 · AI 없이 · 약 ${m}분`, tmTalk: '하나랑 이야기', tmTalkDs: '대화 연습 · 보기에서 골라요',
@@ -905,7 +905,7 @@
       hHero: 'Joue et parle<br>coréen avec Hana',
       plT: 'Allons-y !', plN: '5 lieux', plIntro: 'Hana joue l’hôtesse, la vendeuse, l’agente du métro et la pharmacienne. Apprends les phrases du lieu et 10 mots. Sans inscription.',
       plSheet: 'Fiche PDF', plTalk: 'Parler avec Hana', plLib: n => `Ressources · ${n}`, plMeta: m => `env. ${m} min · 10 mots`,
-      hkT: 'Parler avec Hana', hkN: '8 sujets', hkBadge: 'Exercice', hkAi: 'Hana pose une question, tu choisis ta réponse.',
+      hkT: 'Parler avec Hana', hkN: '17 sujets', hkBadge: 'Exercice', hkAi: 'Hana pose une question, tu choisis ta réponse.',
       hkRules: [['🔁', 'Si tu ne comprends pas, touche « 다시 말해 주세요. » : Hana répète lentement.'], ['🎮', 'Les mêmes phrases que dans « Allons-y ! ». À la fin, continue en 3D, avec la fiche ou les ressources.'], ['🔒', 'Pas de code, pas de prénom. Rien n’est envoyé.']],
       hkOpen: 'Ouvrir « Parler avec Hana »',
       tmT: 'Encore plus sur ce thème', tmPlay: m => `Allons-y ! · sans IA · env. ${m} min`, tmTalk: 'Parler avec Hana', tmTalkDs: 'Dialogue guidé · choisis ta réponse',
@@ -1567,10 +1567,13 @@
   ];
   const HANA_URL = 'hana/';   // 11-18 미리 쓴 대화(같은 사이트, AI · 반 코드 없음)
   const HANA_T = [['cafe', '☕', '카페', 'Au café'], ['hanok', '🏠', '하나네 집', 'Chez Hana'], ['store', '🏪', '편의점', 'À la supérette'], ['bunsik', '🍢', '분식집', 'Au snack coréen'],
-    ['subway', '🚇', '지하철', 'Dans le métro'], ['pharmacy', '💊', '약국', 'À la pharmacie'], ['restaurant', '🍽️', '식당', 'Au restaurant'], ['intro', '👋', '처음 만남', 'Première rencontre']]
+    ['subway', '🚇', '지하철', 'Dans le métro'], ['pharmacy', '💊', '약국', 'À la pharmacie'], ['restaurant', '🍽️', '식당', 'Au restaurant'], ['intro', '👋', '처음 만남', 'Première rencontre'],
+    ['market', '🧺', '시장', 'Au marché'], ['clothes', '👕', '옷가게', 'Magasin de vêtements'], ['groceries', '🛒', '장보기', 'Faire les courses'], ['directions', '🗺️', '길 묻기', 'Demander son chemin'],
+    ['taxi', '🚕', '택시', 'En taxi'], ['time', '⏰', '시간', "L'heure"], ['colors', '🎨', '색깔', 'Les couleurs'], ['classroom', '🏫', '교실 규칙', 'Règles de la classe'], ['invite', '💌', '초대', 'Une invitation']]
     .map(([id, emo, ko, fr]) => ({ id, emo, ko, fr }));
   // 자료실 소주제 → 하나 주제(기획 3의 겹치는 주제 표)
-  const HANA_OF = { '처음 만남': ['intro'], '하나네 집': ['hanok'], '카페': ['cafe'], '식당': ['restaurant'], '분식집': ['bunsik'], '편의점': ['store'], '지하철': ['subway'], '약국': ['pharmacy'] };
+  const HANA_OF = { '처음 만남': ['intro'], '하나네 집': ['hanok'], '카페': ['cafe'], '식당': ['restaurant'], '분식집': ['bunsik'], '편의점': ['store'], '지하철': ['subway'], '약국': ['pharmacy'],
+    '시장': ['market'], '옷가게': ['clothes'], '장보기': ['groceries'], '길 묻기': ['directions'], '택시': ['taxi'], '시간': ['time'], '색깔': ['colors'], '교실 규칙': ['classroom'], '초대': ['invite'] };   // 11-18 2차 9주제
   const hanaHref = id => HANA_URL + (id ? '?topic=' + encodeURIComponent(id) : '');
   const playOf = name => PLAY.find(p => p.topic === name);
   const hanaOf = name => (HANA_OF[name] || []).map(id => HANA_T.find(h => h.id === id)).filter(Boolean);
