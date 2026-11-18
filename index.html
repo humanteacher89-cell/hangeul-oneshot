@@ -75,6 +75,9 @@
   .lang { flex: none; display: flex; background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 3px; }
   .lang button { border: 0; background: none; padding: 5px 11px; border-radius: 14px; font-size: 13px; font-weight: 800; color: var(--sub); }
   .lang.sm button { padding: 5px 9px; }
+  /* 한 · FR · EN 셋(11-18): 좁은 폰에서 로고와 겹치지 않게 단추 · 로고를 조금 줄인다 */
+  @media (max-width: 400px) { .lang.sm button { padding: 5px 7px; font-size: 12.5px; } }
+  @media (max-width: 350px) { .lang.sm button { padding: 5px 5px; font-size: 12px; } .hlogo { height: 34px; } .hbtns { gap: 6px; } }
   .lang button.on { background: var(--ink); color: #fff; }
   /* 누르는 자리 넓히기(보이는 크기는 그대로, 손가락 44px 안팎 — 2026-10-31 점검) */
   .lang button, .srch .sx { position: relative; }
