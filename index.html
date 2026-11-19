@@ -1047,7 +1047,7 @@
     fTopic: 'Topic', fGroup: 'Main theme', fGroupHint: 'This is a new topic. Which main theme should it go in?', fLevel: 'Level', fTitle: 'Title', fType: 'Type',
     cbOpen: 'Open the list', cbNone: 'Nothing to choose', cbNewTopic: s => `New topic: "${s}"`, cbNewGroup: s => `New main theme: "${s}"`,
     fUrl: 'Link', fMin: 'Time needed', fDesc: 'One-line description', optional: '(optional)', fSchool: 'Your school', phSchool: 'Choose your school', needSchool: 'Please choose your school',
-    phTopic: 'Choose a topic or type a new one', phTitle: 'e.g. Family word picture cards', phDesc: 'e.g. Look at the pictures and repeat',
+    phTopic: 'Choose a topic or type a new one', phTitle: 'e.g. Family word picture cards', phDesc: 'e.g. Look at the pictures and repeat', phGroup: 'e.g. 음식',
     paste: 'Paste', previewCap: 'What learners will see', submit: 'Add', required: 'Topic, level, title and link are required',
     needTopic: 'Please choose or type a topic', needLevel: 'Please choose a level (하·중·상)', needTitle: 'Please enter a title', needUrl: 'Please paste a link',
     srcFile: 'File (PDF/image/HTML)', srcLink: 'Link', fSrc: 'Resource', pickFile: 'Choose a file', fileWhat: n => `PDF, image or HTML · up to ${n} MB`,
@@ -1065,6 +1065,24 @@
     dupLink: (s, w) => `This link is already here: "${s}" (${w})`, dupAsk: 'This link is already in the library.\nAdd it anyway?',
     mineTip: 'To change it, delete it and add it again', total: n => `${n} resource${n === 1 ? '' : 's'}`, updated: 'updated', loading: 'Loading…',
     mockNote: 'Sample data · what you add stays on this device only',
+    // AI 도우미(선생님만, 11-19 영어). AI가 쓰는 글의 언어는 서버가 정한다(영어 화면이면 지금은 한국어로 답함)
+    fDescFr: 'Description in French', phDescFr: 'e.g. Répéter en regardant les images',
+    aiTitle: 'AI helper', aiEntrySub: 'Suggestions · Make a worksheet', aiTabRec: 'Suggestions', aiTabWs: 'Make a worksheet', aiOff: 'The AI helper is turned off right now',
+    aiFillBtn: 'Fill in with AI', aiFillBusy: 'AI is reading the resource…', aiFillHint: 'After you paste a link or choose a file, tap this and AI fills in the title, type, level and description. The resource content is sent to AI (Anthropic).',
+    aiFilled: 'AI filled it in. Please check and fix it before adding.', aiNeedSrc: 'Paste a link or choose a file first', aiHeic: 'This photo format can’t be read here. Please fill in the fields yourself.',
+    aiNoPii: 'Don’t write personal information like students’ names. What you write is sent to AI (Anthropic).', aiLeft: n => `${n} left today`,
+    aiRecLab: 'What lesson are you preparing?', aiRecPh: 'e.g. Next week’s corner shop lesson, beginner 7-year-olds, mostly speaking', aiRecBtn: 'Get suggestions', aiRecBusy: 'AI is looking through the library…', aiRecNeed: 'Please describe your lesson', aiRecNone: 'No matching resources found for this lesson', aiToWs: 'Make a worksheet',
+    aiKind: 'What to make', aiKinds: { sheet: 'Worksheet', read: 'Reading text', talk: 'Dialogue', quiz: 'Quiz', vocab: 'Word list' }, aiPages: 'Length', aiPagesOpts: { 1: 'A4, 1 page', 2: 'A4, 2 pages' }, aiWho: 'Learners', aiWhos: { kid: 'Children', teen: 'Teens', adult: 'Adults' },
+    aiExpr: 'Phrases learned', aiExprPh: 'e.g. 이거 얼마예요? / ~ 주세요', aiWords: 'Words to use', aiWordsPh: 'e.g. 물, 빵, 우유, 과자', aiWordsHint: 'If you list words, only those are used. If empty, easy words for the level are used.',
+    aiWsBtn: 'Make a draft', aiWsBusy: p => `AI is writing the draft… about ${p === '2' ? '40' : '20'} seconds`, aiWsNote: 'This is an AI draft. Please read it and fix any mistakes before adding.', aiWsNew: 'Start over', aiWsRedo: 'Make again',
+    aiWsGuide: 'Instructions', aiWsGuideFr: 'Instructions (French)', aiWsPassage: 'Text', aiWsItem: n => `Question ${n}`, aiWsQ: 'Question', aiWsFr: 'Help in French', aiWsChoices: 'Choices (separate with /)', aiWsAnswer: 'Answer', aiWsDel: 'Remove',
+    aiWsSave: 'Add to the library', aiWsNeed: 'Please check the title and questions',
+    aiWsDrawing: 'Drawing the document…', aiWsEditBtn: 'Edit', aiWsPdf: 'Save as PDF', aiWsPdfBusy: 'Making the PDF…', aiWsPdfDone: 'PDF saved', aiWsPdfErr: 'Could not make the document. Please try again',
+    aiWsEditNote: 'When you finish editing, tap the button below to update the document.', aiWsDone: 'Done', aiWsUpHint: 'Once added, this PDF is public in the library right away.', aiWsAnsHint: 'The answer key on the last page is public too.', aiWsPage: (i, n) => `Page ${i} / ${n}`,
+    aiWsOver: (want, got) => `Too much text for ${want === 1 ? '1 A4 page' : want + ' A4 pages'}: it came out as ${got} pages. To shorten it, remove some text or questions in "Edit".`,
+    aiErr: { ai_off: 'The AI helper is turned off right now', ai_empty: 'This month’s AI credit is used up. You can use it again next month', ai_limit: 'You’ve used all of today’s tries. Please try again tomorrow', ai_busy: 'AI is busy. Please try again in a moment',
+      ai_refused: 'AI didn’t handle this content. Please change it and try again', ai_cut: 'Too long to finish. Please make it shorter', ai_unread: 'This link couldn’t be read. Write a title first, then tap again',
+      ai_big: `The file is too big for AI: up to ${AI_FILE_MAX_MB} MB`, ai_fail: 'AI didn’t answer properly. Please try again', file_type: 'AI can’t read this file type', file_empty: 'Could not read the file. Please choose it again', missing: 'Something is missing', too_many: 'Too many tries. Please try again in 10 minutes.' },
     teacherName: n => n
   });
 
@@ -1243,7 +1261,7 @@
   const starBtn = m => { const on = isFav(m.id); return `<button type="button" class="star${on ? ' on' : ''}" data-fav="${esc(m.id)}" aria-pressed="${on}" aria-label="${esc(t(on ? 'favOff' : 'favOn'))}">${ICON.star}</button>`; };
   // 신고 단추(자료 카드마다, 로그인 없이) · 개인정보처리방침·이용 규칙 링크(프랑스어 화면이면 그 절로)
   const rpLink = m => `<a class="rpbtn" href="#/report/${encodeURIComponent(m.id)}" aria-label="${esc(t('rpBtn'))}" title="${esc(t('rpBtn'))}">${ICON.flag}</a>`;
-  const policyHref = p => `${p}.html${lang === 'fr' ? '#fr' : ''}`;
+  const policyHref = p => `${p}.html${lang === 'fr' ? '#fr' : lang === 'en' ? '#en' : ''}`;   // 영어 쪽은 11-19
   const policyLinks = () => `<a href="${policyHref('privacy')}" target="_blank" rel="noopener">${esc(t('privacyLink'))}</a> · <a href="${policyHref('terms')}" target="_blank" rel="noopener">${esc(t('termsLink'))}</a>`;
   function barSub(title, backHref, right) {
     const left = backHref ? `<a class="circ" href="${backHref}" aria-label="${esc(t('back'))}">${ICON.back}</a>` : '<span class="circ ghost"></span>';
